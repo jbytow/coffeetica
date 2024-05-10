@@ -1,6 +1,7 @@
 package com.example.coffeetica.services.impl;
 
 import com.example.coffeetica.model.CoffeeDTO;
+import com.example.coffeetica.model.CoffeeEntity;
 import com.example.coffeetica.repositories.CoffeeRepository;
 import com.example.coffeetica.services.CoffeeService;
 import org.modelmapper.ModelMapper;
@@ -29,27 +30,24 @@ public class CoffeeServiceImpl implements CoffeeService {
 
     @Override
     public Optional<CoffeeDTO> findCoffeeById(Long id) {
-        return coffeeRepository.findById(id);
+        return coffeeRepository.findById(id)
+                .map(entity -> modelMapper.map(entity, CoffeeDTO.class));
     }
 
     @Override
     public CoffeeDTO saveCoffee(CoffeeDTO coffeeDTO) {
-        return coffeeRepository.save(coffeeDTO);
+        CoffeeEntity entity = modelMapper.map(coffeeDTO, CoffeeEntity.class);
+        CoffeeEntity savedEntity = coffeeRepository.save(entity);
+        return modelMapper.map(savedEntity, CoffeeDTO.class);
     }
 
     @Override
     public CoffeeDTO updateCoffee(Long id, CoffeeDTO coffeeDTODetails) {
-        CoffeeDTO coffeeDTO = coffeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Coffee not found"));
-        coffeeDTO.setName(coffeeDTODetails.getName());
-        coffeeDTO.setCountryOfOrigin(coffeeDTODetails.getCountryOfOrigin());
-        coffeeDTO.setRegion(coffeeDTODetails.getRegion());
-        coffeeDTO.setRoastery(coffeeDTODetails.getRoastery());
-        coffeeDTO.setRoastLevel(coffeeDTODetails.getRoastLevel());
-        coffeeDTO.setFlavorProfile(coffeeDTODetails.getFlavorProfile());
-        coffeeDTO.setNotes(coffeeDTODetails.getNotes());
-        coffeeDTO.setProcessingMethod(coffeeDTODetails.getProcessingMethod());
-        coffeeDTO.setProductionYear(coffeeDTODetails.getProductionYear());
-        return coffeeRepository.save(coffeeDTO);
+        CoffeeEntity entity = coffeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coffee not found"));
+        modelMapper.map(coffeeDTODetails, entity);
+        CoffeeEntity updatedEntity = coffeeRepository.save(entity);
+        return modelMapper.map(updatedEntity, CoffeeDTO.class);
     }
 
     @Override
@@ -61,5 +59,4 @@ public class CoffeeServiceImpl implements CoffeeService {
     public void deleteCoffee(Long id) {
         coffeeRepository.deleteById(id);
     }
-
 }

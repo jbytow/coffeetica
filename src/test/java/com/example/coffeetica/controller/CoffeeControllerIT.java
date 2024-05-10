@@ -34,7 +34,7 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatCoffeeIsCreatedReturnsHTTP201() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
         final ObjectMapper objectMapper = new ObjectMapper();
         final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
 
@@ -47,12 +47,11 @@ public class CoffeeControllerIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
-        // Add more assertions for other coffee fields as needed
     }
 
     @Test
     public void testThatCoffeeIsUpdatedReturnsHTTP200() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
         coffeeService.saveCoffee(coffeeDTO);
 
         coffeeDTO.setRoastery("New Roastery");
@@ -67,7 +66,6 @@ public class CoffeeControllerIT {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.roastery").value(coffeeDTO.getRoastery()));
-        // Add more assertions for other coffee fields as needed
     }
 
     @Test
@@ -78,7 +76,7 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatRetrieveCoffeeReturnsHttp200AndCoffeeWhenExists() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
         coffeeService.saveCoffee(coffeeDTO);
 
         mockMvc.perform(get("/api/coffees/{id}", coffeeDTO.getId()))
@@ -98,7 +96,7 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatListCoffeesReturnsHttp200AndCoffeesWhenCoffeesExist() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
         coffeeService.saveCoffee(coffeeDTO);
 
         mockMvc.perform(get("/api/coffees/"))
@@ -119,7 +117,7 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatHttp204IsReturnedWhenExistingCoffeeIsDeleted() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
 
         mockMvc.perform(delete("/api/coffees/{id}", coffeeDTO.getId()))
                 .andExpect(status().isNoContent());
