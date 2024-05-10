@@ -1,5 +1,5 @@
 package com.example.coffeetica.services.impl;
-import com.example.coffeetica.model.Coffee;
+import com.example.coffeetica.model.CoffeeDTO;
 import com.example.coffeetica.repositories.CoffeeRepository;
 
 import com.example.coffeetica.util.TestData;
@@ -27,12 +27,12 @@ public class CoffeeServiceImplTest {
 
     @Test
     public void testThatCoffeeIsSaved() {
-        final Coffee coffee = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
 
-        when(coffeeRepository.save(eq(coffee))).thenReturn(coffee);
+        when(coffeeRepository.save(eq(coffeeDTO))).thenReturn(coffeeDTO);
 
-        final Coffee result = underTest.saveCoffee(coffee);
-        assertEquals(coffee, result);
+        final CoffeeDTO result = underTest.saveCoffee(coffeeDTO);
+        assertEquals(coffeeDTO, result);
     }
 
     @Test
@@ -40,32 +40,32 @@ public class CoffeeServiceImplTest {
         final Long id = 1L;
         when(coffeeRepository.findById(eq(id))).thenReturn(Optional.empty());
 
-        final Optional<Coffee> result = underTest.findCoffeeById(id);
+        final Optional<CoffeeDTO> result = underTest.findCoffeeById(id);
         assertEquals(Optional.empty(), result);
     }
 
     @Test
     public void testThatFindByIdReturnsCoffeeWhenExists() {
-        final Coffee coffee = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
 
-        when(coffeeRepository.findById(eq(coffee.getId()))).thenReturn(Optional.of(coffee));
+        when(coffeeRepository.findById(eq(coffeeDTO.getId()))).thenReturn(Optional.of(coffeeDTO));
 
-        final Optional<Coffee> result = underTest.findCoffeeById(coffee.getId());
-        assertEquals(Optional.of(coffee), result);
+        final Optional<CoffeeDTO> result = underTest.findCoffeeById(coffeeDTO.getId());
+        assertEquals(Optional.of(coffeeDTO), result);
     }
 
     @Test
     public void testListCoffeesReturnsEmptyListWhenNoCoffeesExist() {
         when(coffeeRepository.findAll()).thenReturn(new ArrayList<>());
-        final List<Coffee> result = underTest.findAllCoffees();
+        final List<CoffeeDTO> result = underTest.findAllCoffees();
         assertEquals(0, result.size());
     }
 
     @Test
     public void testListCoffeesReturnsCoffeesWhenExist() {
-        final Coffee coffee = TestData.createTestCoffee();
-        when(coffeeRepository.findAll()).thenReturn(List.of(coffee));
-        final List<Coffee> result = underTest.findAllCoffees();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        when(coffeeRepository.findAll()).thenReturn(List.of(coffeeDTO));
+        final List<CoffeeDTO> result = underTest.findAllCoffees();
         assertEquals(1, result.size());
     }
 

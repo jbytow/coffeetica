@@ -1,6 +1,6 @@
 package com.example.coffeetica.services;
 
-import com.example.coffeetica.model.Coffee;
+import com.example.coffeetica.model.CoffeeDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,13 +9,13 @@ public interface CoffeeService {
 
     boolean isCoffeeExists(Long id);
 
-    List<Coffee> findAllCoffees();
+    List<CoffeeDTO> findAllCoffees();
 
-    Optional<Coffee> findCoffeeById(Long id);
+    Optional<CoffeeDTO> findCoffeeById(Long id);
 
-    Coffee saveCoffee(Coffee coffee);
+    CoffeeDTO saveCoffee(CoffeeDTO coffeeDTO);
 
-    Coffee updateCoffee(Long id, Coffee coffeeDetails);
+    CoffeeDTO updateCoffee(Long id, CoffeeDTO coffeeDTODetails);
 
     void deleteCoffee(Long id);
 }

@@ -1,13 +1,15 @@
 package com.example.coffeetica.services.impl;
 
-import com.example.coffeetica.model.Coffee;
+import com.example.coffeetica.model.CoffeeDTO;
 import com.example.coffeetica.repositories.CoffeeRepository;
 import com.example.coffeetica.services.CoffeeService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CoffeeServiceImpl implements CoffeeService {
@@ -15,34 +17,39 @@ public class CoffeeServiceImpl implements CoffeeService {
     @Autowired
     private CoffeeRepository coffeeRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public List<Coffee> findAllCoffees() {
-        return coffeeRepository.findAll();
+    public List<CoffeeDTO> findAllCoffees() {
+        return coffeeRepository.findAll().stream()
+                .map(entity -> modelMapper.map(entity, CoffeeDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Coffee> findCoffeeById(Long id) {
+    public Optional<CoffeeDTO> findCoffeeById(Long id) {
         return coffeeRepository.findById(id);
     }
 
     @Override
-    public Coffee saveCoffee(Coffee coffee) {
-        return coffeeRepository.save(coffee);
+    public CoffeeDTO saveCoffee(CoffeeDTO coffeeDTO) {
+        return coffeeRepository.save(coffeeDTO);
     }
 
     @Override
-    public Coffee updateCoffee(Long id, Coffee coffeeDetails) {
-        Coffee coffee = coffeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Coffee not found"));
-        coffee.setName(coffeeDetails.getName());
-        coffee.setCountryOfOrigin(coffeeDetails.getCountryOfOrigin());
-        coffee.setRegion(coffeeDetails.getRegion());
-        coffee.setRoastery(coffeeDetails.getRoastery());
-        coffee.setRoastLevel(coffeeDetails.getRoastLevel());
-        coffee.setFlavorProfile(coffeeDetails.getFlavorProfile());
-        coffee.setNotes(coffeeDetails.getNotes());
-        coffee.setProcessingMethod(coffeeDetails.getProcessingMethod());
-        coffee.setProductionYear(coffeeDetails.getProductionYear());
-        return coffeeRepository.save(coffee);
+    public CoffeeDTO updateCoffee(Long id, CoffeeDTO coffeeDTODetails) {
+        CoffeeDTO coffeeDTO = coffeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Coffee not found"));
+        coffeeDTO.setName(coffeeDTODetails.getName());
+        coffeeDTO.setCountryOfOrigin(coffeeDTODetails.getCountryOfOrigin());
+        coffeeDTO.setRegion(coffeeDTODetails.getRegion());
+        coffeeDTO.setRoastery(coffeeDTODetails.getRoastery());
+        coffeeDTO.setRoastLevel(coffeeDTODetails.getRoastLevel());
+        coffeeDTO.setFlavorProfile(coffeeDTODetails.getFlavorProfile());
+        coffeeDTO.setNotes(coffeeDTODetails.getNotes());
+        coffeeDTO.setProcessingMethod(coffeeDTODetails.getProcessingMethod());
+        coffeeDTO.setProductionYear(coffeeDTODetails.getProductionYear());
+        return coffeeRepository.save(coffeeDTO);
     }
 
     @Override

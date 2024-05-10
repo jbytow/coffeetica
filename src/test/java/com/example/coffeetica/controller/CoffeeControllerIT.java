@@ -1,6 +1,6 @@
 package com.example.coffeetica.controller;
 
-import com.example.coffeetica.model.Coffee;
+import com.example.coffeetica.model.CoffeeDTO;
 import com.example.coffeetica.services.CoffeeService;
 import com.example.coffeetica.util.TestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,9 +34,9 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatCoffeeIsCreatedReturnsHTTP201() throws Exception {
-        final Coffee coffee = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
         final ObjectMapper objectMapper = new ObjectMapper();
-        final String coffeeJson = objectMapper.writeValueAsString(coffee);
+        final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/coffees/")
@@ -44,29 +44,29 @@ public class CoffeeControllerIT {
                                 .content(coffeeJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffee.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffee.getCountryOfOrigin()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffee.getRegion()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
         // Add more assertions for other coffee fields as needed
     }
 
     @Test
     public void testThatCoffeeIsUpdatedReturnsHTTP200() throws Exception {
-        final Coffee coffee = TestData.createTestCoffee();
-        coffeeService.saveCoffee(coffee);
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        coffeeService.saveCoffee(coffeeDTO);
 
-        coffee.setRoastery("New Roastery");
+        coffeeDTO.setRoastery("New Roastery");
 
         final ObjectMapper objectMapper = new ObjectMapper();
-        final String coffeeJson = objectMapper.writeValueAsString(coffee);
+        final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.put("/api/coffees/{id}", coffee.getId())
+                        MockMvcRequestBuilders.put("/api/coffees/{id}", coffeeDTO.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(coffeeJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffee.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.roastery").value(coffee.getRoastery()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.roastery").value(coffeeDTO.getRoastery()));
         // Add more assertions for other coffee fields as needed
     }
 
@@ -78,15 +78,15 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatRetrieveCoffeeReturnsHttp200AndCoffeeWhenExists() throws Exception {
-        final Coffee coffee = TestData.createTestCoffee();
-        coffeeService.saveCoffee(coffee);
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        coffeeService.saveCoffee(coffeeDTO);
 
-        mockMvc.perform(get("/api/coffees/{id}", coffee.getId()))
+        mockMvc.perform(get("/api/coffees/{id}", coffeeDTO.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(coffee.getId()))
-                .andExpect(jsonPath("$.name").value(coffee.getName()))
-                .andExpect(jsonPath("$.countryOfOrigin").value(coffee.getCountryOfOrigin()))
-                .andExpect(jsonPath("$.region").value(coffee.getRegion()));
+                .andExpect(jsonPath("$.id").value(coffeeDTO.getId()))
+                .andExpect(jsonPath("$.name").value(coffeeDTO.getName()))
+                .andExpect(jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
+                .andExpect(jsonPath("$.region").value(coffeeDTO.getRegion()));
     }
 
     @Test
@@ -98,15 +98,15 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatListCoffeesReturnsHttp200AndCoffeesWhenCoffeesExist() throws Exception {
-        final Coffee coffee = TestData.createTestCoffee();
-        coffeeService.saveCoffee(coffee);
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
+        coffeeService.saveCoffee(coffeeDTO);
 
         mockMvc.perform(get("/api/coffees/"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value(coffee.getId()))
-                .andExpect(jsonPath("$.[0].name").value(coffee.getName()))
-                .andExpect(jsonPath("$.[0].countryOfOrigin").value(coffee.getCountryOfOrigin()))
-                .andExpect(jsonPath("$.[0].region").value(coffee.getRegion()));
+                .andExpect(jsonPath("$.[0].id").value(coffeeDTO.getId()))
+                .andExpect(jsonPath("$.[0].name").value(coffeeDTO.getName()))
+                .andExpect(jsonPath("$.[0].countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
+                .andExpect(jsonPath("$.[0].region").value(coffeeDTO.getRegion()));
     }
 
     @Test
@@ -119,9 +119,9 @@ public class CoffeeControllerIT {
 
     @Test
     public void testThatHttp204IsReturnedWhenExistingCoffeeIsDeleted() throws Exception {
-        final Coffee coffee = TestData.createTestCoffee();
+        final CoffeeDTO coffeeDTO = TestData.createTestCoffee();
 
-        mockMvc.perform(delete("/api/coffees/{id}", coffee.getId()))
+        mockMvc.perform(delete("/api/coffees/{id}", coffeeDTO.getId()))
                 .andExpect(status().isNoContent());
     }
 }

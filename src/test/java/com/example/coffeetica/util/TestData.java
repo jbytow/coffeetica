@@ -1,21 +1,21 @@
 package com.example.coffeetica.util;
 
-import com.example.coffeetica.model.Coffee;
+import com.example.coffeetica.model.CoffeeDTO;
 
 public class TestData {
 
-    public static Coffee createTestCoffee() {
-        Coffee coffee = new Coffee();
-        coffee.setId(1L);
-        coffee.setName("Nutty Brazil");
-        coffee.setCountryOfOrigin("Brazil");
-        coffee.setRegion("Minas Gerais");
-        coffee.setRoastery("Best Roastery");
-        coffee.setRoastLevel("Medium");
-        coffee.setFlavorProfile("Nutty");
-        coffee.setNotes("Notes of chocolate");
-        coffee.setProcessingMethod("Washed");
-        coffee.setProductionYear(2024);
-        return coffee;
+    public static CoffeeDTO createTestCoffee() {
+        CoffeeDTO coffeeDTO = new CoffeeDTO();
+        coffeeDTO.setId(1L);
+        coffeeDTO.setName("Nutty Brazil");
+        coffeeDTO.setCountryOfOrigin("Brazil");
+        coffeeDTO.setRegion("Minas Gerais");
+        coffeeDTO.setRoastery("Best Roastery");
+        coffeeDTO.setRoastLevel("Medium");
+        coffeeDTO.setFlavorProfile("Nutty");
+        coffeeDTO.setNotes("Notes of chocolate");
+        coffeeDTO.setProcessingMethod("Washed");
+        coffeeDTO.setProductionYear(2024);
+        return coffeeDTO;
     }
 }
