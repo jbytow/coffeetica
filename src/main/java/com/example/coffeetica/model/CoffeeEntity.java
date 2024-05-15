@@ -2,6 +2,8 @@ package com.example.coffeetica.model;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "coffees")
 public class CoffeeEntity {
@@ -13,16 +15,20 @@ public class CoffeeEntity {
     private String name; // Name of the coffee
     private String countryOfOrigin; // Country of origin
     private String region; // Region
-    private String roastery; // Roastery
     private String roastLevel; // Roast level
     private String flavorProfile; // Flavor profile
     private String notes; // Notes
     private String processingMethod; // Processing method
     private Integer productionYear; // Year
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "roastery_id", nullable = false)
+    private RoasteryEntity roastery;
+
+    @OneToMany(mappedBy = "coffee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ReviewEntity> reviews;
+
     // Getters and setters
-
-
     public Long getId() {
         return id;
     }
@@ -53,14 +59,6 @@ public class CoffeeEntity {
 
     public void setRegion(String region) {
         this.region = region;
-    }
-
-    public String getRoastery() {
-        return roastery;
-    }
-
-    public void setRoastery(String roastery) {
-        this.roastery = roastery;
     }
 
     public String getRoastLevel() {
@@ -101,5 +99,21 @@ public class CoffeeEntity {
 
     public void setProductionYear(Integer productionYear) {
         this.productionYear = productionYear;
+    }
+
+    public RoasteryEntity getRoastery() {
+        return roastery;
+    }
+
+    public void setRoastery(RoasteryEntity roastery) {
+        this.roastery = roastery;
+    }
+
+    public Set<ReviewEntity> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<ReviewEntity> reviews) {
+        this.reviews = reviews;
     }
 }

@@ -1,30 +1,24 @@
 package com.example.coffeetica.model;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
+import java.util.Set;
 
 public class CoffeeDTO {
 
     private Long id;
-
     private String name; // Name of the coffee
     private String countryOfOrigin; // Country of origin
     private String region; // Region
-    private String roastery; // Roastery
     private String roastLevel; // Roast level
     private String flavorProfile; // Flavor profile
     private String notes; // Notes
     private String processingMethod; // Processing method
     private Integer productionYear; // Year
 
+    private RoasteryDTO roastery;
+
+    private Set<ReviewDTO> reviews;
+
     // Getters and setters
-
-
     public Long getId() {
         return id;
     }
@@ -55,14 +49,6 @@ public class CoffeeDTO {
 
     public void setRegion(String region) {
         this.region = region;
-    }
-
-    public String getRoastery() {
-        return roastery;
-    }
-
-    public void setRoastery(String roastery) {
-        this.roastery = roastery;
     }
 
     public String getRoastLevel() {
@@ -103,6 +89,22 @@ public class CoffeeDTO {
 
     public void setProductionYear(Integer productionYear) {
         this.productionYear = productionYear;
+    }
+
+    public RoasteryDTO getRoastery() {
+        return roastery;
+    }
+
+    public void setRoastery(RoasteryDTO roastery) {
+        this.roastery = roastery;
+    }
+
+    public Set<ReviewDTO> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<ReviewDTO> reviews) {
+        this.reviews = reviews;
     }
 }
 
