@@ -51,12 +51,12 @@ public class CoffeeServiceImpl implements CoffeeService {
     }
 
     @Override
-    public boolean isCoffeeExists(Long id) {
-        return coffeeRepository.existsById(id);
+    public void deleteCoffee(Long id) {
+        coffeeRepository.deleteById(id);
     }
 
     @Override
-    public void deleteCoffee(Long id) {
-        coffeeRepository.deleteById(id);
+    public boolean isCoffeeExists(Long id) {
+        return coffeeRepository.existsById(id);
     }
 }

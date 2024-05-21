@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,27 +17,36 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CoffeeControllerIT {
+public class CoffeeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private CoffeeService coffeeService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void testThatCoffeeIsCreatedReturnsHTTP201() throws Exception {
         final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        final ObjectMapper objectMapper = new ObjectMapper();
         final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
+
+        when(coffeeService.saveCoffee(any(CoffeeDTO.class))).thenReturn(coffeeDTO);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/coffees/")
@@ -52,12 +62,11 @@ public class CoffeeControllerIT {
     @Test
     public void testThatCoffeeIsUpdatedReturnsHTTP200() throws Exception {
         final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        coffeeService.saveCoffee(coffeeDTO);
-
-        coffeeDTO.setRoastery("New Roastery");
-
-        final ObjectMapper objectMapper = new ObjectMapper();
         final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
+
+        when(coffeeService.updateCoffee(anyLong(), any(CoffeeDTO.class))).thenReturn(coffeeDTO);
+
+        coffeeDTO.setRegion("Africa");
 
         mockMvc.perform(
                         MockMvcRequestBuilders.put("/api/coffees/{id}", coffeeDTO.getId())
@@ -65,61 +74,69 @@ public class CoffeeControllerIT {
                                 .content(coffeeJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.roastery").value(coffeeDTO.getRoastery()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
     }
 
     @Test
     public void testThatRetrieveCoffeeReturns404WhenCoffeeNotFound() throws Exception {
-        mockMvc.perform(get("/api/coffees/123123123"))
-                .andExpect(status().isNotFound());
+        when(coffeeService.findCoffeeById(anyLong())).thenReturn(Optional.empty());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/123123123"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     public void testThatRetrieveCoffeeReturnsHttp200AndCoffeeWhenExists() throws Exception {
         final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        coffeeService.saveCoffee(coffeeDTO);
+        when(coffeeService.findCoffeeById(coffeeDTO.getId())).thenReturn(Optional.of(coffeeDTO));
 
-        mockMvc.perform(get("/api/coffees/{id}", coffeeDTO.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(coffeeDTO.getId()))
-                .andExpect(jsonPath("$.name").value(coffeeDTO.getName()))
-                .andExpect(jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
-                .andExpect(jsonPath("$.region").value(coffeeDTO.getRegion()));
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/{id}", coffeeDTO.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
     }
 
     @Test
     public void testThatListCoffeeReturnsHttp200EmptyListWhenNoCoffeesExist() throws Exception {
-        mockMvc.perform(get("/api/coffees/"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("[]"));
+        when(coffeeService.findAllCoffees()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 
     @Test
     public void testThatListCoffeesReturnsHttp200AndCoffeesWhenCoffeesExist() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        coffeeService.saveCoffee(coffeeDTO);
+        CoffeeDTO coffeeDTO = new CoffeeDTO();
+        coffeeDTO.setId(1L);
+        coffeeDTO.setName("Test Coffee");
 
-        mockMvc.perform(get("/api/coffees/"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value(coffeeDTO.getId()))
-                .andExpect(jsonPath("$.[0].name").value(coffeeDTO.getName()))
-                .andExpect(jsonPath("$.[0].countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
-                .andExpect(jsonPath("$.[0].region").value(coffeeDTO.getRegion()));
+        when(coffeeService.findAllCoffees()).thenReturn(Arrays.asList(coffeeDTO));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(coffeeDTO.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Test Coffee"));
     }
 
     @Test
     public void testThatHttp204IsReturnedWhenCoffeeDoesntExist() throws Exception {
         final long nonExistentCoffeeId = 213213213L;
 
-        mockMvc.perform(delete("/api/coffees/{id}", nonExistentCoffeeId))
-                .andExpect(status().isNoContent());
+        doNothing().when(coffeeService).deleteCoffee(nonExistentCoffeeId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/coffees/{id}", nonExistentCoffeeId))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
     public void testThatHttp204IsReturnedWhenExistingCoffeeIsDeleted() throws Exception {
         final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
+        doNothing().when(coffeeService).deleteCoffee(coffeeDTO.getId());
 
-        mockMvc.perform(delete("/api/coffees/{id}", coffeeDTO.getId()))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/coffees/{id}", coffeeDTO.getId()))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 }

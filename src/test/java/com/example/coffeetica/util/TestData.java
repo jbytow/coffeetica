@@ -2,23 +2,46 @@ package com.example.coffeetica.util;
 
 import com.example.coffeetica.model.CoffeeDTO;
 import com.example.coffeetica.model.CoffeeEntity;
+import com.example.coffeetica.model.RoasteryDTO;
+import com.example.coffeetica.model.RoasteryEntity;
 
 public final class TestData {
 
     private TestData() {
     }
+
+    public static RoasteryEntity createTestRoasteryEntity() {
+        RoasteryEntity roastery = new RoasteryEntity();
+        roastery.setId(1L);
+        roastery.setName("Best Roastery");
+        roastery.setLocation("Brazil, Minas Gerais");
+        roastery.setFoundingYear(2010);
+        roastery.setWebsiteUrl("http://bestroastery.com");
+        return roastery;
+    }
+
+    public static RoasteryDTO createTestRoasteryDTO() {
+        RoasteryDTO roasteryDTO = new RoasteryDTO();
+        roasteryDTO.setId(1L);
+        roasteryDTO.setName("Best Roastery");
+        roasteryDTO.setLocation("Brazil, Minas Gerais");
+        roasteryDTO.setFoundingYear(2010);
+        roasteryDTO.setWebsiteUrl("http://bestroastery.com");
+        return roasteryDTO;
+    }
+
     public static CoffeeEntity createTestCoffeeEntity() {
         CoffeeEntity coffeeEntity = new CoffeeEntity();
         coffeeEntity.setId(1L);
         coffeeEntity.setName("Nutty Brazil");
         coffeeEntity.setCountryOfOrigin("Brazil");
         coffeeEntity.setRegion("Minas Gerais");
-        coffeeEntity.setRoastery("Best Roastery");
         coffeeEntity.setRoastLevel("Medium");
         coffeeEntity.setFlavorProfile("Nutty");
         coffeeEntity.setNotes("Notes of chocolate");
         coffeeEntity.setProcessingMethod("Washed");
         coffeeEntity.setProductionYear(2024);
+        coffeeEntity.setRoastery(createTestRoasteryEntity());
         return coffeeEntity;
     }
 
@@ -28,12 +51,12 @@ public final class TestData {
         coffeeDTO.setName("Nutty Brazil");
         coffeeDTO.setCountryOfOrigin("Brazil");
         coffeeDTO.setRegion("Minas Gerais");
-        coffeeDTO.setRoastery("Best Roastery");
         coffeeDTO.setRoastLevel("Medium");
         coffeeDTO.setFlavorProfile("Nutty");
         coffeeDTO.setNotes("Notes of chocolate");
         coffeeDTO.setProcessingMethod("Washed");
         coffeeDTO.setProductionYear(2024);
+        coffeeDTO.setRoastery(createTestRoasteryDTO());
         return coffeeDTO;
     }
 }
