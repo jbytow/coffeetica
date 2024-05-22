@@ -1,9 +1,6 @@
 package com.example.coffeetica.util;
 
-import com.example.coffeetica.model.CoffeeDTO;
-import com.example.coffeetica.model.CoffeeEntity;
-import com.example.coffeetica.model.RoasteryDTO;
-import com.example.coffeetica.model.RoasteryEntity;
+import com.example.coffeetica.model.*;
 
 public final class TestData {
 
@@ -58,5 +55,27 @@ public final class TestData {
         coffeeDTO.setProductionYear(2024);
         coffeeDTO.setRoastery(createTestRoasteryDTO());
         return coffeeDTO;
+    }
+
+    public static ReviewEntity createTestReviewEntity() {
+        ReviewEntity review = new ReviewEntity();
+        review.setId(1L);
+        review.setContent("Great coffee with a nutty flavor.");
+        review.setBrewingMethod("Espresso");
+        review.setBrewingDescription("Brewed with a professional espresso machine.");
+        review.setRating(5);
+        review.setCoffee(createTestCoffeeEntity());
+        return review;
+    }
+
+    public static ReviewDTO createTestReviewDTO() {
+        ReviewDTO reviewDTO = new ReviewDTO();
+        reviewDTO.setId(1L);
+        reviewDTO.setContent("Great coffee with a nutty flavor.");
+        reviewDTO.setBrewingMethod("Espresso");
+        reviewDTO.setBrewingDescription("Brewed with a professional espresso machine.");
+        reviewDTO.setRating(5);
+        reviewDTO.setCoffeeId(1L);
+        return reviewDTO;
     }
 }
