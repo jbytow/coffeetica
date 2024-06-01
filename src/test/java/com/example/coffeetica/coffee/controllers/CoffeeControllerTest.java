@@ -1,6 +1,6 @@
-package com.example.coffeetica.coffee.controller;
+package com.example.coffeetica.coffee.controllers;
 
-import com.example.coffeetica.coffee.model.CoffeeDTO;
+import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.util.TestData;
 

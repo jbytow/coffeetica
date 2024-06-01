@@ -1,6 +1,6 @@
-package com.example.coffeetica.coffee.controller;
+package com.example.coffeetica.coffee.controllers;
 
-import com.example.coffeetica.coffee.model.ReviewDTO;
+import com.example.coffeetica.coffee.models.ReviewDTO;
 import com.example.coffeetica.coffee.services.ReviewService;
 import com.example.coffeetica.coffee.util.TestData;
 import com.fasterxml.jackson.databind.ObjectMapper;

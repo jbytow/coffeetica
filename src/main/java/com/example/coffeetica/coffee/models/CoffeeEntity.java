@@ -1,4 +1,4 @@
-package com.example.coffeetica.coffee.model;
+package com.example.coffeetica.coffee.models;
 
 import jakarta.persistence.*;
 

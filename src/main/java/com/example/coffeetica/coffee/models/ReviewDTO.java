@@ -1,4 +1,4 @@
-package com.example.coffeetica.coffee.model;
+package com.example.coffeetica.coffee.models;
 
 public class ReviewDTO {
 

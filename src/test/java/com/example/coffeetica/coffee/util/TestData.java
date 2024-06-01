@@ -1,6 +1,6 @@
 package com.example.coffeetica.coffee.util;
 
-import com.example.coffeetica.coffee.model.*;
+import com.example.coffeetica.coffee.models.*;
 
 
 public final class TestData {

@@ -1,6 +1,6 @@
 package com.example.coffeetica.coffee.controllers;
 
-import com.example.coffeetica.coffee.model.ReviewDTO;
+import com.example.coffeetica.coffee.models.ReviewDTO;
 import com.example.coffeetica.coffee.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

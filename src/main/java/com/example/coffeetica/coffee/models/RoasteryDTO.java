@@ -1,23 +1,12 @@
-package com.example.coffeetica.coffee.model;
+package com.example.coffeetica.coffee.models;
 
-import jakarta.persistence.*;
+public class RoasteryDTO {
 
-import java.util.Set;
-
-@Entity
-@Table(name = "roasteries")
-public class RoasteryEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String location;
     private Integer foundingYear;
     private String websiteUrl;
-
-    @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<CoffeeEntity> coffees;
 
     // Getters and setters
     public Long getId() {
@@ -58,13 +47,5 @@ public class RoasteryEntity {
 
     public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
-    }
-
-    public Set<CoffeeEntity> getCoffees() {
-        return coffees;
-    }
-
-    public void setCoffees(Set<CoffeeEntity> coffees) {
-        this.coffees = coffees;
     }
 }

@@ -1,7 +1,7 @@
-package com.example.coffeetica.coffee.controller;
+package com.example.coffeetica.coffee.controllers;
 
 
-import com.example.coffeetica.coffee.model.RoasteryDTO;
+import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.services.RoasteryService;
 import com.example.coffeetica.coffee.util.TestData;
 

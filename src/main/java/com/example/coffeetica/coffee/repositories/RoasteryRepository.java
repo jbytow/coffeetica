@@ -1,6 +1,6 @@
 package com.example.coffeetica.coffee.repositories;
 
-import com.example.coffeetica.coffee.model.RoasteryEntity;
+import com.example.coffeetica.coffee.models.RoasteryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

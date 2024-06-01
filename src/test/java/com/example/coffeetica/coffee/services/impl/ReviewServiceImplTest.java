@@ -1,9 +1,8 @@
 package com.example.coffeetica.coffee.services.impl;
 
-import com.example.coffeetica.coffee.model.ReviewDTO;
-import com.example.coffeetica.coffee.model.ReviewEntity;
+import com.example.coffeetica.coffee.models.ReviewDTO;
+import com.example.coffeetica.coffee.models.ReviewEntity;
 import com.example.coffeetica.coffee.repositories.ReviewRepository;
-import com.example.coffeetica.coffee.services.impl.ReviewServiceImpl;
 import com.example.coffeetica.coffee.util.TestData;
 
 import org.junit.jupiter.api.Test;

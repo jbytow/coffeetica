@@ -1,6 +1,6 @@
 package com.example.coffeetica.coffee.controllers;
 
-import com.example.coffeetica.coffee.model.RoasteryDTO;
+import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.services.RoasteryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

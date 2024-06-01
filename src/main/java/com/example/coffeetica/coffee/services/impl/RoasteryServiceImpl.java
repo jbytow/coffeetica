@@ -1,7 +1,7 @@
 package com.example.coffeetica.coffee.services.impl;
 
-import com.example.coffeetica.coffee.model.RoasteryDTO;
-import com.example.coffeetica.coffee.model.RoasteryEntity;
+import com.example.coffeetica.coffee.models.RoasteryDTO;
+import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.RoasteryService;
 import org.modelmapper.ModelMapper;

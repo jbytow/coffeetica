@@ -1,6 +1,6 @@
 package com.example.coffeetica.coffee.services;
 
-import com.example.coffeetica.coffee.model.RoasteryDTO;
+import com.example.coffeetica.coffee.models.RoasteryDTO;
 
 import java.util.List;
 import java.util.Optional;

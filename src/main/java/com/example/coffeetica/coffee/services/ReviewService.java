@@ -1,6 +1,6 @@
 package com.example.coffeetica.coffee.services;
 
-import com.example.coffeetica.coffee.model.ReviewDTO;
+import com.example.coffeetica.coffee.models.ReviewDTO;
 
 import java.util.List;
 import java.util.Optional;
