@@ -1,6 +1,7 @@
 package com.example.coffeetica.user.controllers;
 
 
+import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
 import com.example.coffeetica.user.services.UserService;
 import org.slf4j.Logger;
@@ -20,24 +21,24 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/api/users/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserEntity user) {
-        logger.debug("Attempting to register user {}", user.getUsername());
+    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
+        logger.debug("Attempting to register user {}", userDTO.getUsername());
         try {
-            UserEntity savedUser = userService.registerNewUserAccount(user);
-            logger.info("Registered user successfully {}", user.getUsername());
+            UserDTO savedUser = userService.registerNewUserAccount(userDTO);
+            logger.info("Registered user successfully {}", userDTO.getUsername());
             return ResponseEntity.ok(savedUser);
         } catch (Exception e) {
-            logger.error("Registration failed for user {}: {}", user.getUsername(), e.getMessage());
+            logger.error("Registration failed for user {}: {}", userDTO.getUsername(), e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PutMapping("/api/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserEntity user) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         logger.debug("Attempting to update user {}", id);
         try {
-            user.setId(id);
-            UserEntity updatedUser = userService.updateUser(user);
+            userDTO.setId(id);
+            UserDTO updatedUser = userService.updateUser(userDTO);
             logger.info("Updated user successfully {}", id);
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
