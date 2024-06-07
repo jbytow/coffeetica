@@ -1,10 +1,19 @@
 package com.example.coffeetica.user.models;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Set;
+
 
 public class UserDTO {
     private Long id;
+    @NotBlank
+    @Size(min = 3, max = 50)
     private String username;
+
+    @NotBlank
+    @Size(min = 6, max = 100)
+    private String password;
     private Set<String> roles;
 
     // Getters and setters
@@ -22,6 +31,14 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<String> getRoles() {

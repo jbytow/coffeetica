@@ -2,6 +2,7 @@ package com.example.coffeetica.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -19,7 +20,8 @@ public class SecurityConfig {
                 .authorizeRequests(authorize -> authorize
                         .anyRequest().permitAll()
                 )
-                .csrf(CsrfConfigurer::disable);
+                .csrf(CsrfConfigurer::disable)
+                .formLogin(Customizer.withDefaults());
 
         return http.build();
     }

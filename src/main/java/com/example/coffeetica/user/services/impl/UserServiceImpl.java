@@ -1,6 +1,7 @@
 package com.example.coffeetica.user.services.impl;
 
 
+import com.example.coffeetica.user.models.RoleEntity;
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
 import com.example.coffeetica.user.repositories.UserRepository;
@@ -13,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception("There is an account with that email address: " + userDTO.getUsername());
         }
         UserEntity user = modelMapper.map(userDTO, UserEntity.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));  // Encrypt the password
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // Encrypt the password
         UserEntity savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
@@ -46,9 +49,17 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new Exception("User not found with id: " + userDTO.getId()));
 
-        // Map the DTO to the existing entity
-        modelMapper.map(userDTO, user);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));  // Re-encrypt the password
+        user.setUsername(userDTO.getUsername());
+        if (userDTO.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // Re-encrypt the password
+        }
+        user.setRoles(userDTO.getRoles().stream()
+                .map(roleName -> {
+                    RoleEntity role = new RoleEntity();
+                    role.setName(roleName);
+                    return role;
+                }).collect(Collectors.toSet()));
+
         UserEntity updatedUser = userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
     }

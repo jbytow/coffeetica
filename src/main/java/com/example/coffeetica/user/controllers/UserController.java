@@ -7,6 +7,7 @@ import com.example.coffeetica.user.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +27,7 @@ public class UserController {
         try {
             UserDTO savedUser = userService.registerNewUserAccount(userDTO);
             logger.info("Registered user successfully {}", userDTO.getUsername());
-            return ResponseEntity.ok(savedUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (Exception e) {
             logger.error("Registration failed for user {}: {}", userDTO.getUsername(), e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -53,7 +54,7 @@ public class UserController {
         try {
             userService.deleteUser(id);
             logger.info("Deleted user successfully {}", id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             logger.error("Delete failed for user {}: {}", id, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
