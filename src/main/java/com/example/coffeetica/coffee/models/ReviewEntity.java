@@ -1,5 +1,6 @@
 package com.example.coffeetica.coffee.models;
 
+import com.example.coffeetica.user.models.UserEntity;
 import jakarta.persistence.*;
 
 @Entity
@@ -25,6 +26,10 @@ public class ReviewEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coffee_id", nullable = false)
     private CoffeeEntity coffee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     // Getters and Setters
     public Long getId() {
@@ -73,5 +78,13 @@ public class ReviewEntity {
 
     public void setCoffee(CoffeeEntity coffee) {
         this.coffee = coffee;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 }

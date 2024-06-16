@@ -4,6 +4,7 @@ package com.example.coffeetica.user.services.impl;
 import com.example.coffeetica.user.models.RoleEntity;
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
+import com.example.coffeetica.user.repositories.RoleRepository;
 import com.example.coffeetica.user.repositories.UserRepository;
 import com.example.coffeetica.user.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,7 +43,14 @@ public class UserServiceImpl implements UserService {
             throw new Exception("There is an account with that email address: " + userDTO.getUsername());
         }
         UserEntity user = modelMapper.map(userDTO, UserEntity.class);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // Encrypt the password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Set<RoleEntity> roles = userDTO.getRoles().stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
         UserEntity savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
@@ -49,17 +61,15 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new Exception("User not found with id: " + userDTO.getId()));
 
-        user.setUsername(userDTO.getUsername());
-        if (userDTO.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // Re-encrypt the password
-        }
-        user.setRoles(userDTO.getRoles().stream()
-                .map(roleName -> {
-                    RoleEntity role = new RoleEntity();
-                    role.setName(roleName);
-                    return role;
-                }).collect(Collectors.toSet()));
+        modelMapper.map(userDTO, user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        Set<RoleEntity> roles = userDTO.getRoles().stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
         UserEntity updatedUser = userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
     }

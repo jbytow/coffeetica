@@ -15,6 +15,7 @@ public class UserDTO {
     @Size(min = 6, max = 100)
     private String password;
     private Set<String> roles;
+    private Set<Long> reviewIds;
 
     // Getters and setters
     public Long getId() {
@@ -47,5 +48,13 @@ public class UserDTO {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    public Set<Long> getReviewIds() {
+        return reviewIds;
+    }
+
+    public void setReviewIds(Set<Long> reviewIds) {
+        this.reviewIds = reviewIds;
     }
 }

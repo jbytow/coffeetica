@@ -16,7 +16,7 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping("/api/reviews/")
+    @GetMapping("/api/reviews")
     public List<ReviewDTO> getAllReviews() {
         return reviewService.findAllReviews();
     }
@@ -29,7 +29,7 @@ public class ReviewController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/api/reviews/")
+    @PostMapping("/api/reviews")
     public ResponseEntity<ReviewDTO> createReview(@RequestBody ReviewDTO reviewDTO) {
         ReviewDTO savedReviewDTO = reviewService.saveReview(reviewDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReviewDTO);
@@ -46,7 +46,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/api/reviews/{id}")
-    public ResponseEntity deleteReview(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

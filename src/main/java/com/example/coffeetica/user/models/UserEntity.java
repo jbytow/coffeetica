@@ -1,5 +1,6 @@
 package com.example.coffeetica.user.models;
 
+import com.example.coffeetica.coffee.models.ReviewEntity;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -21,6 +22,9 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roleEntities = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ReviewEntity> reviews = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -52,5 +56,13 @@ public class UserEntity {
 
     public void setRoles(Set<RoleEntity> roleEntities) {
         this.roleEntities = roleEntities;
+    }
+
+    public Set<ReviewEntity> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<ReviewEntity> reviews) {
+        this.reviews = reviews;
     }
 }

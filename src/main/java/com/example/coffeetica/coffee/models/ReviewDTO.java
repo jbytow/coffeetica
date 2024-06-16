@@ -8,6 +8,7 @@ public class ReviewDTO {
     private String brewingDescription;
     private Integer rating;
     private Long coffeeId;
+    private Long userId;
 
     // Getters and Setters
     public Long getId() {
@@ -56,5 +57,13 @@ public class ReviewDTO {
 
     public void setCoffeeId(Long coffeeId) {
         this.coffeeId = coffeeId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
