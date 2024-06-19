@@ -2,7 +2,10 @@ package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.ReviewDTO;
 import com.example.coffeetica.coffee.services.ReviewService;
-import com.example.coffeetica.coffee.util.TestData;
+import com.example.coffeetica.coffee.util.CoffeeTestData;
+import com.example.coffeetica.user.models.UserDTO;
+import com.example.coffeetica.user.services.UserService;
+import com.example.coffeetica.user.util.UserTestData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,17 +41,23 @@ public class ReviewControllerTest {
     @MockBean
     private ReviewService reviewService;
 
+    @MockBean
+    private UserService userService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void testThatReviewIsCreatedReturnsHTTP201() throws Exception {
-        final ReviewDTO reviewDTO = TestData.createTestReviewDTO();
+        final ReviewDTO reviewDTO = CoffeeTestData.createTestReviewDTO();
+        final UserDTO userDTO = UserTestData.createTestUserDTO();
+        reviewDTO.setUserId(userDTO.getId());
         final String reviewJson = objectMapper.writeValueAsString(reviewDTO);
 
+        when(userService.findUserById(userDTO.getId())).thenReturn(Optional.of(userDTO));
         when(reviewService.saveReview(any(ReviewDTO.class))).thenReturn(reviewDTO);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/api/reviews/")
+                        MockMvcRequestBuilders.post("/api/reviews")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(reviewJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -59,9 +68,12 @@ public class ReviewControllerTest {
 
     @Test
     public void testThatReviewIsUpdatedReturnsHTTP200() throws Exception {
-        final ReviewDTO reviewDTO = TestData.createTestReviewDTO();
+        final ReviewDTO reviewDTO = CoffeeTestData.createTestReviewDTO();
+        final UserDTO userDTO = UserTestData.createTestUserDTO();
+        reviewDTO.setUserId(userDTO.getId());
         final String reviewJson = objectMapper.writeValueAsString(reviewDTO);
 
+        when(userService.findUserById(userDTO.getId())).thenReturn(Optional.of(userDTO));
         when(reviewService.updateReview(anyLong(), any(ReviewDTO.class))).thenReturn(reviewDTO);
 
         reviewDTO.setBrewingMethod("French Press");
@@ -85,7 +97,12 @@ public class ReviewControllerTest {
 
     @Test
     public void testThatRetrieveReviewReturnsHttp200AndReviewWhenExists() throws Exception {
-        final ReviewDTO reviewDTO = TestData.createTestReviewDTO();
+        final ReviewDTO reviewDTO = CoffeeTestData.createTestReviewDTO();
+        final UserDTO userDTO = UserTestData.createTestUserDTO();
+        reviewDTO.setUserId(userDTO.getId());
+
+        // Mockowanie odpowiedzi UserService
+        when(userService.findUserById(userDTO.getId())).thenReturn(Optional.of(userDTO));
         when(reviewService.findReviewById(reviewDTO.getId())).thenReturn(Optional.of(reviewDTO));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/reviews/{id}", reviewDTO.getId()))
@@ -99,23 +116,25 @@ public class ReviewControllerTest {
     public void testThatListReviewsReturnsHttp200EmptyListWhenNoReviewsExist() throws Exception {
         when(reviewService.findAllReviews()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/reviews/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reviews"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 
     @Test
     public void testThatListReviewsReturnsHttp200AndReviewsWhenReviewsExist() throws Exception {
-        ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setId(1L);
-        reviewDTO.setContent("Great coffee!");
+        ReviewDTO reviewDTO = CoffeeTestData.createTestReviewDTO();
+        final UserDTO userDTO = UserTestData.createTestUserDTO();
+        reviewDTO.setUserId(userDTO.getId());
 
+        // Mockowanie odpowiedzi UserService
+        when(userService.findUserById(userDTO.getId())).thenReturn(Optional.of(userDTO));
         when(reviewService.findAllReviews()).thenReturn(Arrays.asList(reviewDTO));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/reviews/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/reviews"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(reviewDTO.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("Great coffee!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value(reviewDTO.getContent()));
     }
 
     @Test
@@ -130,7 +149,11 @@ public class ReviewControllerTest {
 
     @Test
     public void testThatHttp204IsReturnedWhenExistingReviewIsDeleted() throws Exception {
-        final ReviewDTO reviewDTO = TestData.createTestReviewDTO();
+        final ReviewDTO reviewDTO = CoffeeTestData.createTestReviewDTO();
+        final UserDTO userDTO = UserTestData.createTestUserDTO();
+        reviewDTO.setUserId(userDTO.getId());
+
+        when(userService.findUserById(userDTO.getId())).thenReturn(Optional.of(userDTO));
         doNothing().when(reviewService).deleteReview(reviewDTO.getId());
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/reviews/{id}", reviewDTO.getId()))

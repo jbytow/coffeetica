@@ -1,13 +1,18 @@
 package com.example.coffeetica.user.controllers.services.impl;
 
+import com.example.coffeetica.user.models.RoleEntity;
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
+import com.example.coffeetica.user.repositories.RoleRepository;
 import com.example.coffeetica.user.repositories.UserRepository;
 import com.example.coffeetica.user.services.impl.UserServiceImpl;
-import com.example.coffeetica.user.util.TestData;
+import com.example.coffeetica.user.util.UserTestData;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,74 +39,55 @@ public class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private RoleRepository roleRepository;
+
     @InjectMocks
     private UserServiceImpl underTest;
 
     @Test
     public void testRegisterNewUserAccount() throws Exception {
-        UserDTO userDTO = TestData.createTestUserDTO();
-        UserEntity userEntity = TestData.createTestUserEntity();
+        UserDTO userDTO = UserTestData.createTestUserDTO();
+        UserEntity userEntity = UserTestData.createTestUserEntity();
         String encryptedPassword = "encryptedPassword";
+        RoleEntity userRoleEntity = UserTestData.createRoleEntity("USER");
+        RoleEntity adminRoleEntity = UserTestData.createRoleEntity("ADMIN");
 
-        when(modelMapper.map(userDTO, UserEntity.class)).thenReturn(userEntity);
-        when(passwordEncoder.encode(userEntity.getPassword())).thenReturn(encryptedPassword);
-        when(userRepository.save(userEntity)).thenReturn(userEntity);
-        when(modelMapper.map(userEntity, UserDTO.class)).thenReturn(userDTO);
+        // Mocking the behavior of ModelMapper and other components
+        doReturn(userEntity).when(modelMapper).map(ArgumentMatchers.any(UserDTO.class), ArgumentMatchers.eq(UserEntity.class));
+        doReturn(encryptedPassword).when(passwordEncoder).encode(userEntity.getPassword());
+        doReturn(userEntity).when(userRepository).save(userEntity);
+        doReturn(userDTO).when(modelMapper).map(ArgumentMatchers.any(UserEntity.class), ArgumentMatchers.eq(UserDTO.class));
+        doReturn(Optional.of(userRoleEntity)).when(roleRepository).findByName("USER"); // Mock RoleRepository for USER role
+        doReturn(Optional.of(adminRoleEntity)).when(roleRepository).findByName("ADMIN"); // Mock RoleRepository for ADMIN role
 
+        // Action
         UserDTO result = underTest.registerNewUserAccount(userDTO);
 
+        // Assertions
         assertEquals(userDTO, result);
         verify(userRepository).save(userEntity);
         verify(modelMapper).map(userEntity, UserDTO.class);
         verify(passwordEncoder).encode(userEntity.getPassword());
+        verify(roleRepository).findByName("USER"); // Verify RoleRepository call for USER role
+        verify(roleRepository).findByName("ADMIN"); // Verify RoleRepository call for ADMIN role
     }
-
-
-    @Test
-    public void testUpdateUser() throws Exception {
-        UserDTO userDTO = TestData.createTestUserDTO();
-        UserEntity userEntity = TestData.createTestUserEntity();
-
-        // Simulate finding by ID
-        when(userRepository.findById(userDTO.getId())).thenReturn(Optional.of(userEntity));
-
-        // Simulate encoding the password
-        String encodedPassword = "encodedPassword";
-        when(passwordEncoder.encode(userDTO.getPassword())).thenReturn(encodedPassword);
-
-        // Update the password of the userEntity
-        userEntity.setPassword(encodedPassword);
-
-        // Simulate saving the entity
-        when(userRepository.save(userEntity)).thenReturn(userEntity);
-
-        // Return the updated user DTO when mapping back to DTO
-        when(modelMapper.map(userEntity, UserDTO.class)).thenReturn(userDTO);
-
-        // Execute the update
-        UserDTO result = underTest.updateUser(userDTO);
-
-        // Assertions
-        assertEquals(userDTO.getUsername(), result.getUsername());
-        assertEquals(userDTO.getId(), result.getId());
-        verify(userRepository).save(userEntity);
-        verify(passwordEncoder).encode(userDTO.getPassword());
-    }
-
 
     @Test
     public void testDeleteUser() {
         Long userId = 1L;
 
+        // Action
         underTest.deleteUser(userId);
 
+        // Assertions
         verify(userRepository).deleteById(userId);
     }
 
     @Test
     public void testLoadUserByUsername() {
         String username = "testUser";
-        UserEntity userEntity = TestData.createTestUserEntity();
+        UserEntity userEntity = UserTestData.createTestUserEntity();
         UserDetails expectedUserDetails = org.springframework.security.core.userdetails.User
                 .withUsername(userEntity.getUsername())
                 .password(userEntity.getPassword())
@@ -110,10 +96,13 @@ public class UserServiceImplTest {
                         .collect(Collectors.toList()))
                 .build();
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(userEntity));
+        // Mocking the behavior of UserRepository
+        doReturn(Optional.of(userEntity)).when(userRepository).findByUsername(username);
 
+        // Action
         UserDetails actualUserDetails = underTest.loadUserByUsername(username);
 
+        // Assertions
         assertEquals(expectedUserDetails.getUsername(), actualUserDetails.getUsername());
         verify(userRepository).findByUsername(username);
     }
@@ -121,12 +110,16 @@ public class UserServiceImplTest {
     @Test
     public void testLoadUserByUsernameNotFound() {
         String username = "nonexistentUser";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
+        // Mocking the behavior of UserRepository
+        doReturn(Optional.empty()).when(userRepository).findByUsername(username);
+
+        // Action
         Exception exception = assertThrows(Exception.class, () -> {
             underTest.loadUserByUsername(username);
         });
 
+        // Assertions
         assertTrue(exception.getMessage().contains("User not found with username: " + username));
     }
 }

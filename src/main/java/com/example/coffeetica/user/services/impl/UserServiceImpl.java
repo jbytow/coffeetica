@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -93,5 +94,16 @@ public class UserServiceImpl implements UserService {
                         .map(role -> "ROLE_" + role.getName())
                         .toArray(String[]::new))
                 .build();
+    }
+
+    public Optional<UserDTO> findUserById(Long id) {
+        return userRepository.findById(id).map(user -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(user.getId());
+            userDTO.setUsername(user.getUsername());
+            userDTO.setPassword(user.getPassword());
+            userDTO.setRoles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
+            return userDTO;
+        });
     }
 }

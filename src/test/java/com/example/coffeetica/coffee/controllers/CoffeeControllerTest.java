@@ -2,7 +2,7 @@ package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.services.CoffeeService;
-import com.example.coffeetica.coffee.util.TestData;
+import com.example.coffeetica.coffee.util.CoffeeTestData;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void testThatCoffeeIsCreatedReturnsHTTP201() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
+        final CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
         final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
 
         when(coffeeService.saveCoffee(any(CoffeeDTO.class))).thenReturn(coffeeDTO);
@@ -62,7 +62,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void testThatCoffeeIsUpdatedReturnsHTTP200() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
+        final CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
         final String coffeeJson = objectMapper.writeValueAsString(coffeeDTO);
 
         when(coffeeService.updateCoffee(anyLong(), any(CoffeeDTO.class))).thenReturn(coffeeDTO);
@@ -88,7 +88,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void testThatRetrieveCoffeeReturnsHttp200AndCoffeeWhenExists() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
+        final CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
         when(coffeeService.findCoffeeById(coffeeDTO.getId())).thenReturn(Optional.of(coffeeDTO));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/{id}", coffeeDTO.getId()))
@@ -134,7 +134,7 @@ public class CoffeeControllerTest {
 
     @Test
     public void testThatHttp204IsReturnedWhenExistingCoffeeIsDeleted() throws Exception {
-        final CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
+        final CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
         doNothing().when(coffeeService).deleteCoffee(coffeeDTO.getId());
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/coffees/{id}", coffeeDTO.getId()))

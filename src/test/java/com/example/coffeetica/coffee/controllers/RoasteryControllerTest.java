@@ -3,7 +3,7 @@ package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.services.RoasteryService;
-import com.example.coffeetica.coffee.util.TestData;
+import com.example.coffeetica.coffee.util.CoffeeTestData;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class RoasteryControllerTest {
 
     @Test
     public void testThatRoasteryIsCreatedReturnsHTTP201() throws Exception {
-        final RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
+        final RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
         final String roasteryJson = objectMapper.writeValueAsString(roasteryDTO);
 
         when(roasteryService.saveRoastery(any(RoasteryDTO.class))).thenReturn(roasteryDTO);
@@ -61,7 +61,7 @@ public class RoasteryControllerTest {
 
     @Test
     public void testThatRoasteryIsUpdatedReturnsHTTP200() throws Exception {
-        final RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
+        final RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
         final String roasteryJson = objectMapper.writeValueAsString(roasteryDTO);
 
         when(roasteryService.updateRoastery(anyLong(), any(RoasteryDTO.class))).thenReturn(roasteryDTO);
@@ -87,7 +87,7 @@ public class RoasteryControllerTest {
 
     @Test
     public void testThatRetrieveRoasteryReturnsHttp200AndRoasteryWhenExists() throws Exception {
-        final RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
+        final RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
         when(roasteryService.findRoasteryById(roasteryDTO.getId())).thenReturn(Optional.of(roasteryDTO));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/roasteries/{id}", roasteryDTO.getId()))
@@ -132,7 +132,7 @@ public class RoasteryControllerTest {
 
     @Test
     public void testThatHttp204IsReturnedWhenExistingRoasteryIsDeleted() throws Exception {
-        final RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
+        final RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
         doNothing().when(roasteryService).deleteRoastery(roasteryDTO.getId());
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/roasteries/{id}", roasteryDTO.getId()))

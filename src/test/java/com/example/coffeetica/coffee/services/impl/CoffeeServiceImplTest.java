@@ -3,7 +3,7 @@ package com.example.coffeetica.coffee.services.impl;
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.CoffeeEntity;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
-import com.example.coffeetica.coffee.util.TestData;
+import com.example.coffeetica.coffee.util.CoffeeTestData;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +32,8 @@ public class CoffeeServiceImplTest {
 
     @Test
     public void testThatCoffeeIsSaved() {
-        CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        CoffeeEntity coffeeEntity = TestData.createTestCoffeeEntity();
+        CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
+        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
 
         // Mocking the behavior of ModelMapper
         when(modelMapper.map(coffeeDTO, CoffeeEntity.class)).thenReturn(coffeeEntity);
@@ -53,8 +53,8 @@ public class CoffeeServiceImplTest {
     @Test
     public void testThatFindByIdReturnsCoffeeWhenExists() {
         Long id = 1L;
-        CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        CoffeeEntity coffeeEntity = TestData.createTestCoffeeEntity();
+        CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
+        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
 
         when(coffeeRepository.findById(id)).thenReturn(Optional.of(coffeeEntity));
         when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);
@@ -88,8 +88,8 @@ public class CoffeeServiceImplTest {
 
     @Test
     public void testListCoffeesReturnsCoffeesWhenExist() {
-        CoffeeDTO coffeeDTO = TestData.createTestCoffeeDTO();
-        CoffeeEntity coffeeEntity = TestData.createTestCoffeeEntity();
+        CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
+        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
 
         when(coffeeRepository.findAll()).thenReturn(List.of(coffeeEntity));
         when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);

@@ -2,7 +2,7 @@ package com.example.coffeetica.user.controllers;
 
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.services.UserService;
-import com.example.coffeetica.user.util.TestData;
+import com.example.coffeetica.user.util.UserTestData;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class UserControllerTest {
 
     @Test
     public void testRegisterUserReturnsHTTP201() throws Exception {
-        UserDTO userDTO = TestData.createTestUserDTO();
+        UserDTO userDTO = UserTestData.createTestUserDTO();
         when(userService.registerNewUserAccount(any(UserDTO.class))).thenReturn(userDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/users/register")
@@ -58,7 +58,7 @@ public class UserControllerTest {
 
     @Test
     public void testUpdateUserReturnsHTTP200() throws Exception {
-        UserDTO originalUserDTO = TestData.createTestUserDTO();
+        UserDTO originalUserDTO = UserTestData.createTestUserDTO();
         UserDTO updatedUserDTO = new UserDTO();
         updatedUserDTO.setId(originalUserDTO.getId());
         updatedUserDTO.setUsername("updatedUser");
@@ -87,7 +87,7 @@ public class UserControllerTest {
 
     @Test
     public void testGetUserByUsernameReturnsHTTP200() throws Exception {
-        UserDTO userDTO = TestData.createTestUserDTO();
+        UserDTO userDTO = UserTestData.createTestUserDTO();
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(userDTO.getUsername())
                 .password("password")

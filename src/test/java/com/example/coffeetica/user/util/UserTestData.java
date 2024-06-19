@@ -8,9 +8,9 @@ import com.example.coffeetica.user.models.UserEntity;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class TestData {
+public final class UserTestData {
 
-    private TestData() {
+    private UserTestData() {
     }
 
     public static UserDTO createTestUserDTO() {
@@ -31,14 +31,14 @@ public final class TestData {
         return userEntity;
     }
 
-    private static Set<RoleEntity> createRolesEntitySet() {
+    public static Set<RoleEntity> createRolesEntitySet() {
         Set<RoleEntity> roles = new HashSet<>();
         roles.add(createRoleEntity("USER"));
         roles.add(createRoleEntity("ADMIN"));
         return roles;
     }
 
-    private static RoleEntity createRoleEntity(String roleName) {
+    public static RoleEntity createRoleEntity(String roleName) {
         RoleEntity role = new RoleEntity();
         role.setName(roleName);
         return role;

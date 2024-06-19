@@ -3,7 +3,7 @@ package com.example.coffeetica.coffee.services.impl;
 import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
-import com.example.coffeetica.coffee.util.TestData;
+import com.example.coffeetica.coffee.util.CoffeeTestData;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +32,8 @@ public class RoasteryServiceImplTest {
 
     @Test
     public void testThatRoasteryIsSaved() {
-        RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
-        RoasteryEntity roasteryEntity = TestData.createTestRoasteryEntity();
+        RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
+        RoasteryEntity roasteryEntity = CoffeeTestData.createTestRoasteryEntity();
 
         // Mocking the behavior of ModelMapper
         when(modelMapper.map(roasteryDTO, RoasteryEntity.class)).thenReturn(roasteryEntity);
@@ -53,8 +53,8 @@ public class RoasteryServiceImplTest {
     @Test
     public void testThatFindByIdReturnsRoasteryWhenExists() {
         Long id = 1L;
-        RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
-        RoasteryEntity roasteryEntity = TestData.createTestRoasteryEntity();
+        RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
+        RoasteryEntity roasteryEntity = CoffeeTestData.createTestRoasteryEntity();
 
         when(roasteryRepository.findById(id)).thenReturn(Optional.of(roasteryEntity));
         when(modelMapper.map(roasteryEntity, RoasteryDTO.class)).thenReturn(roasteryDTO);
@@ -88,8 +88,8 @@ public class RoasteryServiceImplTest {
 
     @Test
     public void testListRoasteriesReturnsRoasteriesWhenExist() {
-        RoasteryDTO roasteryDTO = TestData.createTestRoasteryDTO();
-        RoasteryEntity roasteryEntity = TestData.createTestRoasteryEntity();
+        RoasteryDTO roasteryDTO = CoffeeTestData.createTestRoasteryDTO();
+        RoasteryEntity roasteryEntity = CoffeeTestData.createTestRoasteryEntity();
 
         when(roasteryRepository.findAll()).thenReturn(List.of(roasteryEntity));
         when(modelMapper.map(roasteryEntity, RoasteryDTO.class)).thenReturn(roasteryDTO);

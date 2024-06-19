@@ -1,11 +1,12 @@
 package com.example.coffeetica.coffee.util;
 
 import com.example.coffeetica.coffee.models.*;
+import com.example.coffeetica.user.util.UserTestData;
 
 
-public final class TestData {
+public final class CoffeeTestData {
 
-    private TestData() {
+    private CoffeeTestData() {
     }
 
     public static RoasteryEntity createTestRoasteryEntity() {
@@ -66,6 +67,7 @@ public final class TestData {
         review.setBrewingDescription("Brewed with a professional espresso machine.");
         review.setRating(5);
         review.setCoffee(createTestCoffeeEntity());
+        review.setUser(UserTestData.createTestUserEntity());
         return review;
     }
 
