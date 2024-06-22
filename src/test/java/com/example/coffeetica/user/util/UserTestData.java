@@ -18,7 +18,8 @@ public final class UserTestData {
         userDTO.setId(1L);
         userDTO.setUsername("testUser");
         userDTO.setPassword("encryptedPassword");
-        userDTO.setRoles(Set.of("USER", "ADMIN"));  // Assume roles are still transmitted as strings in DTOs
+        userDTO.setEmail("testuser@example.com");
+        userDTO.setRoles(Set.of("USER", "ADMIN"));
         return userDTO;
     }
 
@@ -26,7 +27,8 @@ public final class UserTestData {
         UserEntity userEntity = new UserEntity();
         userEntity.setId(1L);
         userEntity.setUsername("testUser");
-        userEntity.setPassword("encryptedPassword"); // Normally you would store encrypted passwords
+        userEntity.setPassword("encryptedPassword");
+        userEntity.setEmail("testuser@example.com");
         userEntity.setRoles(createRolesEntitySet());
         return userEntity;
     }
@@ -43,5 +45,4 @@ public final class UserTestData {
         role.setName(roleName);
         return role;
     }
-
 }

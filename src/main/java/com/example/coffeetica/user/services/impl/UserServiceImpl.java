@@ -41,7 +41,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO registerNewUserAccount(UserDTO userDTO) throws Exception {
         logger.info("Registering new user {}", userDTO.getUsername());
         if (userRepository.existsByUsername(userDTO.getUsername())) {
-            throw new Exception("There is an account with that email address: " + userDTO.getUsername());
+            throw new Exception("There is an account with that username: " + userDTO.getUsername());
+        }
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new Exception("There is an account with that email address: " + userDTO.getEmail());
         }
         UserEntity user = modelMapper.map(userDTO, UserEntity.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -102,6 +105,7 @@ public class UserServiceImpl implements UserService {
             userDTO.setId(user.getId());
             userDTO.setUsername(user.getUsername());
             userDTO.setPassword(user.getPassword());
+            userDTO.setEmail(user.getEmail());
             userDTO.setRoles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
             return userDTO;
         });

@@ -14,6 +14,7 @@ public class UserEntity {
     private Long id;
     private String username;
     private String password;
+    private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -25,6 +26,8 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ReviewEntity> reviews = new HashSet<>();
+
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -48,6 +51,14 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Set<RoleEntity> getRoles() {
