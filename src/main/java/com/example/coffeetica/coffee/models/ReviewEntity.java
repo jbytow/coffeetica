@@ -11,13 +11,13 @@ public class ReviewEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
     @Column(nullable = false)
     private String brewingMethod;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String brewingDescription;
 
     @Column(nullable = false)

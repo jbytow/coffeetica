@@ -12,13 +12,21 @@ public class CoffeeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name; // Name of the coffee
+    @Column(nullable = false)
     private String countryOfOrigin; // Country of origin
+    @Column(nullable = false)
     private String region; // Region
+    @Column(nullable = false)
     private String roastLevel; // Roast level
+    @Column(nullable = false)
     private String flavorProfile; // Flavor profile
+    @Column(nullable = false)
     private String notes; // Notes
+    @Column(nullable = false)
     private String processingMethod; // Processing method
+    @Column(nullable = false)
     private Integer productionYear; // Year
 
     @ManyToOne(fetch = FetchType.LAZY)

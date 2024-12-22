@@ -11,9 +11,13 @@ public class RoasteryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String location;
+    @Column(nullable = false)
     private Integer foundingYear;
+    @Column(nullable = true)
     private String websiteUrl;
 
     @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
