@@ -17,7 +17,7 @@ public class CoffeeController {
     @Autowired
     private CoffeeService coffeeService;
 
-    @GetMapping(path = "/api/coffees/")
+    @GetMapping(path = "/api/coffees")
     public List<CoffeeDTO> getAllCoffees() {
         return coffeeService.findAllCoffees();
     }
@@ -30,7 +30,7 @@ public class CoffeeController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(path = "/api/coffees/")
+    @PostMapping(path = "/api/coffees")
     public ResponseEntity<CoffeeDTO> createCoffee(@RequestBody CoffeeDTO coffeeDTO) {
         CoffeeDTO savedCoffeeDTO = coffeeService.saveCoffee(coffeeDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCoffeeDTO);

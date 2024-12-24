@@ -16,7 +16,7 @@ public class RoasteryController {
     @Autowired
     private RoasteryService roasteryService;
 
-    @GetMapping("/api/roasteries/")
+    @GetMapping("/api/roasteries")
     public List<RoasteryDTO> getAllRoasteries() {
         return roasteryService.findAllRoasteries();
     }
@@ -29,7 +29,7 @@ public class RoasteryController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/api/roasteries/")
+    @PostMapping("/api/roasteries")
     public ResponseEntity<RoasteryDTO> createRoastery(@RequestBody RoasteryDTO roasteryDTO) {
         RoasteryDTO savedRoasteryDTO = roasteryService.saveRoastery(roasteryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRoasteryDTO);
