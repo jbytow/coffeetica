@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { CoffeeDTO } from "../../../models/CoffeeDTO";
 import apiClient from "../../../lib/api";
+import { RoasteryDTO } from "../../../models/RoasteryDTO";
 
 const ManageCoffees: React.FC = () => {
     const [coffees, setCoffees] = useState<CoffeeDTO[]>([]);
+    const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
     const [newCoffee, setNewCoffee] = useState<Partial<CoffeeDTO>>({});
     const [error, setError] = useState<string | null>(null);
   
-    // Fetch all coffees
+    // Fetch all coffees and roasteries
     useEffect(() => {
       const fetchCoffees = async () => {
         try {
@@ -18,19 +20,31 @@ const ManageCoffees: React.FC = () => {
           setError("Failed to fetch coffees");
         }
       };
+  
+      const fetchRoasteries = async () => {
+        try {
+          const response = await apiClient.get<RoasteryDTO[]>("/roasteries");
+          setRoasteries(response.data);
+        } catch (err: any) {
+          console.error("Error fetching roasteries:", err.response || err.message);
+          setError("Failed to fetch roasteries");
+        }
+      };
+  
       fetchCoffees();
+      fetchRoasteries();
     }, []);
   
     // Handle adding a new coffee
     const handleAddCoffee = async () => {
-      // Validate required fields
       if (
         !newCoffee.name ||
         !newCoffee.countryOfOrigin ||
         !newCoffee.roastLevel ||
-        !newCoffee.flavorProfile
+        !newCoffee.flavorProfile ||
+        !newCoffee.roastery
       ) {
-        setError("Name, Country of Origin, Roast Level, and Flavor Profile are required.");
+        setError("All fields, including roastery, are required.");
         return;
       }
       try {
@@ -88,6 +102,20 @@ const ManageCoffees: React.FC = () => {
                   setNewCoffee({
                     ...newCoffee,
                     countryOfOrigin: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label>Region:</label>
+              <input
+                type="text"
+                placeholder="Region"
+                value={newCoffee.region || ""}
+                onChange={(e) =>
+                  setNewCoffee({
+                    ...newCoffee,
+                    region: e.target.value,
                   })
                 }
               />
@@ -156,6 +184,26 @@ const ManageCoffees: React.FC = () => {
                 }
               />
             </div>
+            <div>
+              <label>Roastery:</label>
+              <select
+                value={newCoffee.roastery?.id || ""}
+                onChange={(e) => {
+                  const roasteryId = parseInt(e.target.value, 10);
+                  const selectedRoastery = roasteries.find(
+                    (roastery) => roastery.id === roasteryId
+                  );
+                  setNewCoffee({ ...newCoffee, roastery: selectedRoastery });
+                }}
+              >
+                <option value="">Select a Roastery</option>
+                {roasteries.map((roastery) => (
+                  <option key={roastery.id} value={roastery.id}>
+                    {roastery.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button type="submit">Add Coffee</button>
           </form>
         </div>
@@ -166,11 +214,13 @@ const ManageCoffees: React.FC = () => {
               <li key={coffee.id}>
                 <strong>{coffee.name}</strong> <br />
                 Country: {coffee.countryOfOrigin} <br />
+                Region: {coffee.region} <br />
                 Roast Level: {coffee.roastLevel} <br />
                 Flavor: {coffee.flavorProfile} <br />
                 Notes: {coffee.notes} <br />
                 Processing Method: {coffee.processingMethod} <br />
                 Production Year: {coffee.productionYear} <br />
+                Roastery: {coffee.roastery?.name || "Unknown"} <br />
                 <button onClick={() => handleDeleteCoffee(coffee.id)}>
                   Delete
                 </button>

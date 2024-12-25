@@ -4,4 +4,5 @@ export interface RoasteryDTO {
     location: string;
     foundingYear: number;
     websiteUrl: string;
+    imageUrl?: string;
   }

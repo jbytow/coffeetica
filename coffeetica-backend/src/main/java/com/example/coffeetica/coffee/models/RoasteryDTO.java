@@ -8,6 +8,8 @@ public class RoasteryDTO {
     private Integer foundingYear;
     private String websiteUrl;
 
+    private String imageUrl; // URL of the uploaded image
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -48,4 +50,8 @@ public class RoasteryDTO {
     public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
     }
+
+    public String getImageUrl() { return imageUrl; }
+
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

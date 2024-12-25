@@ -29,6 +29,9 @@ public class CoffeeEntity {
     @Column(nullable = false)
     private Integer productionYear; // Year
 
+    @Column(nullable = true)
+    private String imageUrl; // image path
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roastery_id", nullable = false)
     private RoasteryEntity roastery;
@@ -108,6 +111,10 @@ public class CoffeeEntity {
     public void setProductionYear(Integer productionYear) {
         this.productionYear = productionYear;
     }
+
+    public String getImageUrl() { return imageUrl; }
+
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public RoasteryEntity getRoastery() {
         return roastery;

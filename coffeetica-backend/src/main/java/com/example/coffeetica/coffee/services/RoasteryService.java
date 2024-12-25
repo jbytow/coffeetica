@@ -18,4 +18,7 @@ public interface RoasteryService {
     RoasteryDTO updateRoastery(Long id, RoasteryDTO roasteryDetails);
 
     void deleteRoastery(Long id);
+
+    void updateImageUrl(Long id, String imageUrl);
+
 }

@@ -20,6 +20,9 @@ public class RoasteryEntity {
     @Column(nullable = true)
     private String websiteUrl;
 
+    @Column(nullable = true)
+    private String imageUrl;
+
     @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<CoffeeEntity> coffees;
 
@@ -63,6 +66,10 @@ public class RoasteryEntity {
     public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
     }
+
+    public String getImageUrl() { return imageUrl; }
+
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public Set<CoffeeEntity> getCoffees() {
         return coffees;

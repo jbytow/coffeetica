@@ -14,6 +14,8 @@ public class CoffeeDTO {
     private String processingMethod; // Processing method
     private Integer productionYear; // Year
 
+    private String imageUrl; // URL of the uploaded image
+
     private RoasteryDTO roastery;
 
     private Set<ReviewDTO> reviews;
@@ -90,6 +92,10 @@ public class CoffeeDTO {
     public void setProductionYear(Integer productionYear) {
         this.productionYear = productionYear;
     }
+
+    public String getImageUrl() { return imageUrl; }
+
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public RoasteryDTO getRoastery() {
         return roastery;

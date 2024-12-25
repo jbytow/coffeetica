@@ -1,5 +1,6 @@
 package com.example.coffeetica.coffee.services.impl;
 
+
 import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
@@ -7,10 +8,17 @@ import com.example.coffeetica.coffee.services.RoasteryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Service
 public class RoasteryServiceImpl implements RoasteryService {
@@ -59,4 +67,14 @@ public class RoasteryServiceImpl implements RoasteryService {
     public boolean isRoasteryExists(Long id) {
         return roasteryRepository.existsById(id);
     }
+
+    @Override
+    public void updateImageUrl(Long id, String imageUrl) {
+        RoasteryEntity roastery = roasteryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Roastery not found"));
+        roastery.setImageUrl(imageUrl);
+        roasteryRepository.save(roastery);
+    }
+
 }
+
