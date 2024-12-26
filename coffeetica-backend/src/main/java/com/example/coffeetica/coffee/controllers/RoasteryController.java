@@ -66,9 +66,6 @@ public class RoasteryController {
                 return ResponseEntity.badRequest().body("No file provided");
             }
 
-            // Log file details
-            System.out.println("Received file: " + file.getOriginalFilename());
-
             // Generate unique file name
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path uploadPath = Paths.get("uploads/roasteries/");
@@ -80,7 +77,7 @@ public class RoasteryController {
 
             // Update database with image URL
             String imageUrl = "/uploads/roasteries/" + fileName;
-            roasteryService.updateImageUrl(id, imageUrl);
+            roasteryService.updateRoasteryImageUrl(id, imageUrl);
 
             return ResponseEntity.ok("File uploaded successfully: " + imageUrl);
         } catch (IOException e) {

@@ -59,4 +59,12 @@ public class CoffeeServiceImpl implements CoffeeService {
     public boolean isCoffeeExists(Long id) {
         return coffeeRepository.existsById(id);
     }
+
+    @Override
+    public void updateCoffeeImageUrl(Long id, String imageUrl) {
+        CoffeeEntity coffee = coffeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coffee not found"));
+        coffee.setImageUrl(imageUrl);
+        coffeeRepository.save(coffee);
+    }
 }

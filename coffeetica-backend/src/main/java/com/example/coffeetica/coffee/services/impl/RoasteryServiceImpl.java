@@ -60,6 +60,19 @@ public class RoasteryServiceImpl implements RoasteryService {
 
     @Override
     public void deleteRoastery(Long id) {
+        RoasteryEntity roastery = roasteryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Roastery not found"));
+
+        // Delete the associated image file if it exists
+        if (roastery.getImageUrl() != null) {
+            Path imagePath = Paths.get("uploads" + roastery.getImageUrl().replace("/uploads", ""));
+            try {
+                Files.deleteIfExists(imagePath);
+                System.out.println("Deleted image: " + imagePath.toString());
+            } catch (IOException e) {
+                System.err.println("Failed to delete image: " + imagePath.toString());
+            }
+        }
         roasteryRepository.deleteById(id);
     }
 
@@ -69,7 +82,7 @@ public class RoasteryServiceImpl implements RoasteryService {
     }
 
     @Override
-    public void updateImageUrl(Long id, String imageUrl) {
+    public void updateRoasteryImageUrl(Long id, String imageUrl) {
         RoasteryEntity roastery = roasteryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Roastery not found"));
         roastery.setImageUrl(imageUrl);

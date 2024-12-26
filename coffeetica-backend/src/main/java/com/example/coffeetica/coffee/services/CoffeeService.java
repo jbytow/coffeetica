@@ -18,4 +18,6 @@ public interface CoffeeService {
     CoffeeDTO updateCoffee(Long id, CoffeeDTO coffeeDTODetails);
 
     void deleteCoffee(Long id);
+
+    void updateCoffeeImageUrl(Long id, String imageUrl);
 }

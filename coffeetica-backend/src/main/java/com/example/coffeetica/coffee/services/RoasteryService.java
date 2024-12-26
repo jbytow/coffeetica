@@ -19,6 +19,6 @@ public interface RoasteryService {
 
     void deleteRoastery(Long id);
 
-    void updateImageUrl(Long id, String imageUrl);
+    void updateRoasteryImageUrl(Long id, String imageUrl);
 
 }

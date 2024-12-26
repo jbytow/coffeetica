@@ -11,6 +11,7 @@ export interface CoffeeDTO {
     notes: string;
     processingMethod: string;
     productionYear: number;
+    imageUrl?: string;
     roastery: RoasteryDTO;
     reviews: ReviewDTO[];
   }
