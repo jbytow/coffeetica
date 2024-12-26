@@ -1,42 +1,131 @@
+:root {
+  --primary-color: #0d6efd;
+  --secondary-color: #6c757d;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --main-bg: #f1f1f1;
+  --header-height: 15em;
+}
+
+body {
+  background-color: var(--main-bg);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+.header {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+    url('./Images/PublicImages/image-2.jpg') center/cover no-repeat;
+  height: var(--header-height);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--light-color);
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.header-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.dark-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.main-color {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: var(--dark-color);
+  text-align: left;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
 }
 
 .card {
-  padding: 2em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.col-image {
+  height: 25em;
+  background-size: cover;
+  background-position: center;
+}
+
+.col-image-left {
+  background-image: url('./Images/PublicImages/image-4.jpg');
+}
+
+.col-image-right {
+  background-image: url('./Images/PublicImages/image-1.jpg');
+}
+
+.lost-image {
+  background-image: url('./Images/PublicImages/image-3.jpg');
+  height: 25em;
+  background-size: cover;
+  background-position: center;
+}
+
+.carousel-title {
+  font-size: 2rem;
+  color: var(--light-color);
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+
+.inactiveLink {
+  pointer-events: none;
+  cursor: default;
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+  background-color: darken(var(--primary-color), 10%);
+  color: var(--light-color);
 }

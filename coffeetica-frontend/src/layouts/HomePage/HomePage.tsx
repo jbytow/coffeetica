@@ -4,10 +4,10 @@ import { CoffeeCarousel } from './components/CoffeeCarousel';
 
 const HomePage: React.FC = () => {
   return (
-    <div>
+    <>
       <HeroSection />
       <CoffeeCarousel />
-    </div>
+    </>
   );
 };
 
