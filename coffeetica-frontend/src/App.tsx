@@ -6,6 +6,7 @@ import Navbar from './layouts/NavbarAndFooter/Navbar';
 import AdminPage from './layouts/AdminPage/AdminPage';
 import ManageCoffees from './layouts/AdminPage/components/ManageCoffees';
 import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries';
+import { CoffeePage } from './layouts/CoffeePage/CoffePage';
 
 function App() {
   return (
@@ -22,6 +23,10 @@ function App() {
           {/* Nested Routes for Admin Sections */}
           <Route path="/admin/coffees" element={<ManageCoffees />} />
           <Route path="/admin/roasteries" element={<ManageRoasteries />} />
+
+           {/* Coffee Details Page */}
+           <Route path="/coffees/:id" element={<CoffeePage />} />
+
         </Routes>
       </div>
       <Footer />

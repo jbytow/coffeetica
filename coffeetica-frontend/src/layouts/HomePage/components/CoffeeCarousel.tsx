@@ -66,7 +66,7 @@ export const CoffeeCarousel: React.FC = () => {
                   >
                     {coffee.imageUrl ? (
                       <img
-                        src={`http://localhost:8080${coffee.imageUrl}`}
+                      src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
                         alt={coffee.name}
                         className="card-img-top"
                         style={{
