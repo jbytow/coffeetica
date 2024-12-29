@@ -12,16 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -40,21 +42,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO registerNewUserAccount(UserDTO userDTO) throws Exception {
         logger.info("Registering new user {}", userDTO.getUsername());
+
+        // Check if the username or email already exists
         if (userRepository.existsByUsername(userDTO.getUsername())) {
             throw new Exception("There is an account with that username: " + userDTO.getUsername());
         }
+
         if (userRepository.existsByEmail(userDTO.getEmail())) {
             throw new Exception("There is an account with that email address: " + userDTO.getEmail());
         }
+
+        // Map UserDTO to UserEntity
         UserEntity user = modelMapper.map(userDTO, UserEntity.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<RoleEntity> roles = userDTO.getRoles().stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .collect(Collectors.toSet());
+        // Always assign the "User" role
+        RoleEntity userRole = roleRepository.findByName("User")
+                .orElseThrow(() -> new RuntimeException("Default role 'User' not found"));
+
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(userRole);
 
         user.setRoles(roles);
+
+        // Save the user and return as DTO
         UserEntity savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
