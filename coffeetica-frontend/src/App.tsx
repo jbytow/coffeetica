@@ -7,6 +7,7 @@ import AdminPage from './layouts/AdminPage/AdminPage';
 import ManageCoffees from './layouts/AdminPage/components/ManageCoffees';
 import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries';
 import { CoffeePage } from './layouts/CoffeePage/CoffePage';
+import RegisterPage from './auth/RegisterPage';
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
         <Routes>
           {/* Home Page */}
           <Route path="/" element={<HomePage />} />
+
+          {/* Auth */}
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Admin Page */}
           <Route path="/admin" element={<AdminPage />} />
