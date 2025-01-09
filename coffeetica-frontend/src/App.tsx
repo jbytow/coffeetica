@@ -12,9 +12,9 @@ import LoginPage from './auth/LoginPage';
 
 function App() {
   return (
-    <>
+    <div className='d-flex flex-column min-vh-100'>
       <Navbar />
-      <div className="container my-4">
+      <div className='flex-grow-1'>
         <Routes>
           {/* Home Page */}
           <Route path="/" element={<HomePage />} />
@@ -36,7 +36,7 @@ function App() {
         </Routes>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }
 

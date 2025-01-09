@@ -5,11 +5,12 @@
   --dark-color: #212529;
   --main-bg: #f1f1f1;
   --header-height: 15em;
+  --font-family: 'Roboto', sans-serif;
 }
 
 body {
+  font-family: var(--font-family);
   background-color: var(--main-bg);
-  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -20,15 +21,11 @@ body {
   padding: 2rem;
 }
 
-.header {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-    url('./Images/PublicImages/image-2.jpg') center/cover no-repeat;
-  height: var(--header-height);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--light-color);
-  text-align: center;
+.header-image {
+  background-image: linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ),
+  url('/images/image-1.jpg');
+    opacity: var(--mainOpacity);
+    height: 25em !important;
 }
 
 .header-title {
@@ -122,10 +119,13 @@ body {
   background-color: var(--primary-color);
   color: var(--light-color);
   border: none;
+  border-radius: 8px;
+  padding: 0.6em 1.2em;
+  font-weight: 500;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .button-primary:hover {
-  background-color: darken(var(--primary-color), 10%);
-  color: var(--light-color);
+  background-color: #0056b3; /* Slightly darker shade */
 }
