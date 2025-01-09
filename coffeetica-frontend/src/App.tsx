@@ -8,6 +8,7 @@ import ManageCoffees from './layouts/AdminPage/components/ManageCoffees';
 import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries';
 import { CoffeePage } from './layouts/CoffeePage/CoffePage';
 import RegisterPage from './auth/RegisterPage';
+import LoginPage from './auth/LoginPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
           {/* Auth */}
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
           {/* Admin Page */}
           <Route path="/admin" element={<AdminPage />} />
