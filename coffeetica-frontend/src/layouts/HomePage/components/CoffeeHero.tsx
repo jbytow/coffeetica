@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ExploreTopCoffees: React.FC = () => {
+const CoffeeHero: React.FC = () => {
   return (
     <div className='p-5 mb-4 bg-dark header-image'>
       <div className='container-fluid py-5 text-white 
@@ -21,4 +21,4 @@ const ExploreTopCoffees: React.FC = () => {
   );
 };
 
-export default ExploreTopCoffees;
+export default CoffeeHero;

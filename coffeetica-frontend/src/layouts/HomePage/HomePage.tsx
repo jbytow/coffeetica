@@ -1,11 +1,11 @@
 import React from 'react';
 import { CoffeeCarousel } from './components/CoffeeCarousel';
-import ExploreTopCoffees from './components/ExploreTopCoffees';
+import CoffeeHero from './components/CoffeeHero';
 
 const HomePage: React.FC = () => {
   return (
     <>
-      <ExploreTopCoffees />
+      <CoffeeHero />
       <CoffeeCarousel />
     </>
   );

@@ -6,7 +6,7 @@ import Navbar from './layouts/NavbarAndFooter/Navbar';
 import AdminPage from './layouts/AdminPage/AdminPage';
 import ManageCoffees from './layouts/AdminPage/components/ManageCoffees';
 import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries';
-import { CoffeePage } from './layouts/CoffeePage/CoffePage';
+import { CoffeePage } from './layouts/CoffeePage/CoffeePage';
 import RegisterPage from './auth/RegisterPage';
 import LoginPage from './auth/LoginPage';
 
