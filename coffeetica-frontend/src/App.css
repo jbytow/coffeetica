@@ -1,4 +1,4 @@
-.header-image {
+.hero-image {
   background-image: linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) ),
   url('/images/image-1.jpg');
     opacity: var(--mainOpacity);
@@ -34,11 +34,6 @@
   height: 100%;
 }
 
-.main-color {
-  background-color: var(--primary-color);
-  color: var(--light-color);
-}
-
 .section-title {
   font-size: 1.8rem;
   color: var(--dark-color);
@@ -48,26 +43,9 @@
   padding-bottom: 0.5rem;
 }
 
-.card {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card-header {
-  background-color: var(--primary-color);
-  color: var(--light-color);
-  font-weight: bold;
-}
-
-.card-body {
-  padding: 1.5rem;
 }
 
 .col-image {
@@ -96,19 +74,4 @@
   cursor: default;
   color: var(--secondary-color);
   text-decoration: none;
-}
-
-.button-primary {
-  background-color: var(--primary-color);
-  color: var(--light-color);
-  border: none;
-  border-radius: 8px;
-  padding: 0.6em 1.2em;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button-primary:hover {
-  background-color: #0056b3; /* Slightly darker shade */
 }

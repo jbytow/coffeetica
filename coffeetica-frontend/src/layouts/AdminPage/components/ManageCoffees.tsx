@@ -229,7 +229,7 @@ const ManageCoffees: React.FC = () => {
               }
             />
           </div>
-          <button type="submit">Add Coffee</button>
+          <button type="submit" className="btn btn-primary">Add Coffee</button>
         </form>
       </div>
       <div>
@@ -253,7 +253,7 @@ const ManageCoffees: React.FC = () => {
                   width="100"
                 />
               )}
-              <button onClick={() => handleDeleteCoffee(coffee.id)}>Delete</button>
+              <button className="btn btn-danger" onClick={() => handleDeleteCoffee(coffee.id)}>Delete</button>
             </li>
           ))}
         </ul>

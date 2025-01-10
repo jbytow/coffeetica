@@ -127,7 +127,7 @@ const ManageRoasteries: React.FC = () => {
               }
             />
           </div>
-          <button type="submit">Add Roastery</button>
+          <button type="submit" className="btn btn-primary">Add Roastery</button>
         </form>
       </div>
       <div>
@@ -150,10 +150,7 @@ const ManageRoasteries: React.FC = () => {
                   width="100"
                 />
               )}
-              <button
-                className="btn btn-danger mt-2"
-                onClick={() => handleDeleteRoastery(roastery.id)}
-              >
+              <button className="btn btn-danger mt-2" onClick={() => handleDeleteRoastery(roastery.id)}>
                 Delete
               </button>
             </li>
