@@ -43,9 +43,35 @@
   padding-bottom: 0.5rem;
 }
 
+.custom-card-size {
+  width: 14rem;
+  height: 28rem;
+}
+
+
+.img-150 {
+  height: 150px;
+  object-fit: cover;
+  max-width: 100%;
+}
+
+
+.no-image-placeholder {
+  height: 150px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .col-image {
