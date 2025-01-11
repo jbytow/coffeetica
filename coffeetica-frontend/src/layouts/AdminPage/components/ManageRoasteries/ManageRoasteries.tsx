@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { RoasteryDTO } from "../../../models/RoasteryDTO";
-import apiClient from "../../../lib/api";
+import { RoasteryDTO } from "../../../../models/RoasteryDTO";
+import apiClient from "../../../../lib/api";
 
 
 const ManageRoasteries: React.FC = () => {

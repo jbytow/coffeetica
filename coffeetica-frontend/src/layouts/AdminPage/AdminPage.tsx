@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ManageCoffees from "./components/ManageCoffees";
-import ManageRoasteries from "./components/ManageRoasteries";
+import ManageCoffees from "./components/ManageCoffees/ManageCoffees";
+import ManageRoasteries from "./components/ManageRoasteries/ManageRoasteries";
 // In the future, you can add more sections like ManageUsers
 // import ManageUsers from "./ManageUsers";
 

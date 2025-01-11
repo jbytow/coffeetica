@@ -4,11 +4,12 @@ import './App.css';
 import Footer from './layouts/NavbarAndFooter/Footer';
 import Navbar from './layouts/NavbarAndFooter/Navbar';
 import AdminPage from './layouts/AdminPage/AdminPage';
-import ManageCoffees from './layouts/AdminPage/components/ManageCoffees';
-import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries';
+import ManageCoffees from './layouts/AdminPage/components/ManageCoffees/ManageCoffees';
+import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries/ManageRoasteries';
 import { CoffeePage } from './layouts/CoffeePage/CoffeePage';
 import RegisterPage from './auth/RegisterPage';
 import LoginPage from './auth/LoginPage';
+import CreateCoffee from './layouts/AdminPage/components/ManageCoffees/CreateCoffee';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           {/* Nested Routes for Admin Sections */}
           <Route path="/admin/coffees" element={<ManageCoffees />} />
           <Route path="/admin/roasteries" element={<ManageRoasteries />} />
+          <Route path="/admin/coffees/add" element={<CreateCoffee />} />
 
            {/* Coffee Details Page */}
            <Route path="/coffees/:id" element={<CoffeePage />} />
