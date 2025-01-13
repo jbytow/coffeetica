@@ -1,18 +1,22 @@
 package com.example.coffeetica.coffee.models;
 
+import com.example.coffeetica.coffee.models.enums.FlavorProfile;
+import com.example.coffeetica.coffee.models.enums.Region;
+import com.example.coffeetica.coffee.models.enums.RoastLevel;
+
 import java.util.Set;
 
 public class CoffeeDTO {
 
     private Long id;
-    private String name; // Name of the coffee
-    private String countryOfOrigin; // Country of origin
-    private String region; // Region
-    private String roastLevel; // Roast level
-    private String flavorProfile; // Flavor profile
-    private String notes; // Notes
-    private String processingMethod; // Processing method
-    private Integer productionYear; // Year
+    private String name;
+    private String countryOfOrigin;
+    private Region region;
+    private RoastLevel roastLevel;
+    private FlavorProfile flavorProfile;
+    private String notes;
+    private String processingMethod;
+    private Integer productionYear;
 
     private String imageUrl; // URL of the uploaded image
 
@@ -45,27 +49,27 @@ public class CoffeeDTO {
         this.countryOfOrigin = countryOfOrigin;
     }
 
-    public String getRegion() {
+    public Region getRegion() {
         return region;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(Region region) {
         this.region = region;
     }
 
-    public String getRoastLevel() {
+    public RoastLevel getRoastLevel() {
         return roastLevel;
     }
 
-    public void setRoastLevel(String roastLevel) {
+    public void setRoastLevel(RoastLevel roastLevel) {
         this.roastLevel = roastLevel;
     }
 
-    public String getFlavorProfile() {
+    public FlavorProfile getFlavorProfile() {
         return flavorProfile;
     }
 
-    public void setFlavorProfile(String flavorProfile) {
+    public void setFlavorProfile(FlavorProfile flavorProfile) {
         this.flavorProfile = flavorProfile;
     }
 

@@ -1,5 +1,8 @@
 package com.example.coffeetica.coffee.models;
 
+import com.example.coffeetica.coffee.models.enums.FlavorProfile;
+import com.example.coffeetica.coffee.models.enums.Region;
+import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -13,21 +16,21 @@ public class CoffeeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name; // Name of the coffee
+    private String name;
     @Column(nullable = false)
-    private String countryOfOrigin; // Country of origin
+    private String countryOfOrigin;
+    @Enumerated(EnumType.STRING)
+    private Region region;
+    @Enumerated(EnumType.STRING)
+    private RoastLevel roastLevel;
+    @Enumerated(EnumType.STRING)
+    private FlavorProfile flavorProfile;
     @Column(nullable = false)
-    private String region; // Region
+    private String notes;
     @Column(nullable = false)
-    private String roastLevel; // Roast level
+    private String processingMethod;
     @Column(nullable = false)
-    private String flavorProfile; // Flavor profile
-    @Column(nullable = false)
-    private String notes; // Notes
-    @Column(nullable = false)
-    private String processingMethod; // Processing method
-    @Column(nullable = false)
-    private Integer productionYear; // Year
+    private Integer productionYear;
 
     @Column(nullable = true)
     private String imageUrl; // image path
@@ -64,27 +67,27 @@ public class CoffeeEntity {
         this.countryOfOrigin = countryOfOrigin;
     }
 
-    public String getRegion() {
+    public Region getRegion() {
         return region;
     }
 
-    public void setRegion(String region) {
+    public void setRegion(Region region) {
         this.region = region;
     }
 
-    public String getRoastLevel() {
+    public RoastLevel getRoastLevel() {
         return roastLevel;
     }
 
-    public void setRoastLevel(String roastLevel) {
+    public void setRoastLevel(RoastLevel roastLevel) {
         this.roastLevel = roastLevel;
     }
 
-    public String getFlavorProfile() {
+    public FlavorProfile getFlavorProfile() {
         return flavorProfile;
     }
 
-    public void setFlavorProfile(String flavorProfile) {
+    public void setFlavorProfile(FlavorProfile flavorProfile) {
         this.flavorProfile = flavorProfile;
     }
 

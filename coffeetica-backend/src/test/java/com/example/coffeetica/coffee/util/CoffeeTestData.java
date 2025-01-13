@@ -1,6 +1,9 @@
 package com.example.coffeetica.coffee.util;
 
 import com.example.coffeetica.coffee.models.*;
+import com.example.coffeetica.coffee.models.enums.FlavorProfile;
+import com.example.coffeetica.coffee.models.enums.Region;
+import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import com.example.coffeetica.user.util.UserTestData;
 
 
@@ -34,9 +37,9 @@ public final class CoffeeTestData {
         coffeeEntity.setId(1L);
         coffeeEntity.setName("Nutty Brazil");
         coffeeEntity.setCountryOfOrigin("Brazil");
-        coffeeEntity.setRegion("Minas Gerais");
-        coffeeEntity.setRoastLevel("Medium");
-        coffeeEntity.setFlavorProfile("Nutty");
+        coffeeEntity.setRegion(Region.SOUTH_AMERICA);
+        coffeeEntity.setRoastLevel(RoastLevel.MEDIUM);
+        coffeeEntity.setFlavorProfile(FlavorProfile.NUTTY);
         coffeeEntity.setNotes("Notes of chocolate");
         coffeeEntity.setProcessingMethod("Washed");
         coffeeEntity.setProductionYear(2024);
@@ -49,9 +52,9 @@ public final class CoffeeTestData {
         coffeeDTO.setId(1L);
         coffeeDTO.setName("Nutty Brazil");
         coffeeDTO.setCountryOfOrigin("Brazil");
-        coffeeDTO.setRegion("Minas Gerais");
-        coffeeDTO.setRoastLevel("Medium");
-        coffeeDTO.setFlavorProfile("Nutty");
+        coffeeDTO.setRegion(Region.SOUTH_AMERICA);
+        coffeeDTO.setRoastLevel(RoastLevel.MEDIUM);
+        coffeeDTO.setFlavorProfile(FlavorProfile.NUTTY);
         coffeeDTO.setNotes("Notes of chocolate");
         coffeeDTO.setProcessingMethod("Washed");
         coffeeDTO.setProductionYear(2024);

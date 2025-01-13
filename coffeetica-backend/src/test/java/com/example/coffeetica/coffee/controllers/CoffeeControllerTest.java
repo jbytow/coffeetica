@@ -1,6 +1,7 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
+import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.util.CoffeeTestData;
 
@@ -67,7 +68,7 @@ public class CoffeeControllerTest {
 
         when(coffeeService.updateCoffee(anyLong(), any(CoffeeDTO.class))).thenReturn(coffeeDTO);
 
-        coffeeDTO.setRegion("Africa");
+        coffeeDTO.setRegion(Region.AFRICA);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.put("/api/coffees/{id}", coffeeDTO.getId())
