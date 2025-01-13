@@ -51,14 +51,14 @@ public class CoffeeControllerTest {
         when(coffeeService.saveCoffee(any(CoffeeDTO.class))).thenReturn(coffeeDTO);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/api/coffees/")
+                        MockMvcRequestBuilders.post("/api/coffees")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(coffeeJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().name()));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CoffeeControllerTest {
                                 .content(coffeeJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().name()));
     }
 
     @Test
@@ -97,14 +97,14 @@ public class CoffeeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().name()));
     }
 
     @Test
     public void testThatListCoffeeReturnsHttp200EmptyListWhenNoCoffeesExist() throws Exception {
         when(coffeeService.findAllCoffees()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
@@ -117,7 +117,7 @@ public class CoffeeControllerTest {
 
         when(coffeeService.findAllCoffees()).thenReturn(Arrays.asList(coffeeDTO));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(coffeeDTO.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Test Coffee"));

@@ -50,7 +50,7 @@ public class RoasteryControllerTest {
         when(roasteryService.saveRoastery(any(RoasteryDTO.class))).thenReturn(roasteryDTO);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.post("/api/roasteries/")
+                        MockMvcRequestBuilders.post("/api/roasteries")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(roasteryJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -101,7 +101,7 @@ public class RoasteryControllerTest {
     public void testThatListRoasteriesReturnsHttp200EmptyListWhenNoRoasteriesExist() throws Exception {
         when(roasteryService.findAllRoasteries()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/roasteries/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/roasteries"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
@@ -114,7 +114,7 @@ public class RoasteryControllerTest {
 
         when(roasteryService.findAllRoasteries()).thenReturn(Arrays.asList(roasteryDTO));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/roasteries/"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/roasteries"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(roasteryDTO.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Test Roastery"));

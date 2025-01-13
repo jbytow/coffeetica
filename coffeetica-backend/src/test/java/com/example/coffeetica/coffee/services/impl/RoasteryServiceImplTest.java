@@ -124,6 +124,9 @@ public class RoasteryServiceImplTest {
     @Test
     public void testDeleteRoasteryDeletesRoastery() {
         Long id = 1L;
+        RoasteryEntity roasteryEntity = CoffeeTestData.createTestRoasteryEntity();
+
+        when(roasteryRepository.findById(id)).thenReturn(Optional.of(roasteryEntity));
 
         underTest.deleteRoastery(id);
 

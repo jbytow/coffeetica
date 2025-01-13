@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +44,9 @@ public class ReviewControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
