@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/coffee-options")
+@RequestMapping("/api/coffees/options")
 public class CoffeeOptionsController {
 
     private final CoffeeOptionsService coffeeOptionsService;
