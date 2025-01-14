@@ -3,6 +3,7 @@ import { CoffeeDTO } from "../../../../models/CoffeeDTO";
 import apiClient from "../../../../lib/api";
 import { RoasteryDTO } from "../../../../models/RoasteryDTO";
 import { useNavigate } from "react-router-dom";
+import SearchableDropdown from "../../../Utils/SearchableDropdown";
 
 const CreateCoffee: React.FC = () => {
     const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
@@ -96,172 +97,133 @@ const CreateCoffee: React.FC = () => {
 
     return (
         <div className="container mt-5 mb-5">
-            {success && <div className="alert alert-success">Coffee added successfully!</div>}
-            {error && <div className="alert alert-danger">{error}</div>}
-            <div className="card">
-                <div className="card-header">Add New Coffee</div>
-                <div className="card-body">
-                    <form onSubmit={handleAddCoffee}>
-                        <div className="row">
-
-                            {/* Name - Flavor Profile */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Name</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={newCoffee.name || ""}
-                                    onChange={(e) => setNewCoffee({ ...newCoffee, name: e.target.value })}
-                                    required
-                                />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Flavor Profile</label>
-                                <select
-                                    className="form-select"
-                                    value={newCoffee.flavorProfile || ""}
-                                    onChange={(e) =>
-                                        setNewCoffee({ ...newCoffee, flavorProfile: e.target.value })
-                                    }
-                                    required
-                                >
-                                    <option value="">Select a flavor profile</option>
-                                    {flavorProfiles.map((profile) => (
-                                        <option key={profile} value={profile}>
-                                            {profile}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Roastery - Notes */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Roastery</label>
-                                <select
-                                    className="form-select"
-                                    value={newCoffee.roastery?.id || ""}
-                                    onChange={(e) => {
-                                        const roasteryId = parseInt(e.target.value, 10);
-                                        const selectedRoastery = roasteries.find((r) => r.id === roasteryId);
-                                        setNewCoffee({ ...newCoffee, roastery: selectedRoastery });
-                                    }}
-                                    required
-                                >
-                                    <option value="">Select a roastery</option>
-                                    {roasteries.map((roastery) => (
-                                        <option key={roastery.id} value={roastery.id}>
-                                            {roastery.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Notes</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={newCoffee.notes || ""}
-                                    onChange={(e) => setNewCoffee({ ...newCoffee, notes: e.target.value })}
-                                    required
-                                />
-                            </div>
-
-                            {/* Region - Roast Level */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Region</label>
-                                <select
-                                    className="form-select"
-                                    value={newCoffee.region || ""}
-                                    onChange={(e) => setNewCoffee({ ...newCoffee, region: e.target.value })}
-                                    required
-                                >
-                                    <option value="">Select a region</option>
-                                    {regions.map((region) => (
-                                        <option key={region} value={region}>
-                                            {region}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Roast Level</label>
-                                <select
-                                    className="form-select"
-                                    value={newCoffee.roastLevel || ""}
-                                    onChange={(e) => setNewCoffee({ ...newCoffee, roastLevel: e.target.value })}
-                                    required
-                                >
-                                    <option value="">Select a roast level</option>
-                                    {roastLevels.map((level) => (
-                                        <option key={level} value={level}>
-                                            {level}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Country - Processing Method */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Country of Origin</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={newCoffee.countryOfOrigin || ""}
-                                    onChange={(e) =>
-                                        setNewCoffee({ ...newCoffee, countryOfOrigin: e.target.value })
-                                    }
-                                    required
-                                />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Processing Method</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={newCoffee.processingMethod || ""}
-                                    onChange={(e) =>
-                                        setNewCoffee({ ...newCoffee, processingMethod: e.target.value })
-                                    }
-                                    required
-                                />
-                            </div>
-
-                            {/* Image - Production Year */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Image</label>
-                                <input
-                                    type="file"
-                                    className="form-control"
-                                    accept="image/*"
-                                    onChange={(e) =>
-                                        setSelectedFile(e.target.files ? e.target.files[0] : null)
-                                    }
-                                />
-                            </div>
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Production Year</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    value={newCoffee.productionYear || ""}
-                                    onChange={(e) =>
-                                        setNewCoffee({
-                                            ...newCoffee,
-                                            productionYear: parseInt(e.target.value, 10),
-                                        })
-                                    }
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <button type="submit" className="btn btn-primary">
-                            Add Coffee
-                        </button>
-                    </form>
+          {success && <div className="alert alert-success">Coffee added successfully!</div>}
+          {error && <div className="alert alert-danger">{error}</div>}
+          <div className="card">
+            <div className="card-header">Add New Coffee</div>
+            <div className="card-body">
+              <form onSubmit={handleAddCoffee}>
+                <div className="row">
+      
+                  {/* Name - Flavor Profile */}
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newCoffee.name || ""}
+                      onChange={(e) => setNewCoffee({ ...newCoffee, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <SearchableDropdown
+                      options={flavorProfiles}
+                      label="Flavor Profile"
+                      onChange={(value) => setNewCoffee({ ...newCoffee, flavorProfile: value })}
+                    />
+                  </div>
+      
+                  {/* Roast Level - Roastery */}
+                  <div className="col-md-6 mb-3">
+                    <SearchableDropdown
+                      options={roastLevels}
+                      label="Roast Level"
+                      onChange={(value) => setNewCoffee({ ...newCoffee, roastLevel: value })}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <SearchableDropdown
+                      options={roasteries.map((roastery) => roastery.name)} // Extract roastery names
+                      label="Roastery"
+                      onChange={(value) => {
+                        const selectedRoastery = roasteries.find((r) => r.name === value);
+                        setNewCoffee({ ...newCoffee, roastery: selectedRoastery });
+                      }}
+                    />
+                  </div>
+      
+                  {/* Region - Notes */}
+                  <div className="col-md-6 mb-3">
+                    <SearchableDropdown
+                      options={regions}
+                      label="Region"
+                      onChange={(value) => setNewCoffee({ ...newCoffee, region: value })}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Notes</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newCoffee.notes || ""}
+                      onChange={(e) => setNewCoffee({ ...newCoffee, notes: e.target.value })}
+                      required
+                    />
+                  </div>
+      
+                  {/* Country of Origin - Processing Method */}
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Country of Origin</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newCoffee.countryOfOrigin || ""}
+                      onChange={(e) =>
+                        setNewCoffee({ ...newCoffee, countryOfOrigin: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Processing Method</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={newCoffee.processingMethod || ""}
+                      onChange={(e) =>
+                        setNewCoffee({ ...newCoffee, processingMethod: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+      
+                  {/* Image - Production Year */}
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Image</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setSelectedFile(e.target.files ? e.target.files[0] : null)
+                      }
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Production Year</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={newCoffee.productionYear || ""}
+                      onChange={(e) =>
+                        setNewCoffee({
+                          ...newCoffee,
+                          productionYear: parseInt(e.target.value, 10),
+                        })
+                      }
+                      required
+                    />
+                  </div>
                 </div>
+                <button type="submit" className="btn btn-primary">
+                  Add Coffee
+                </button>
+              </form>
             </div>
+          </div>
         </div>
-    );
+      );
 };
 
 export default CreateCoffee;
