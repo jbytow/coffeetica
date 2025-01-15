@@ -41,6 +41,14 @@ export const CoffeeCarousel: React.FC = () => {
     );
   }
 
+  if (coffees.length === 0) {
+    return (
+      <div className="container mt-5 text-center">
+        <p className="lead">No coffees available to display at the moment.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-5">
       <div className="homepage-carousel-title">
@@ -53,65 +61,80 @@ export const CoffeeCarousel: React.FC = () => {
         data-bs-ride="carousel"
       >
         <div className="carousel-inner px-5">
-          {[0, 3, 6].map((startIdx, index) => (
-            <div
-              className={`carousel-item ${index === 0 ? "active" : ""}`}
-              key={startIdx}
-            >
-              <div className="row d-flex justify-content-center align-items-center">
-                {coffees.slice(startIdx, startIdx + 3).map((coffee) => (
-                  <div className="col-auto" key={coffee.id}>
-                    <Link to={`/coffees/${coffee.id}`} className="card-link">
-                      <div className="card text-center m-3 custom-card-size">
-                        {coffee.imageUrl ? (
-                          <img
-                            src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
-                            alt={coffee.name}
-                            className="card-img-top img-150"
-                          />
-                        ) : (
-                          <div className="card-img-top no-image-placeholder">
-                            <p>No Image Available</p>
-                          </div>
-                        )}
-                        <div className="card-body">
-                          <h5 className="card-title">{coffee.name}</h5>
-                          {coffee.roastery && (
-                            <p className="card-text">
-                              Roastery: {coffee.roastery.name}
-                            </p>
+          {[0, 3, 6].map((startIdx, index) => {
+            const group = coffees.slice(startIdx, startIdx + 3);
+            if (group.length === 0) return null; // Skip empty groups
+
+            return (
+              <div
+                className={`carousel-item ${index === 0 ? "active" : ""}`}
+                key={startIdx}
+              >
+                <div className="row d-flex justify-content-center align-items-center">
+                  {group.map((coffee) => (
+                    <div className="col-auto" key={coffee.id}>
+                      <Link to={`/coffees/${coffee.id}`} className="card-link">
+                        <div className="card text-center m-3 carousel-card-size carousel-card">
+                          {coffee.imageUrl ? (
+                            <img
+                              src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+                              alt={coffee.name}
+                              className="card-img-top img-150"
+                            />
+                          ) : (
+                            <div className="card-img-top no-image-placeholder">
+                              <p>No Image Available</p>
+                            </div>
                           )}
-                          <p className="card-text">
-                            Country: {coffee.countryOfOrigin}
-                          </p>
+                          <div className="card-body">
+                            <h5 className="card-title">{coffee.name}</h5>
+                            {coffee.roastery && (
+                              <p className="card-text">
+                                Roastery: {coffee.roastery.name}
+                              </p>
+                            )}
+                            <p className="card-text">
+                              Country: {coffee.countryOfOrigin}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <button
-          className="carousel-control-prev"
-          type="button"
-          data-bs-target="#carouselExampleControls"
-          data-bs-slide="prev"
-        >
-          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-          className="carousel-control-next"
-          type="button"
-          data-bs-target="#carouselExampleControls"
-          data-bs-slide="next"
-        >
-          <span className="carousel-control-next-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Next</span>
-        </button>
+        {coffees.length > 3 && (
+          <>
+            <button
+              className="carousel-control-prev"
+              type="button"
+              data-bs-target="#carouselExampleControls"
+              data-bs-slide="prev"
+            >
+              <span
+                className="carousel-control-prev-icon"
+                aria-hidden="true"
+              ></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+            <button
+              className="carousel-control-next"
+              type="button"
+              data-bs-target="#carouselExampleControls"
+              data-bs-slide="next"
+            >
+              <span
+                className="carousel-control-next-icon"
+                aria-hidden="true"
+              ></span>
+              <span className="visually-hidden">Next</span>
+            </button>
+          </>
+        )}
       </div>
 
       <div className="homepage-carousel-title mt-3 text-center">

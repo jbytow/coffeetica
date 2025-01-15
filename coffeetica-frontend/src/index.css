@@ -46,8 +46,3 @@ a {
 a:hover {
   color: var(--secondary-color);
 }
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}

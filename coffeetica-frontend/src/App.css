@@ -17,14 +17,6 @@
     align-items: center !important;
   }
 
-.carousel-title {
-    font-size: 2rem;
-    color: var(--light-color);
-    font-weight: bold;
-    text-align: center;
-    margin: 0;
-  }
-
 .dark-overlay {
   background-color: rgba(0, 0, 0, 0.4);
   position: absolute;
@@ -43,18 +35,23 @@
   padding-bottom: 0.5rem;
 }
 
-.custom-card-size {
+
+/* Carousel Styles */
+.carousel-card:size {
   width: 14rem;
   height: 28rem;
 }
 
+.carousel-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
 .img-150 {
   height: 150px;
   object-fit: cover;
   max-width: 100%;
 }
-
 
 .no-image-placeholder {
   height: 150px;
@@ -64,16 +61,13 @@
   justify-content: center;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
 .card-link {
   text-decoration: none;
   color: inherit;
 }
 
+
+/* CoffeeWelcomeSection Backgrounds */
 .col-image {
   height: 25em;
   background-size: cover;
