@@ -41,14 +41,14 @@
 .coffee-carousel-card {
   width: 240px;
   height: 384px;
-  display: flex;
-  flex-direction: column;
+  display: flex; /* as in Bootstrap */
+  flex-direction: column; /* as in Bootstrap */
   justify-content: space-between;
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease;
-  background-color: #fff;
+  background-color: #fff; /* as in Bootstrap */
 }
 
 .coffee-carousel-card:hover {
@@ -58,23 +58,7 @@
 .coffee-carousel-image {
   height: 65%;
   object-fit: cover;
-  width: 100%;
-}
-
-.carousel-card:size {
-  width: 14rem;
-  height: 28rem;
-}
-
-.carousel-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.img-150 {
-  height: 150px;
-  object-fit: cover;
-  max-width: 100%;
+  width: 100%; /* as in Bootstrap */
 }
 
 .no-image-placeholder {

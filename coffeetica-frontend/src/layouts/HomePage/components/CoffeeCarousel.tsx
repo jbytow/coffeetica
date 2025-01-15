@@ -82,7 +82,7 @@ export const CoffeeCarousel: React.FC = () => {
                           />
                           <div className="card-body d-flex flex-column p-3">
                             <h5>{coffee.roastery?.name} {coffee.name}</h5>
-                            <p className="text-muted mt-auto">
+                            <p className="text-muted mt-auto mb-0">
                               {coffee.countryOfOrigin} - {coffee.flavorProfile}
                             </p>
                           </div>
