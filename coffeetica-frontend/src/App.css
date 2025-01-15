@@ -37,6 +37,30 @@
 
 
 /* Carousel Styles */
+
+.coffee-carousel-card {
+  width: 240px;
+  height: 384px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  background-color: #fff;
+}
+
+.coffee-carousel-card:hover {
+  transform: scale(1.05);
+}
+
+.coffee-carousel-image {
+  height: 65%;
+  object-fit: cover;
+  width: 100%;
+}
+
 .carousel-card:size {
   width: 14rem;
   height: 28rem;

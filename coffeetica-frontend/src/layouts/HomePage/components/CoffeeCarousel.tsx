@@ -70,31 +70,20 @@ export const CoffeeCarousel: React.FC = () => {
                 className={`carousel-item ${index === 0 ? "active" : ""}`}
                 key={startIdx}
               >
-                <div className="row d-flex justify-content-center align-items-center">
+                <div className="row d-flex justify-content-center">
                   {group.map((coffee) => (
                     <div className="col-auto" key={coffee.id}>
                       <Link to={`/coffees/${coffee.id}`} className="card-link">
-                        <div className="card text-center m-3 carousel-card-size carousel-card">
-                          {coffee.imageUrl ? (
-                            <img
-                              src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
-                              alt={coffee.name}
-                              className="card-img-top img-150"
-                            />
-                          ) : (
-                            <div className="card-img-top no-image-placeholder">
-                              <p>No Image Available</p>
-                            </div>
-                          )}
-                          <div className="card-body">
-                            <h5 className="card-title">{coffee.name}</h5>
-                            {coffee.roastery && (
-                              <p className="card-text">
-                                Roastery: {coffee.roastery.name}
-                              </p>
-                            )}
-                            <p className="card-text">
-                              Country: {coffee.countryOfOrigin}
+                        <div className="coffee-carousel-card m-3 shadow-sm">
+                          <img
+                            src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+                            alt={coffee.name}
+                            className="coffee-carousel-image"
+                          />
+                          <div className="card-body d-flex flex-column p-3">
+                            <h5>{coffee.roastery?.name} {coffee.name}</h5>
+                            <p className="text-muted mt-auto">
+                              {coffee.countryOfOrigin} - {coffee.flavorProfile}
                             </p>
                           </div>
                         </div>
