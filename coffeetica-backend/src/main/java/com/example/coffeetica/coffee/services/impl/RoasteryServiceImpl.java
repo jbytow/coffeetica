@@ -5,18 +5,13 @@ import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.RoasteryService;
+import com.example.coffeetica.utility.FileHelper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -63,16 +58,12 @@ public class RoasteryServiceImpl implements RoasteryService {
         RoasteryEntity roastery = roasteryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Roastery not found"));
 
-        // Delete the associated image file if it exists
+        // Delete the associated image file using FileHelper
         if (roastery.getImageUrl() != null) {
-            Path imagePath = Paths.get("uploads" + roastery.getImageUrl().replace("/uploads", ""));
-            try {
-                Files.deleteIfExists(imagePath);
-                System.out.println("Deleted image: " + imagePath.toString());
-            } catch (IOException e) {
-                System.err.println("Failed to delete image: " + imagePath.toString());
-            }
+            FileHelper.deleteImage(roastery.getImageUrl());
         }
+
+        // Delete the roastery entity from the database
         roasteryRepository.deleteById(id);
     }
 
@@ -82,12 +73,22 @@ public class RoasteryServiceImpl implements RoasteryService {
     }
 
     @Override
-    public void updateRoasteryImageUrl(Long id, String imageUrl) {
+    public void updateRoasteryImageUrl(Long id, String newImageUrl) {
         RoasteryEntity roastery = roasteryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Roastery not found"));
-        roastery.setImageUrl(imageUrl);
+
+        // Check if there is an existing image and if it differs from the new image
+        String oldImageUrl = roastery.getImageUrl();
+        if (oldImageUrl != null && !oldImageUrl.equals(newImageUrl)) {
+            // Use FileHelper to delete the old image
+            FileHelper.deleteImage(oldImageUrl);
+        }
+
+        // Update the image URL in the roastery entity
+        roastery.setImageUrl(newImageUrl);
+
+        // Save the updated roastery entity to the database
         roasteryRepository.save(roastery);
     }
-
 }
 

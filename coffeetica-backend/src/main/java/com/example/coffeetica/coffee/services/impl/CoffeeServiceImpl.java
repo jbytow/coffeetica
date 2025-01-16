@@ -4,6 +4,7 @@ import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.CoffeeEntity;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
 import com.example.coffeetica.coffee.services.CoffeeService;
+import com.example.coffeetica.utility.FileHelper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,11 @@ public class CoffeeServiceImpl implements CoffeeService {
 
     @Override
     public void deleteCoffee(Long id) {
-        coffeeRepository.deleteById(id);
+        CoffeeEntity coffeeEntity = coffeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coffee not found"));
+
+        FileHelper.deleteImage(coffeeEntity.getImageUrl());
+        coffeeRepository.delete(coffeeEntity);
     }
 
     @Override
@@ -61,10 +66,21 @@ public class CoffeeServiceImpl implements CoffeeService {
     }
 
     @Override
-    public void updateCoffeeImageUrl(Long id, String imageUrl) {
+    public void updateCoffeeImageUrl(Long id, String newImageUrl) {
         CoffeeEntity coffee = coffeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Coffee not found"));
-        coffee.setImageUrl(imageUrl);
+
+        // Check if there is an existing image and if it differs from the new image
+        String oldImageUrl = coffee.getImageUrl();
+        if (oldImageUrl != null && !oldImageUrl.equals(newImageUrl)) {
+            // Use FileHelper to delete the old image
+            FileHelper.deleteImage(oldImageUrl);
+        }
+
+        // Update the image URL in the coffee entity
+        coffee.setImageUrl(newImageUrl);
+
+        // Save the updated coffee entity to the database
         coffeeRepository.save(coffee);
     }
 }
