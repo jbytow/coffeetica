@@ -10,6 +10,7 @@ import { CoffeePage } from './layouts/CoffeePage/CoffeePage';
 import RegisterPage from './auth/RegisterPage';
 import LoginPage from './auth/LoginPage';
 import CreateCoffee from './layouts/AdminPage/components/ManageCoffees/CreateCoffee';
+import EditCoffee from './layouts/AdminPage/components/ManageCoffees/EditCoffee';
 
 function App() {
   return (
@@ -31,7 +32,8 @@ function App() {
           <Route path="/admin/coffees" element={<ManageCoffees />} />
           <Route path="/admin/roasteries" element={<ManageRoasteries />} />
           <Route path="/admin/coffees/add" element={<CreateCoffee />} />
-
+          <Route path="/admin/coffees/edit/:id" element={<EditCoffee />} />
+          
            {/* Coffee Details Page */}
            <Route path="/coffees/:id" element={<CoffeePage />} />
 

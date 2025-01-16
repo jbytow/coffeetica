@@ -3,8 +3,11 @@ package com.example.coffeetica.coffee.models;
 import com.example.coffeetica.coffee.models.enums.FlavorProfile;
 import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,8 +42,9 @@ public class CoffeeEntity {
     @JoinColumn(name = "roastery_id", nullable = false)
     private RoasteryEntity roastery;
 
-    @OneToMany(mappedBy = "coffee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ReviewEntity> reviews;
+    @OneToMany(mappedBy = "coffee", cascade = CascadeType.REMOVE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<ReviewEntity> reviews = new ArrayList<>();
 
     // Getters and setters
     public Long getId() {
@@ -127,11 +131,11 @@ public class CoffeeEntity {
         this.roastery = roastery;
     }
 
-    public Set<ReviewEntity> getReviews() {
+    public List<ReviewEntity> getReviews() {
         return reviews;
     }
 
-    public void setReviews(Set<ReviewEntity> reviews) {
+    public void setReviews(List<ReviewEntity> reviews) {
         this.reviews = reviews;
     }
 }

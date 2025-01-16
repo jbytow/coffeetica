@@ -5,12 +5,14 @@ interface SearchableDropdownProps {
   options: string[]; // List of dropdown options
   label: string; // Label for the dropdown
   onChange: (selected: string) => void; // Callback for the selected value
+  value?: string; // Selected value (optional, for pre-selection)
 }
 
 const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   options,
   label,
   onChange,
+  value = "",
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>(""); // User input
   const [filteredOptions, setFilteredOptions] = useState<string[]>(options); // Filtered list
@@ -20,6 +22,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
   // Synchronize filtered options with the initial options prop
   useEffect(() => {
     setFilteredOptions(options);
+    setSearchTerm(value)
     setHighlightedIndex(0); // Reset highlighted index
   }, [options]);
 

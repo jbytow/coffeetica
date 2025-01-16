@@ -4,6 +4,8 @@ import com.example.coffeetica.coffee.models.enums.FlavorProfile;
 import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class CoffeeDTO {
@@ -22,7 +24,7 @@ public class CoffeeDTO {
 
     private RoasteryDTO roastery;
 
-    private Set<ReviewDTO> reviews;
+    private List<ReviewDTO> reviews = new ArrayList<>();
 
     // Getters and setters
     public Long getId() {
@@ -109,11 +111,11 @@ public class CoffeeDTO {
         this.roastery = roastery;
     }
 
-    public Set<ReviewDTO> getReviews() {
+    public List<ReviewDTO> getReviews() {
         return reviews;
     }
 
-    public void setReviews(Set<ReviewDTO> reviews) {
+    public void setReviews(List<ReviewDTO> reviews) {
         this.reviews = reviews;
     }
 }
