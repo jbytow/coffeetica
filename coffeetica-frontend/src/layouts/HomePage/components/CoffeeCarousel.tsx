@@ -55,6 +55,7 @@ export const CoffeeCarousel: React.FC = () => {
         <h3>Discover Your Next Favorite Coffee</h3>
       </div>
 
+      {/* Desktop */}
       <div
         id="carouselExampleControls"
         className="carousel carousel-dark slide mt-5 d-none d-lg-block"
@@ -124,6 +125,31 @@ export const CoffeeCarousel: React.FC = () => {
             </button>
           </>
         )}
+      </div>
+
+      {/* Mobile */}
+      <div className="d-lg-none mt-3">
+        <div className="row d-flex justify-content-center align-items-center">
+          {coffees.slice(0, 1).map((coffee) => (
+            <div className="col-auto" key={coffee.id}>
+              <Link to={`/coffees/${coffee.id}`} className="card-link">
+                <div className="coffee-carousel-card m-3 shadow-sm">
+                  <img
+                    src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+                    alt={coffee.name}
+                    className="coffee-carousel-image"
+                  />
+                  <div className="card-body d-flex flex-column p-3">
+                    <h5>{coffee.roastery?.name} {coffee.name}</h5>
+                    <p className="text-muted mt-auto mb-0">
+                      {coffee.countryOfOrigin} - {coffee.flavorProfile}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="homepage-carousel-title mt-3 text-center">
