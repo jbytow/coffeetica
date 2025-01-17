@@ -8,18 +8,18 @@ import { SpinnerLoading } from "../../../Utils/SpinnerLoading";
 import SearchableDropdown from "../../../Utils/SearchableDropdown";
 
 const EditCoffee: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
-  
-    const [coffee, setCoffee] = useState<Partial<CoffeeDTO>>({});
-    const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
-    const [regions, setRegions] = useState<string[]>([]);
-    const [roastLevels, setRoastLevels] = useState<string[]>([]);
-    const [flavorProfiles, setFlavorProfiles] = useState<string[]>([]);
-    
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const [coffee, setCoffee] = useState<Partial<CoffeeDTO>>({});
+  const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
+  const [regions, setRegions] = useState<string[]>([]);
+  const [roastLevels, setRoastLevels] = useState<string[]>([]);
+  const [flavorProfiles, setFlavorProfiles] = useState<string[]>([]);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
 
   // Fetch options for dropdowns
@@ -150,14 +150,42 @@ const EditCoffee: React.FC = () => {
                 />
               </div>
               <div className="col-md-6 mb-3">
-                <label className="form-label">Notes</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={coffee.notes || ""}
-                  onChange={(e) => setCoffee({ ...coffee, notes: e.target.value })}
-                  required
-                />
+                <label className="form-label">Flavor Notes</label>
+                <div className="form-control d-flex flex-wrap align-items-center" style={{ gap: "0.5rem", minHeight: "38px" }}>
+                  {coffee.flavorNotes?.map((note, index) => (
+                    <span key={index} className="badge bg-primary d-inline-flex align-items-center">
+                      {note}
+                      <button
+                        type="button"
+                        className="btn-close btn-close-white ms-2"
+                        aria-label="Close"
+                        onClick={() =>
+                          setCoffee({
+                            ...coffee,
+                            flavorNotes: coffee.flavorNotes?.filter((_, i) => i !== index),
+                          })
+                        }
+                      ></button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    className="border-0 flex-grow-1"
+                    placeholder="Add a note and press Enter"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                        const newNote = e.currentTarget.value.trim();
+                        setCoffee({
+                          ...coffee,
+                          flavorNotes: [...(coffee.flavorNotes || []), newNote],
+                        });
+                        e.currentTarget.value = ""; // Clear the input
+                        e.preventDefault(); // Prevent form submission
+                      }
+                    }}
+                    style={{ outline: "none" }}
+                  />
+                </div>
               </div>
 
               {/* Country of Origin - Processing Method */}
@@ -188,7 +216,7 @@ const EditCoffee: React.FC = () => {
 
               {/* Image - Production Year */}
               <div className="col-md-6 mb-3">
-                <label className="form-label">Image</label>
+                <label className="form-label">Change Image</label>
                 <input
                   type="file"
                   className="form-control"

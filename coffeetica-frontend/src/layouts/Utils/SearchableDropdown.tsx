@@ -24,7 +24,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
     setFilteredOptions(options);
     setSearchTerm(value)
     setHighlightedIndex(0); // Reset highlighted index
-  }, [options]);
+  }, [options, value]);
 
   // Update filtered options when the search term changes
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

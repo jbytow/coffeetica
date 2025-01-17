@@ -8,7 +8,7 @@ export interface CoffeeDTO {
     region: string;
     roastLevel: string;
     flavorProfile: string;
-    notes: string;
+    flavorNotes: string[];
     processingMethod: string;
     productionYear: number;
     imageUrl?: string;
