@@ -58,7 +58,7 @@ public class CoffeeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().name()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().getDisplayName()));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CoffeeControllerTest {
                                 .content(coffeeJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().name()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().getDisplayName()));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class CoffeeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(coffeeDTO.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(coffeeDTO.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.countryOfOrigin").value(coffeeDTO.getCountryOfOrigin()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().name()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.region").value(coffeeDTO.getRegion().getDisplayName()));
     }
 
     @Test

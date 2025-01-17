@@ -122,11 +122,14 @@ public class CoffeeServiceImplTest {
     }
 
     @Test
-    public void testDeleteCoffeeDeletesCoffee() {
+    public void testThatDeleteCoffeeDeletesCoffee() {
         Long id = 1L;
+        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
+
+        when(coffeeRepository.findById(id)).thenReturn(Optional.of(coffeeEntity));
 
         underTest.deleteCoffee(id);
 
-        verify(coffeeRepository, times(1)).deleteById(id);
+        verify(coffeeRepository, times(1)).delete(coffeeEntity);
     }
 }

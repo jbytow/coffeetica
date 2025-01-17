@@ -6,6 +6,9 @@ import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import com.example.coffeetica.user.util.UserTestData;
 
+import java.util.HashSet;
+import java.util.List;
+
 
 public final class CoffeeTestData {
 
@@ -40,7 +43,7 @@ public final class CoffeeTestData {
         coffeeEntity.setRegion(Region.SOUTH_AMERICA);
         coffeeEntity.setRoastLevel(RoastLevel.MEDIUM);
         coffeeEntity.setFlavorProfile(FlavorProfile.NUTTY);
-        coffeeEntity.setNotes("Notes of chocolate");
+        coffeeEntity.setFlavorNotes(new HashSet<>(List.of("Chocolate", "Nuts")));
         coffeeEntity.setProcessingMethod("Washed");
         coffeeEntity.setProductionYear(2024);
         coffeeEntity.setRoastery(createTestRoasteryEntity());
@@ -55,7 +58,7 @@ public final class CoffeeTestData {
         coffeeDTO.setRegion(Region.SOUTH_AMERICA);
         coffeeDTO.setRoastLevel(RoastLevel.MEDIUM);
         coffeeDTO.setFlavorProfile(FlavorProfile.NUTTY);
-        coffeeDTO.setNotes("Notes of chocolate");
+        coffeeDTO.setFlavorNotes(new HashSet<>(List.of("Chocolate", "Nuts")));
         coffeeDTO.setProcessingMethod("Washed");
         coffeeDTO.setProductionYear(2024);
         coffeeDTO.setRoastery(createTestRoasteryDTO());

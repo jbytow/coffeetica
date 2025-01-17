@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,6 @@ public class CoffeeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
@@ -29,7 +29,7 @@ public class CoffeeEntity {
     @Enumerated(EnumType.STRING)
     private FlavorProfile flavorProfile;
     @Column(nullable = false)
-    private String notes;
+    private Set<String> flavorNotes = new HashSet<>();
     @Column(nullable = false)
     private String processingMethod;
     @Column(nullable = false)
@@ -95,12 +95,14 @@ public class CoffeeEntity {
         this.flavorProfile = flavorProfile;
     }
 
-    public String getNotes() {
-        return notes;
+    // Getter
+    public Set<String> getFlavorNotes() {
+        return flavorNotes;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    // Setter
+    public void setFlavorNotes(Set<String> flavorNotes) {
+        this.flavorNotes = flavorNotes;
     }
 
     public String getProcessingMethod() {

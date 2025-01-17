@@ -16,7 +16,7 @@ public class CoffeeDTO {
     private Region region;
     private RoastLevel roastLevel;
     private FlavorProfile flavorProfile;
-    private String notes;
+    private Set<String> flavorNotes;
     private String processingMethod;
     private Integer productionYear;
 
@@ -75,12 +75,14 @@ public class CoffeeDTO {
         this.flavorProfile = flavorProfile;
     }
 
-    public String getNotes() {
-        return notes;
+    // Getter
+    public Set<String> getFlavorNotes() {
+        return flavorNotes;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    // Setter
+    public void setFlavorNotes(Set<String> flavorNotes) {
+        this.flavorNotes = flavorNotes;
     }
 
     public String getProcessingMethod() {
