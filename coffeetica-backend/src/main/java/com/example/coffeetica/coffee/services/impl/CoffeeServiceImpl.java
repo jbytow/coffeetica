@@ -2,7 +2,9 @@ package com.example.coffeetica.coffee.services.impl;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.CoffeeEntity;
+import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
+import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.utility.FileHelper;
 import org.modelmapper.ModelMapper;
@@ -18,6 +20,9 @@ public class CoffeeServiceImpl implements CoffeeService {
 
     @Autowired
     private CoffeeRepository coffeeRepository;
+
+    @Autowired
+    private RoasteryRepository roasteryRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -46,6 +51,14 @@ public class CoffeeServiceImpl implements CoffeeService {
     public CoffeeDTO updateCoffee(Long id, CoffeeDTO coffeeDTODetails) {
         CoffeeEntity entity = coffeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Coffee not found"));
+
+        // roastery field
+        if (coffeeDTODetails.getRoastery() != null && coffeeDTODetails.getRoastery().getId() != null) {
+            RoasteryEntity roastery = roasteryRepository.findById(coffeeDTODetails.getRoastery().getId())
+                    .orElseThrow(() -> new RuntimeException("Roastery not found"));
+            entity.setRoastery(roastery);
+        }
+
         modelMapper.map(coffeeDTODetails, entity);
         CoffeeEntity updatedEntity = coffeeRepository.save(entity);
         return modelMapper.map(updatedEntity, CoffeeDTO.class);
