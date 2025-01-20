@@ -1,6 +1,8 @@
 package com.example.coffeetica.coffee.services;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +11,7 @@ public interface CoffeeService {
 
     boolean isCoffeeExists(Long id);
 
-    List<CoffeeDTO> findAllCoffees();
+    Page<CoffeeDTO> findAllCoffees(Pageable pageable);
 
     Optional<CoffeeDTO> findCoffeeById(Long id);
 

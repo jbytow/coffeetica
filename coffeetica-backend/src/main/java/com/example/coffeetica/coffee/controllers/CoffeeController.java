@@ -3,6 +3,10 @@ package com.example.coffeetica.coffee.controllers;
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +29,14 @@ public class CoffeeController {
     private CoffeeService coffeeService;
 
     @GetMapping(path = "/api/coffees")
-    public List<CoffeeDTO> getAllCoffees() {
-        return coffeeService.findAllCoffees();
+    public Page<CoffeeDTO> getAllCoffees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return coffeeService.findAllCoffees(pageable);
     }
 
     @GetMapping(path = "/api/coffees/{id}")

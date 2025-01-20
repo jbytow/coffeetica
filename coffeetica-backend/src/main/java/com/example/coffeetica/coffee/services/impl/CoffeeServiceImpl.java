@@ -9,6 +9,8 @@ import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.utility.FileHelper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,10 +30,9 @@ public class CoffeeServiceImpl implements CoffeeService {
     private ModelMapper modelMapper;
 
     @Override
-    public List<CoffeeDTO> findAllCoffees() {
-        return coffeeRepository.findAll().stream()
-                .map(entity -> modelMapper.map(entity, CoffeeDTO.class))
-                .collect(Collectors.toList());
+    public Page<CoffeeDTO> findAllCoffees(Pageable pageable) {
+        return coffeeRepository.findAll(pageable)
+                .map(entity -> modelMapper.map(entity, CoffeeDTO.class));
     }
 
     @Override
