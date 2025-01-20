@@ -11,7 +11,13 @@ import org.modelmapper.ModelMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,11 +85,14 @@ public class CoffeeServiceImplTest {
 
     @Test
     public void testListCoffeesReturnsEmptyListWhenNoCoffeesExist() {
-        when(coffeeRepository.findAll()).thenReturn(new ArrayList<>());
+        Page<CoffeeEntity> emptyPage = new PageImpl<>(Collections.emptyList());
+        when(coffeeRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
 
-        List<CoffeeDTO> result = underTest.findAllCoffees();
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<CoffeeDTO> result = underTest.findAllCoffees(pageable);
 
         assertTrue(result.isEmpty());
+        verify(coffeeRepository).findAll(any(Pageable.class));
     }
 
     @Test
@@ -91,14 +100,17 @@ public class CoffeeServiceImplTest {
         CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
         CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
 
-        when(coffeeRepository.findAll()).thenReturn(List.of(coffeeEntity));
+        Page<CoffeeEntity> coffeePage = new PageImpl<>(List.of(coffeeEntity));
+        when(coffeeRepository.findAll(any(Pageable.class))).thenReturn(coffeePage);
         when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);
 
-        List<CoffeeDTO> result = underTest.findAllCoffees();
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<CoffeeDTO> result = underTest.findAllCoffees(pageable);
 
-        assertEquals(1, result.size());
-        assertEquals(coffeeDTO, result.get(0));
+        assertEquals(1, result.getContent().size());
+        assertEquals(coffeeDTO, result.getContent().get(0));
         verify(modelMapper).map(coffeeEntity, CoffeeDTO.class);
+        verify(coffeeRepository).findAll(any(Pageable.class));
     }
 
     @Test

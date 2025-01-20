@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -102,11 +106,13 @@ public class CoffeeControllerTest {
 
     @Test
     public void testThatListCoffeeReturnsHttp200EmptyListWhenNoCoffeesExist() throws Exception {
-        when(coffeeService.findAllCoffees()).thenReturn(Collections.emptyList());
+        Page<CoffeeDTO> emptyPage = new PageImpl<>(Collections.emptyList());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees"))
+        when(coffeeService.findAllCoffees(any(Pageable.class))).thenReturn(emptyPage);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees?page=0&size=5"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isEmpty());
     }
 
     @Test
@@ -115,12 +121,15 @@ public class CoffeeControllerTest {
         coffeeDTO.setId(1L);
         coffeeDTO.setName("Test Coffee");
 
-        when(coffeeService.findAllCoffees()).thenReturn(Arrays.asList(coffeeDTO));
+        List<CoffeeDTO> coffeeList = Arrays.asList(coffeeDTO);
+        Page<CoffeeDTO> coffeePage = new PageImpl<>(coffeeList);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees"))
+        when(coffeeService.findAllCoffees(any(Pageable.class))).thenReturn(coffeePage);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees?page=0&size=5"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(coffeeDTO.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Test Coffee"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(coffeeDTO.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Test Coffee"));
     }
 
     @Test
