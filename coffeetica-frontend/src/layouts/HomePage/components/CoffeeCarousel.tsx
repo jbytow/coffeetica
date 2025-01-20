@@ -12,12 +12,11 @@ export const CoffeeCarousel: React.FC = () => {
   useEffect(() => {
     const fetchCoffees = async () => {
       try {
-        const response = await apiClient.get<CoffeeDTO[]>("/coffees", {
+        const response = await apiClient.get("/coffees", {
           params: { page: 0, size: 9 },
         });
-
-        const sortedCoffees = response.data.sort((a, b) => b.id - a.id); // Sort by ID descending
-        setCoffees(sortedCoffees);
+  
+        setCoffees(response.data.content);
         setIsLoading(false);
       } catch (error: any) {
         console.error("Error fetching coffees:", error);
@@ -25,7 +24,7 @@ export const CoffeeCarousel: React.FC = () => {
         setIsLoading(false);
       }
     };
-
+  
     fetchCoffees();
   }, []);
 
