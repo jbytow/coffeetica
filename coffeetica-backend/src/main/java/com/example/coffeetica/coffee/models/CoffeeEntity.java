@@ -28,7 +28,10 @@ public class CoffeeEntity {
     private RoastLevel roastLevel;
     @Enumerated(EnumType.STRING)
     private FlavorProfile flavorProfile;
-    @Column(nullable = false)
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "coffee_flavor_notes", joinColumns = @JoinColumn(name = "coffee_id"))
+    @Column(name = "flavor_note", nullable = false)
     private Set<String> flavorNotes = new HashSet<>();
     @Column(nullable = false)
     private String processingMethod;

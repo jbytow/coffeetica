@@ -1,7 +1,11 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
+import com.example.coffeetica.coffee.models.enums.FlavorProfile;
+import com.example.coffeetica.coffee.models.enums.Region;
+import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import com.example.coffeetica.coffee.services.CoffeeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,12 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -37,6 +41,32 @@ public class CoffeeController {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         return coffeeService.findAllCoffees(pageable);
+    }
+
+    @GetMapping("/api/coffees/filter")
+    public Page<CoffeeDTO> filterCoffees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String countryOfOrigin,
+            @RequestParam(required = false) Region region,
+            @RequestParam(required = false) RoastLevel roastLevel,
+            @RequestParam(required = false) FlavorProfile flavorProfile,
+            @RequestParam(required = false) Set<String> flavorNotes,
+            @RequestParam(required = false) String processingMethod,
+            @RequestParam(required = false) Integer minProductionYear,
+            @RequestParam(required = false) Integer maxProductionYear,
+            @RequestParam(required = false) String roasteryName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return coffeeService.findFilteredCoffees(
+                name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
+                processingMethod, minProductionYear, maxProductionYear, roasteryName, pageable
+        );
     }
 
     @GetMapping(path = "/api/coffees/{id}")

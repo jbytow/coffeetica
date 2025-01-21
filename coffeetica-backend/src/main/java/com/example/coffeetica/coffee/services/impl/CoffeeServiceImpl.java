@@ -3,19 +3,24 @@ package com.example.coffeetica.coffee.services.impl;
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.CoffeeEntity;
 import com.example.coffeetica.coffee.models.RoasteryEntity;
+import com.example.coffeetica.coffee.models.enums.FlavorProfile;
+import com.example.coffeetica.coffee.models.enums.Region;
+import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.CoffeeService;
+import com.example.coffeetica.coffee.specification.CoffeeSpecification;
+
 import com.example.coffeetica.utility.FileHelper;
-import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.modelmapper.ModelMapper;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 public class CoffeeServiceImpl implements CoffeeService {
@@ -33,6 +38,28 @@ public class CoffeeServiceImpl implements CoffeeService {
     public Page<CoffeeDTO> findAllCoffees(Pageable pageable) {
         return coffeeRepository.findAll(pageable)
                 .map(entity -> modelMapper.map(entity, CoffeeDTO.class));
+    }
+
+    @Override
+    public Page<CoffeeDTO> findFilteredCoffees(
+            String name,
+            String countryOfOrigin,
+            Region region,
+            RoastLevel roastLevel,
+            FlavorProfile flavorProfile,
+            Set<String> flavorNotes,
+            String processingMethod,
+            Integer minProductionYear,
+            Integer maxProductionYear,
+            String roasteryName,
+            Pageable pageable) {
+
+        Specification<CoffeeEntity> spec = CoffeeSpecification.filterByAttributes(
+                name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
+                processingMethod, minProductionYear, maxProductionYear, roasteryName
+        );
+
+        return coffeeRepository.findAll(spec, pageable).map(entity -> modelMapper.map(entity, CoffeeDTO.class));
     }
 
     @Override
