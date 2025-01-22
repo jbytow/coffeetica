@@ -14,7 +14,7 @@ public class RoasteryEntity {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private String location;
+    private String country;
     @Column(nullable = false)
     private Integer foundingYear;
     @Column(nullable = true)
@@ -43,12 +43,12 @@ public class RoasteryEntity {
         this.name = name;
     }
 
-    public String getLocation() {
-        return location;
+    public String getCountry() {
+        return country;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public Integer getFoundingYear() {

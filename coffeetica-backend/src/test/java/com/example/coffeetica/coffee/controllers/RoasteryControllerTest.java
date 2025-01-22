@@ -56,7 +56,7 @@ public class RoasteryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(roasteryDTO.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.location").value(roasteryDTO.getLocation()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.location").value(roasteryDTO.getCountry()));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class RoasteryControllerTest {
 
         when(roasteryService.updateRoastery(anyLong(), any(RoasteryDTO.class))).thenReturn(roasteryDTO);
 
-        roasteryDTO.setLocation("Africa");
+        roasteryDTO.setCountry("Africa");
 
         mockMvc.perform(
                         MockMvcRequestBuilders.put("/api/roasteries/{id}", roasteryDTO.getId())
@@ -74,7 +74,7 @@ public class RoasteryControllerTest {
                                 .content(roasteryJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(roasteryDTO.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.location").value(roasteryDTO.getLocation()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.location").value(roasteryDTO.getCountry()));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class RoasteryControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(roasteryDTO.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(roasteryDTO.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.location").value(roasteryDTO.getLocation()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.location").value(roasteryDTO.getCountry()));
     }
 
     @Test

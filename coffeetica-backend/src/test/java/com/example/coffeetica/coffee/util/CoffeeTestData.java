@@ -19,7 +19,7 @@ public final class CoffeeTestData {
         RoasteryEntity roastery = new RoasteryEntity();
         roastery.setId(1L);
         roastery.setName("Best Roastery");
-        roastery.setLocation("Brazil, Minas Gerais");
+        roastery.setCountry("Brazil, Minas Gerais");
         roastery.setFoundingYear(2010);
         roastery.setWebsiteUrl("http://bestroastery.com");
         return roastery;
@@ -29,7 +29,7 @@ public final class CoffeeTestData {
         RoasteryDTO roasteryDTO = new RoasteryDTO();
         roasteryDTO.setId(1L);
         roasteryDTO.setName("Best Roastery");
-        roasteryDTO.setLocation("Brazil, Minas Gerais");
+        roasteryDTO.setCountry("Brazil, Minas Gerais");
         roasteryDTO.setFoundingYear(2010);
         roasteryDTO.setWebsiteUrl("http://bestroastery.com");
         return roasteryDTO;

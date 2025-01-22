@@ -1,7 +1,7 @@
 export interface RoasteryDTO {
     id: number;
     name: string;
-    location: string;
+    country: string;
     foundingYear: number;
     websiteUrl: string;
     imageUrl?: string;
