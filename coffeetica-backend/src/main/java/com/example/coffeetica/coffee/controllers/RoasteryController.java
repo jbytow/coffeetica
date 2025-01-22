@@ -1,8 +1,16 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.RoasteryDTO;
+import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.services.RoasteryService;
+import com.example.coffeetica.coffee.specification.RoasterySpecification;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +34,25 @@ public class RoasteryController {
     @GetMapping("/api/roasteries")
     public List<RoasteryDTO> getAllRoasteries() {
         return roasteryService.findAllRoasteries();
+    }
+
+    @GetMapping("/api/roasteries/filter")
+    public Page<RoasteryDTO> getFilteredRoasteries(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) Integer minFoundingYear,
+            @RequestParam(required = false) Integer maxFoundingYear,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return roasteryService.findFilteredRoasteries(name, country, minFoundingYear, maxFoundingYear, pageable);
     }
 
     @GetMapping("/api/roasteries/{id}")

@@ -5,9 +5,13 @@ import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.RoasteryService;
+import com.example.coffeetica.coffee.specification.RoasterySpecification;
 import com.example.coffeetica.utility.FileHelper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,6 +33,22 @@ public class RoasteryServiceImpl implements RoasteryService {
         return roasteryRepository.findAll().stream()
                 .map(entity -> modelMapper.map(entity, RoasteryDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<RoasteryDTO> findFilteredRoasteries(
+            String name,
+            String country,
+            Integer minFoundingYear,
+            Integer maxFoundingYear,
+            Pageable pageable) {
+
+        Specification<RoasteryEntity> spec = RoasterySpecification.filterByAttributes(
+                name, country, minFoundingYear, maxFoundingYear
+        );
+
+        return roasteryRepository.findAll(spec, pageable)
+                .map(entity -> modelMapper.map(entity, RoasteryDTO.class));
     }
 
     @Override
