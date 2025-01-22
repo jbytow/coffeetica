@@ -82,7 +82,7 @@ const EditCoffee: React.FC = () => {
         });
       }
 
-      navigate("/admin/coffees");
+      navigate("/admin");
     } catch (err: any) {
       setError("Failed to update coffee.");
     }

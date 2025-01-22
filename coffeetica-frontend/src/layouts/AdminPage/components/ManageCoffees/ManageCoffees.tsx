@@ -4,6 +4,8 @@ import apiClient from "../../../../lib/api";
 import { Link } from "react-router-dom";
 import { Pagination } from "../../../Utils/Pagination";
 import { SpinnerLoading } from "../../../Utils/SpinnerLoading";
+import CoffeeFilterPanel from "../../../Utils/CoffeeFilterPanel";
+import { CoffeeFilters } from "../../../../models/CofffeeFilters";
 
 const ManageCoffees: React.FC = () => {
   const [coffees, setCoffees] = useState<CoffeeDTO[]>([]);
@@ -13,13 +15,27 @@ const ManageCoffees: React.FC = () => {
   const [coffeesPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
 
+  const [filters, setFilters] = useState<CoffeeFilters>({
+    name: '',
+    countryOfOrigin: '',
+    region: '',
+    roastLevel: '',
+    flavorProfile: '',
+    flavorNotes: '',
+    processingMethod: '',
+    minProductionYear: '',
+    maxProductionYear: '',
+    roasteryName: '',
+  });
+
   // Fetch all coffees
   useEffect(() => {
     const fetchCoffees = async () => {
       setIsLoading(true);
       try {
-        const response = await apiClient.get("/coffees", {
+        const response = await apiClient.get("/coffees/filter", {
           params: {
+            ...filters,
             page: currentPage - 1, // Backend paginates from 0
             size: coffeesPerPage,
           },
@@ -37,7 +53,7 @@ const ManageCoffees: React.FC = () => {
     };
 
     fetchCoffees();
-  }, [currentPage]);
+  }, [filters, currentPage]);
 
   // Handle deleting a coffee
   const handleDeleteCoffee = async (id: number) => {
@@ -58,6 +74,12 @@ const ManageCoffees: React.FC = () => {
     }
   };
 
+  const handleFiltersSubmit = (newFilters: CoffeeFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   if (isLoading) {
@@ -74,10 +96,13 @@ const ManageCoffees: React.FC = () => {
           Add New Coffee
         </Link>
       </div>
+      <CoffeeFilterPanel filters={filters} onFiltersSubmit={handleFiltersSubmit} />
       {coffees.map((coffee) => (
-        <div className="card mt-3 shadow p-3 mb-3 bg-body rounded" key={coffee.id}>
+        <div
+          className="card mt-3 shadow p-3 mb-3 bg-body rounded"
+          key={coffee.id}
+        >
           <div className="row g-0">
-            {/* Obraz */}
             <div className="col-md-3 d-flex justify-content-center align-items-center">
               <div>
                 {coffee.imageUrl ? (
@@ -97,7 +122,6 @@ const ManageCoffees: React.FC = () => {
                 )}
               </div>
             </div>
-            {/* Coffee Details */}
             <div className="col-md-9">
               <div className="card-body">
                 <div className="row align-items-center mb-2">
@@ -120,7 +144,6 @@ const ManageCoffees: React.FC = () => {
                   </div>
                 </div>
                 <div className="row">
-                  {/* Column 1 */}
                   <div className="col-md-5">
                     <p className="card-text">
                       <strong>Roastery:</strong> {coffee.roastery.name}
@@ -129,13 +152,14 @@ const ManageCoffees: React.FC = () => {
                       <strong>Region:</strong> {coffee.region}
                     </p>
                     <p className="card-text">
-                      <strong>Country of Origin:</strong> {coffee.countryOfOrigin}
+                      <strong>Country of Origin:</strong>{' '}
+                      {coffee.countryOfOrigin}
                     </p>
                     <p className="card-text">
-                      <strong>Production Year:</strong> {coffee.productionYear}
+                      <strong>Production Year:</strong>{' '}
+                      {coffee.productionYear}
                     </p>
                   </div>
-                  {/* Column 2 */}
                   <div className="col-md-5">
                     <p className="card-text">
                       <strong>Roast Level:</strong> {coffee.roastLevel}
@@ -144,11 +168,12 @@ const ManageCoffees: React.FC = () => {
                       <strong>Flavor Profile:</strong> {coffee.flavorProfile}
                     </p>
                     <p className="card-text">
-                      <strong>Flavor Notes:</strong>{" "}
-                      {coffee.flavorNotes.join(", ")}
+                      <strong>Flavor Notes:</strong>{' '}
+                      {coffee.flavorNotes.join(', ')}
                     </p>
                     <p className="card-text">
-                      <strong>Processing Method:</strong> {coffee.processingMethod}
+                      <strong>Processing Method:</strong>{' '}
+                      {coffee.processingMethod}
                     </p>
                   </div>
                 </div>

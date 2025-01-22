@@ -91,7 +91,7 @@ const CreateCoffee: React.FC = () => {
       // Navigate back to the coffee list or admin panel
       setSuccess(true);
       setError(null);
-      setTimeout(() => navigate("/admin/coffees"), 2000); // Redirect after 2 seconds
+      setTimeout(() => navigate("/admin"), 2000); // Redirect after 2 seconds
     } catch {
       setError("Failed to add coffee.");
     }

@@ -44,7 +44,7 @@ public class CoffeeController {
     }
 
     @GetMapping("/api/coffees/filter")
-    public Page<CoffeeDTO> filterCoffees(
+    public Page<CoffeeDTO> getFilteredCoffees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String countryOfOrigin,
             @RequestParam(required = false) Region region,
