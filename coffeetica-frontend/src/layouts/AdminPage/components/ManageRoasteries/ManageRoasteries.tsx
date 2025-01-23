@@ -82,13 +82,13 @@ const ManageRoasteries: React.FC = () => {
             />
           </div>
           <div>
-            <label>Location:</label>
+            <label>Country:</label>
             <input
               type="text"
-              placeholder="Location"
-              value={newRoastery.location || ""}
+              placeholder="Country"
+              value={newRoastery.country || ""}
               onChange={(e) =>
-                setNewRoastery({ ...newRoastery, location: e.target.value })
+                setNewRoastery({ ...newRoastery, country: e.target.value })
               }
             />
           </div>
@@ -136,7 +136,7 @@ const ManageRoasteries: React.FC = () => {
           {roasteries.map((roastery) => (
             <li key={roastery.id}>
               <strong>{roastery.name}</strong> <br />
-              Location: {roastery.location} <br />
+              Country: {roastery.country} <br />
               Founding Year: {roastery.foundingYear} <br />
               Website:{" "}
               <a href={roastery.websiteUrl} target="_blank" rel="noreferrer">

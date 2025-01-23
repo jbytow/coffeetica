@@ -33,7 +33,7 @@ const ManageCoffees: React.FC = () => {
     const fetchCoffees = async () => {
       setIsLoading(true);
       try {
-        const response = await apiClient.get("/coffees/filter", {
+        const response = await apiClient.get("/coffees", {
           params: {
             ...filters,
             page: currentPage - 1, // Backend paginates from 0

@@ -32,19 +32,19 @@ public class CoffeeController {
     @Autowired
     private CoffeeService coffeeService;
 
-    @GetMapping(path = "/api/coffees")
-    public Page<CoffeeDTO> getAllCoffees(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
-        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return coffeeService.findAllCoffees(pageable);
-    }
+//    @GetMapping(path = "/api/coffees")
+//    public Page<CoffeeDTO> getAllCoffees(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "9") int size,
+//            @RequestParam(defaultValue = "id") String sortBy,
+//            @RequestParam(defaultValue = "desc") String direction) {
+//        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//        return coffeeService.findAllCoffees(pageable);
+//    }
 
-    @GetMapping("/api/coffees/filter")
-    public Page<CoffeeDTO> getFilteredCoffees(
+    @GetMapping("/api/coffees")
+    public Page<CoffeeDTO> getCoffees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String countryOfOrigin,
             @RequestParam(required = false) Region region,

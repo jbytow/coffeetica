@@ -34,11 +34,11 @@ public class CoffeeServiceImpl implements CoffeeService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Override
-    public Page<CoffeeDTO> findAllCoffees(Pageable pageable) {
-        return coffeeRepository.findAll(pageable)
-                .map(entity -> modelMapper.map(entity, CoffeeDTO.class));
-    }
+//    @Override
+//    public Page<CoffeeDTO> findAllCoffees(Pageable pageable) {
+//        return coffeeRepository.findAll(pageable)
+//                .map(entity -> modelMapper.map(entity, CoffeeDTO.class));
+//    }
 
     @Override
     public Page<CoffeeDTO> findFilteredCoffees(

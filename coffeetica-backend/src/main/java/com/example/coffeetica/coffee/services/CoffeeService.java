@@ -16,7 +16,7 @@ public interface CoffeeService {
 
     boolean isCoffeeExists(Long id);
 
-    Page<CoffeeDTO> findAllCoffees(Pageable pageable);
+//    Page<CoffeeDTO> findAllCoffees(Pageable pageable);
 
     Page<CoffeeDTO> findFilteredCoffees(
             String name,
