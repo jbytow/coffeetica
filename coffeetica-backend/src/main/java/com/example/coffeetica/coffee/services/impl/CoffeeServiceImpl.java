@@ -41,7 +41,7 @@ public class CoffeeServiceImpl implements CoffeeService {
 //    }
 
     @Override
-    public Page<CoffeeDTO> findFilteredCoffees(
+    public Page<CoffeeDTO> findCoffees(
             String name,
             String countryOfOrigin,
             Region region,

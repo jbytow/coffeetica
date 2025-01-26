@@ -63,7 +63,7 @@ public class CoffeeController {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return coffeeService.findFilteredCoffees(
+        return coffeeService.findCoffees(
                 name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
                 processingMethod, minProductionYear, maxProductionYear, roasteryName, pageable
         );

@@ -28,37 +28,77 @@ public class CoffeeSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // Name (case insensitive, contains)
             if (name != null && !name.isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("name")),
+                        "%" + name.toLowerCase() + "%"
+                ));
             }
+
+            // Country of Origin (case insensitive, contains)
             if (countryOfOrigin != null && !countryOfOrigin.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("countryOfOrigin"), countryOfOrigin));
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("countryOfOrigin")),
+                        "%" + countryOfOrigin.toLowerCase() + "%"
+                ));
             }
+
+            // Region (case sensitive - enum)
             if (region != null) {
                 predicates.add(criteriaBuilder.equal(root.get("region"), region));
             }
+
+            // Roast Level (case sensitive - enum)
             if (roastLevel != null) {
                 predicates.add(criteriaBuilder.equal(root.get("roastLevel"), roastLevel));
             }
+
+            // Flavor Profile (case sensitive - enum)
             if (flavorProfile != null) {
                 predicates.add(criteriaBuilder.equal(root.get("flavorProfile"), flavorProfile));
             }
+
+            // Flavor Notes (case insensitive, contains)
             if (flavorNotes != null && !flavorNotes.isEmpty()) {
-                predicates.add(criteriaBuilder.isTrue(
-                        root.join("flavorNotes").in(flavorNotes)
+                predicates.add(
+                        criteriaBuilder.or(
+                                flavorNotes.stream()
+                                        .map(note -> criteriaBuilder.like(
+                                                criteriaBuilder.lower(root.join("flavorNotes")),
+                                                "%" + note.toLowerCase() + "%"
+                                        ))
+                                        .toArray(Predicate[]::new)
+                        )
+                );
+            }
+
+            // Processing Method (case insensitive, contains)
+            if (processingMethod != null && !processingMethod.isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("processingMethod")),
+                        "%" + processingMethod.toLowerCase() + "%"
                 ));
             }
-            if (processingMethod != null && !processingMethod.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("processingMethod"), processingMethod));
-            }
+
+            // Production Year (numeric comparisons)
             if (minProductionYear != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("productionYear"), minProductionYear));
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        root.get("productionYear"), minProductionYear
+                ));
             }
             if (maxProductionYear != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("productionYear"), maxProductionYear));
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                        root.get("productionYear"), maxProductionYear
+                ));
             }
+
+            // Roastery Name (case insensitive, contains)
             if (roasteryName != null && !roasteryName.isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("roastery").get("name")), "%" + roasteryName.toLowerCase() + "%"));
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("roastery").get("name")),
+                        "%" + roasteryName.toLowerCase() + "%"
+                ));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

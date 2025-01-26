@@ -2,6 +2,9 @@ package com.example.coffeetica.coffee.services.impl;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.CoffeeEntity;
+import com.example.coffeetica.coffee.models.enums.FlavorProfile;
+import com.example.coffeetica.coffee.models.enums.Region;
+import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
 import com.example.coffeetica.coffee.util.CoffeeTestData;
 
@@ -15,11 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -86,13 +87,27 @@ public class CoffeeServiceImplTest {
     @Test
     public void testListCoffeesReturnsEmptyListWhenNoCoffeesExist() {
         Page<CoffeeEntity> emptyPage = new PageImpl<>(Collections.emptyList());
-        when(coffeeRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
+        when(coffeeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
 
         Pageable pageable = PageRequest.of(0, 5);
-        Page<CoffeeDTO> result = underTest.findAllCoffees(pageable);
+        String name = null;
+        String countryOfOrigin = null;
+        Region region = null;
+        RoastLevel roastLevel = null;
+        FlavorProfile flavorProfile = null;
+        Set<String> flavorNotes = null;
+        String processingMethod = null;
+        Integer minProductionYear = null;
+        Integer maxProductionYear = null;
+        String roasteryName = null;
+
+        Page<CoffeeDTO> result = underTest.findCoffees(
+                name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
+                processingMethod, minProductionYear, maxProductionYear, roasteryName, pageable
+        );
 
         assertTrue(result.isEmpty());
-        verify(coffeeRepository).findAll(any(Pageable.class));
+        verify(coffeeRepository).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
@@ -101,16 +116,33 @@ public class CoffeeServiceImplTest {
         CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
 
         Page<CoffeeEntity> coffeePage = new PageImpl<>(List.of(coffeeEntity));
-        when(coffeeRepository.findAll(any(Pageable.class))).thenReturn(coffeePage);
+        when(coffeeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(coffeePage);
         when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);
 
         Pageable pageable = PageRequest.of(0, 5);
-        Page<CoffeeDTO> result = underTest.findAllCoffees(pageable);
+        String name = null;
+        String countryOfOrigin = null;
+        Region region = null;
+        RoastLevel roastLevel = null;
+        FlavorProfile flavorProfile = null;
+        Set<String> flavorNotes = null;
+        String processingMethod = null;
+        Integer minProductionYear = null;
+        Integer maxProductionYear = null;
+        String roasteryName = null;
+
+
+        Page<CoffeeDTO> result = underTest.findCoffees(
+                name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
+                processingMethod, minProductionYear, maxProductionYear, roasteryName, pageable
+        );
+
 
         assertEquals(1, result.getContent().size());
         assertEquals(coffeeDTO, result.getContent().get(0));
         verify(modelMapper).map(coffeeEntity, CoffeeDTO.class);
-        verify(coffeeRepository).findAll(any(Pageable.class));
+
+        verify(coffeeRepository).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test

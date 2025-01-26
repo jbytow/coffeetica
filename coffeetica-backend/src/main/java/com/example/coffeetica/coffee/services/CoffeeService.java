@@ -18,7 +18,7 @@ public interface CoffeeService {
 
 //    Page<CoffeeDTO> findAllCoffees(Pageable pageable);
 
-    Page<CoffeeDTO> findFilteredCoffees(
+    Page<CoffeeDTO> findCoffees(
             String name,
             String countryOfOrigin,
             Region region,

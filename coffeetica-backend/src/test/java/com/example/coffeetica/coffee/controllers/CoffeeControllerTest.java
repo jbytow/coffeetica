@@ -27,10 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyLong;
 
 
 @SpringBootTest
@@ -108,7 +107,11 @@ public class CoffeeControllerTest {
     public void testThatListCoffeeReturnsHttp200EmptyListWhenNoCoffeesExist() throws Exception {
         Page<CoffeeDTO> emptyPage = new PageImpl<>(Collections.emptyList());
 
-        when(coffeeService.findAllCoffees(any(Pageable.class))).thenReturn(emptyPage);
+        when(coffeeService.findCoffees(
+                eq(null), eq(null), eq(null), eq(null),
+                eq(null), eq(null), eq(null),
+                eq(null), eq(null), eq(null), any(Pageable.class)
+        )).thenReturn(emptyPage);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees?page=0&size=5"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -124,7 +127,11 @@ public class CoffeeControllerTest {
         List<CoffeeDTO> coffeeList = Arrays.asList(coffeeDTO);
         Page<CoffeeDTO> coffeePage = new PageImpl<>(coffeeList);
 
-        when(coffeeService.findAllCoffees(any(Pageable.class))).thenReturn(coffeePage);
+        when(coffeeService.findCoffees(
+                eq(null), eq(null), eq(null), eq(null),
+                eq(null), eq(null), eq(null),
+                eq(null), eq(null), eq(null), any(Pageable.class)
+        )).thenReturn(coffeePage);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/coffees?page=0&size=5"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
