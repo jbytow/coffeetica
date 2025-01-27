@@ -13,6 +13,8 @@ import CreateCoffee from './layouts/AdminPage/components/ManageCoffees/CreateCof
 import EditCoffee from './layouts/AdminPage/components/ManageCoffees/EditCoffee';
 import CreateRoastery from './layouts/AdminPage/components/ManageRoasteries/CreateRoastery';
 import EditRoastery from './layouts/AdminPage/components/ManageRoasteries/EditRoastery';
+import CoffeesListPage from './layouts/CoffeesListPage/CoffeesListPage';
+import RoasteriesListPage from './layouts/RoasteriesListPage/RoasteriesListPage';
 
 function App() {
   return (
@@ -36,8 +38,11 @@ function App() {
           <Route path="/admin/coffees/edit/:id" element={<EditCoffee />} />
           <Route path="/admin/roasteries" element={<ManageRoasteries />} />
           <Route path="/admin/roasteries/add" element={<CreateRoastery />} />
-          <Route path="/admin/roasteries/edit/:id" element={<EditRoastery />} />          
-           {/* Coffee Details Page */}
+          <Route path="/admin/roasteries/edit/:id" element={<EditRoastery />} />   
+                 
+           {/* Roasteries and Coffees Pages */}
+           <Route path="/roasteries" element={<RoasteriesListPage />} />
+           <Route path="/coffees" element={<CoffeesListPage />} />
            <Route path="/coffees/:id" element={<CoffeePage />} />
 
         </Routes>

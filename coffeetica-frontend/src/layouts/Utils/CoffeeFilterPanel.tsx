@@ -6,9 +6,10 @@ import { RoasteryDTO } from '../../models/RoasteryDTO';
 interface CoffeeFilterProps {
   filters: CoffeeFilters;
   onFiltersSubmit: (filters: CoffeeFilters) => void;
+  onClearFilters?: () => void;
 }
 
-const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubmit }) => {
+const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubmit, onClearFilters }) => {
   const [localFilters, setLocalFilters] = useState<CoffeeFilters>(filters);
   const [showMore, setShowMore] = useState<boolean>(false);
 
@@ -18,7 +19,6 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
   const [flavorProfiles, setFlavorProfiles] = useState<string[]>([]);
   const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
-
 
   // Download options from API
   useEffect(() => {
@@ -45,6 +45,10 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
     fetchOptions();
   }, []);
 
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
+
   const handleInputChange = (key: keyof CoffeeFilters, value: string | number) => {
     setLocalFilters((prev) => ({ ...prev, [key]: value }));
   };
@@ -68,6 +72,10 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
     };
     setLocalFilters(defaultFilters);
     onFiltersSubmit(defaultFilters);
+
+    if (onClearFilters) {
+      onClearFilters();
+    }
   };
 
   return (
