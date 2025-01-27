@@ -11,6 +11,8 @@ import RegisterPage from './auth/RegisterPage';
 import LoginPage from './auth/LoginPage';
 import CreateCoffee from './layouts/AdminPage/components/ManageCoffees/CreateCoffee';
 import EditCoffee from './layouts/AdminPage/components/ManageCoffees/EditCoffee';
+import CreateRoastery from './layouts/AdminPage/components/ManageRoasteries/CreateRoastery';
+import EditRoastery from './layouts/AdminPage/components/ManageRoasteries/EditRoastery';
 
 function App() {
   return (
@@ -30,10 +32,11 @@ function App() {
 
           {/* Nested Routes for Admin Sections */}
           <Route path="/admin/coffees" element={<ManageCoffees />} />
-          <Route path="/admin/roasteries" element={<ManageRoasteries />} />
           <Route path="/admin/coffees/add" element={<CreateCoffee />} />
           <Route path="/admin/coffees/edit/:id" element={<EditCoffee />} />
-          
+          <Route path="/admin/roasteries" element={<ManageRoasteries />} />
+          <Route path="/admin/roasteries/add" element={<CreateRoastery />} />
+          <Route path="/admin/roasteries/edit/:id" element={<EditRoastery />} />          
            {/* Coffee Details Page */}
            <Route path="/coffees/:id" element={<CoffeePage />} />
 

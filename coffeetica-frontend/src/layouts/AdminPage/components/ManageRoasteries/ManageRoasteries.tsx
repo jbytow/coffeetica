@@ -1,162 +1,153 @@
 import React, { useState, useEffect } from "react";
 import { RoasteryDTO } from "../../../../models/RoasteryDTO";
 import apiClient from "../../../../lib/api";
-
+import { Link } from "react-router-dom";
+import { Pagination } from "../../../Utils/Pagination";
+import { SpinnerLoading } from "../../../Utils/SpinnerLoading";
+import RoasteryFilterPanel from "../../../Utils/RoasteryFilterPanel";
+import { RoasteryFilters } from "../../../../models/RoasteryFilters";
 
 const ManageRoasteries: React.FC = () => {
   const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
-  const [newRoastery, setNewRoastery] = useState<Partial<RoasteryDTO>>({});
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [httpError, setHttpError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [roasteriesPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
 
-  // Fetch all roasteries
+  const [filters, setFilters] = useState<RoasteryFilters>({
+    name: "",
+    country: "",
+    minFoundingYear: "",
+    maxFoundingYear: "",
+  });
+
   useEffect(() => {
     const fetchRoasteries = async () => {
+      setIsLoading(true);
       try {
-        const response = await apiClient.get<RoasteryDTO[]>("/roasteries");
-        setRoasteries(response.data);
+        const response = await apiClient.get("/roasteries/filter", {
+          params: {
+            ...filters,
+            page: currentPage - 1,
+            size: roasteriesPerPage,
+          },
+        });
+        setRoasteries(response.data.content);
+        setTotalPages(response.data.totalPages);
+        setHttpError(null);
       } catch (err: any) {
-        setError("Failed to fetch roasteries");
+        setHttpError("Failed to fetch roasteries");
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchRoasteries();
-  }, []);
+  }, [filters, currentPage]);
 
-  // Handle adding a new roastery
-  const handleAddRoastery = async () => {
-    try {
-      const response = await apiClient.post<RoasteryDTO>("/roasteries", newRoastery);
-      const createdRoastery = response.data;
-
-      // If a file is selected, upload the image
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        await apiClient.post(`/roasteries/${createdRoastery.id}/upload-image`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-
-      // Refresh the list of roasteries
-      const updatedRoasteries = await apiClient.get<RoasteryDTO[]>("/roasteries");
-      setRoasteries(updatedRoasteries.data);
-      setNewRoastery({});
-      setSelectedFile(null);
-    } catch (err: any) {
-      console.error("Error:", err.response || err.message);
-      setError("Failed to add roastery");
-    }
-  };
-
-  // Handle deleting a roastery
   const handleDeleteRoastery = async (id: number) => {
+    setIsLoading(true);
     try {
       await apiClient.delete(`/roasteries/${id}`);
       setRoasteries((prev) => prev.filter((roastery) => roastery.id !== id));
+
+      if (roasteries.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      }
+      setHttpError(null);
     } catch (err: any) {
-      setError("Failed to delete roastery");
+      setHttpError("Failed to delete roastery");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleFiltersSubmit = (newFilters: RoasteryFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  if (isLoading) {
+    return <SpinnerLoading />;
+  }
+
   return (
     <div>
-      <h2>Manage Roasteries</h2>
-      {error && <p className="text-danger">{error}</p>}
-      <div>
-        <h3>Add New Roastery</h3>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleAddRoastery();
-          }}
+      {httpError && <p className="text-danger">{httpError}</p>}
+      <div className="mb-3 d-flex align-items-center">
+        <Link to="/admin/roasteries/add" className="btn btn-primary me-3">
+          Add New Roastery
+        </Link>
+      </div>
+      <RoasteryFilterPanel filters={filters} onFiltersSubmit={handleFiltersSubmit} />
+      {roasteries.map((roastery) => (
+        <div
+          className="card mt-3 shadow p-3 mb-3 bg-body rounded"
+          key={roastery.id}
         >
-          <div>
-            <label>Name:</label>
-            <input
-              type="text"
-              placeholder="Name"
-              value={newRoastery.name || ""}
-              onChange={(e) =>
-                setNewRoastery({ ...newRoastery, name: e.target.value })
-              }
-            />
+          <div className="row g-0">
+            <div className="col-md-3 d-flex justify-content-center align-items-center">
+              <div>
+                {roastery.imageUrl ? (
+                  <img
+                    src={`http://localhost:8080${roastery.imageUrl}`}
+                    width="123"
+                    height="196"
+                    alt={roastery.name}
+                  />
+                ) : (
+                  <img
+                    src="https://via.placeholder.com/123x196"
+                    width="123"
+                    height="196"
+                    alt="Roastery placeholder"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="col-md-9">
+              <div className="card-body">
+                <div className="row align-items-center mb-2">
+                  <div className="col-md-5">
+                    <h5 className="card-title fs-4">{roastery.name}</h5>
+                  </div>
+                  <div className="col-md-5 d-flex justify-content-start">
+                    <Link
+                      to={`/admin/roasteries/edit/${roastery.id}`}
+                      className="btn btn-secondary me-2"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDeleteRoastery(roastery.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-5">
+                    <p className="card-text">
+                      <strong>Country:</strong> {roastery.country}
+                    </p>
+                    <p className="card-text">
+                      <strong>Founding Year:</strong> {roastery.foundingYear}
+                    </p>
+                    <p className="card-text">
+                      <strong>Website:</strong>{" "}
+                      <a href={roastery.websiteUrl}>{roastery.websiteUrl}</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <label>Country:</label>
-            <input
-              type="text"
-              placeholder="Country"
-              value={newRoastery.country || ""}
-              onChange={(e) =>
-                setNewRoastery({ ...newRoastery, country: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label>Founding Year:</label>
-            <input
-              type="number"
-              placeholder="Founding Year"
-              value={newRoastery.foundingYear || ""}
-              onChange={(e) =>
-                setNewRoastery({
-                  ...newRoastery,
-                  foundingYear: parseInt(e.target.value, 10),
-                })
-              }
-            />
-          </div>
-          <div>
-            <label>Website URL:</label>
-            <input
-              type="url"
-              placeholder="Website URL"
-              value={newRoastery.websiteUrl || ""}
-              onChange={(e) =>
-                setNewRoastery({ ...newRoastery, websiteUrl: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label>Image:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setSelectedFile(e.target.files ? e.target.files[0] : null)
-              }
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">Add Roastery</button>
-        </form>
-      </div>
-      <div>
-        <h3>Existing Roasteries</h3>
-        <ul>
-          {roasteries.map((roastery) => (
-            <li key={roastery.id}>
-              <strong>{roastery.name}</strong> <br />
-              Country: {roastery.country} <br />
-              Founding Year: {roastery.foundingYear} <br />
-              Website:{" "}
-              <a href={roastery.websiteUrl} target="_blank" rel="noreferrer">
-                {roastery.websiteUrl}
-              </a>{" "}
-              <br />
-              {roastery.imageUrl && (
-                <img
-                  src={`http://localhost:8080${roastery.imageUrl}`}
-                  alt={`${roastery.name} image`}
-                  width="100"
-                />
-              )}
-              <button className="btn btn-danger mt-2" onClick={() => handleDeleteRoastery(roastery.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+        </div>
+      ))}
+      {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />}
     </div>
   );
 };
