@@ -14,6 +14,7 @@ const ManageRoasteries: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [roasteriesPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
 
   const [filters, setFilters] = useState<RoasteryFilters>({
     name: "",
@@ -35,6 +36,7 @@ const ManageRoasteries: React.FC = () => {
         });
         setRoasteries(response.data.content);
         setTotalPages(response.data.totalPages);
+        setTotalResults(response.data.totalElements);
         setHttpError(null);
       } catch (err: any) {
         setHttpError("Failed to fetch roasteries");
@@ -46,6 +48,9 @@ const ManageRoasteries: React.FC = () => {
   }, [filters, currentPage]);
 
   const handleDeleteRoastery = async (id: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this roastery?");
+    if (!confirmDelete) return;
+
     setIsLoading(true);
     try {
       await apiClient.delete(`/roasteries/${id}`);
@@ -69,6 +74,9 @@ const ManageRoasteries: React.FC = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const indexOfFirstItem = (currentPage - 1) * roasteriesPerPage;
+  const lastItem = Math.min(indexOfFirstItem + roasteries.length, totalResults);
+
   if (isLoading) {
     return <SpinnerLoading />;
   }
@@ -76,10 +84,16 @@ const ManageRoasteries: React.FC = () => {
   return (
     <div>
       {httpError && <p className="text-danger">{httpError}</p>}
-      <div className="mb-3 d-flex align-items-center">
-        <Link to="/admin/roasteries/add" className="btn btn-primary me-3">
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <Link to="/admin/roasteries/add" className="btn btn-primary">
           Add New Roastery
         </Link>
+        <div className="text-end">
+          <h5 className="mb-0">Number of results: ({totalResults})</h5>
+          <p className="mb-0">
+            {indexOfFirstItem + 1} to {lastItem} of {totalResults} items
+          </p>
+        </div>
       </div>
       <RoasteryFilterPanel filters={filters} onFiltersSubmit={handleFiltersSubmit} />
       {roasteries.map((roastery) => (

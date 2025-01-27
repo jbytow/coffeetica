@@ -14,6 +14,7 @@ const ManageCoffees: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [coffeesPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
 
   const [filters, setFilters] = useState<CoffeeFilters>({
     name: '',
@@ -43,6 +44,7 @@ const ManageCoffees: React.FC = () => {
 
         setCoffees(response.data.content);
         setTotalPages(response.data.totalPages);
+        setTotalResults(response.data.totalElements);
         setHttpError(null);
       } catch (err: any) {
         console.error("Error fetching coffees:", err.response || err.message);
@@ -57,6 +59,9 @@ const ManageCoffees: React.FC = () => {
 
   // Handle deleting a coffee
   const handleDeleteCoffee = async (id: number) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this coffee?");
+    if (!confirmDelete) return;
+
     setIsLoading(true);
     try {
       await apiClient.delete(`/coffees/${id}`);
@@ -67,7 +72,6 @@ const ManageCoffees: React.FC = () => {
       }
       setHttpError(null);
     } catch (err: any) {
-      console.error("Error deleting coffee:", err.response || err.message);
       setHttpError("Failed to delete coffee");
     } finally {
       setIsLoading(false);
@@ -82,6 +86,9 @@ const ManageCoffees: React.FC = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const indexOfFirstItem = (currentPage - 1) * coffeesPerPage;
+  const lastItem = Math.min(indexOfFirstItem + coffees.length, totalResults);
+
   if (isLoading) {
     return (
       <SpinnerLoading />
@@ -91,10 +98,17 @@ const ManageCoffees: React.FC = () => {
   return (
     <div>
       {httpError && <p className="text-danger">{httpError}</p>}
-      <div className="mb-3 d-flex align-items-center">
-        <Link to="/admin/coffees/add" className="btn btn-primary me-3">
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <Link to="/admin/coffees/add" className="btn btn-primary">
           Add New Coffee
         </Link>
+
+        <div className="text-end">
+          <h5 className="mb-0">Number of results: ({totalResults})</h5>
+          <p className="mb-0">
+            {indexOfFirstItem + 1} to {lastItem} of {totalResults} items
+          </p>
+        </div>
       </div>
       <CoffeeFilterPanel filters={filters} onFiltersSubmit={handleFiltersSubmit} />
       {coffees.map((coffee) => (
