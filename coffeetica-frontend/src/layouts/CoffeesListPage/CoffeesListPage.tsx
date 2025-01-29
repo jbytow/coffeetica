@@ -11,8 +11,10 @@ const CoffeesListPage: React.FC = () => {
   const [coffees, setCoffees] = useState<CoffeeDTO[]>([]);
   const [httpError, setHttpError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [coffeesPerPage] = useState(5);
+  
   const [totalPages, setTotalPages] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
 
@@ -29,32 +31,45 @@ const CoffeesListPage: React.FC = () => {
     roasteryName: "",
   });
 
+  const [initialized, setInitialized] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
 
+  // -------------------- EFEKT A: Odczyt parametru z URL (tylko raz) --------------------
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const roasteryParam = searchParams.get("roasteryName") || "";
+    const roasteryParam = searchParams.get("roasteryName");
 
-    // (1) Jeśli roasteryParam z URL jest inny niż filters.roasteryName -> zaktualizuj filters
-    if (roasteryParam !== filters.roasteryName) {
-      setFilters(prev => ({ ...prev, roasteryName: roasteryParam }));
-      setCurrentPage(1);
-      return; // KONIEC, bo i tak wywoła się nowy render i nowy effect
+    if (roasteryParam) {
+      // Jeśli user wszedł przez link z ?roasteryName=XYZ
+      setFilters((prev) => ({ ...prev, roasteryName: roasteryParam }));
     }
 
-    // (2) Jeśli jest taki sam lub pusty, robimy fetch z obecnymi filters
-    fetchCoffees();
+    // Ustawiamy, że już odczytaliśmy param
+    setInitialized(true);
+    // Ten efekt wywoła się TYLKO raz, bo brak [dependency] 
+    // (możesz dać [] albo [location.search] – w sumie i tak ma się wykonać tylko raz)
+  }, []); 
+  // lub: }, [ ]); // jeśli chcesz ignorować zmiany w location.search po załadowaniu
 
-    async function fetchCoffees() {
+  // -------------------- EFEKT B: Fetch kaw przy zmianie filtrów/strony --------------------
+  useEffect(() => {
+    // Dopóki nie zainicjalizowaliśmy (nie wczytaliśmy ewentualnego roasteryName z URL),
+    // nie fetchujemy, by uniknąć "pierwszego" requestu z pustym filtem.
+    if (!initialized) {
+      return;
+    }
+
+    const fetchCoffees = async () => {
       setIsLoading(true);
       try {
         const response = await apiClient.get("/coffees", {
           params: {
             ...filters,
             page: currentPage - 1,
-            size: coffeesPerPage
-          }
+            size: coffeesPerPage,
+          },
         });
         setCoffees(response.data.content);
         setTotalPages(response.data.totalPages);
@@ -65,9 +80,10 @@ const CoffeesListPage: React.FC = () => {
       } finally {
         setIsLoading(false);
       }
-    }
+    };
 
-  }, [location.search, filters, currentPage]);
+    fetchCoffees();
+  }, [initialized, filters, currentPage, coffeesPerPage]);
 
   const handleFiltersSubmit = (newFilters: CoffeeFilters) => {
     setFilters(newFilters);

@@ -93,11 +93,11 @@ public class CoffeeSpecification {
                 ));
             }
 
-            // Roastery Name (case insensitive, contains)
+            // Roastery Name (case insensitive, matches)
             if (roasteryName != null && !roasteryName.isEmpty()) {
-                predicates.add(criteriaBuilder.like(
+                predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(root.get("roastery").get("name")),
-                        "%" + roasteryName.toLowerCase() + "%"
+                        roasteryName.toLowerCase()
                 ));
             }
 
