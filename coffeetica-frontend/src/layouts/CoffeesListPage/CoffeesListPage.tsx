@@ -36,27 +36,25 @@ const CoffeesListPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // -------------------- EFEKT A: Odczyt parametru z URL (tylko raz) --------------------
+  // -------------------- EFFECT A: Read parameter from URL (only once) --------------------
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const roasteryParam = searchParams.get("roasteryName");
 
     if (roasteryParam) {
-      // Jeśli user wszedł przez link z ?roasteryName=XYZ
+      // If the user accessed the page with a ?roasteryName=XYZ link
       setFilters((prev) => ({ ...prev, roasteryName: roasteryParam }));
     }
 
-    // Ustawiamy, że już odczytaliśmy param
+    // Mark that the parameter has been read
     setInitialized(true);
-    // Ten efekt wywoła się TYLKO raz, bo brak [dependency] 
-    // (możesz dać [] albo [location.search] – w sumie i tak ma się wykonać tylko raz)
+    // This effect will run ONLY once because it has no dependencies 
   }, []); 
-  // lub: }, [ ]); // jeśli chcesz ignorować zmiany w location.search po załadowaniu
 
-  // -------------------- EFEKT B: Fetch kaw przy zmianie filtrów/strony --------------------
+  // -------------------- EFFECT B: Fetch coffees when filters/page changes --------------------
   useEffect(() => {
-    // Dopóki nie zainicjalizowaliśmy (nie wczytaliśmy ewentualnego roasteryName z URL),
-    // nie fetchujemy, by uniknąć "pierwszego" requestu z pustym filtem.
+    // Avoid fetching until the parameter from the URL is initialized
+    // to prevent the "first" request with an empty filter.
     if (!initialized) {
       return;
     }
@@ -156,9 +154,6 @@ const CoffeesListPage: React.FC = () => {
                     <Link to={`/coffees/${coffee.id}`} className="fs-4 text-decoration-none">
                       <h5 className="card-title">{coffee.name}</h5>
                     </Link>
-                  </div>
-                  <div className="col-md-5 d-flex justify-content-start">
-                    {/* Dla użytkownika końcowego przyciski są zbędne */}
                   </div>
                 </div>
                 <div className="row">
