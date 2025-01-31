@@ -15,40 +15,43 @@ import CreateRoastery from './layouts/AdminPage/components/ManageRoasteries/Crea
 import EditRoastery from './layouts/AdminPage/components/ManageRoasteries/EditRoastery';
 import CoffeesListPage from './layouts/CoffeesListPage/CoffeesListPage';
 import RoasteriesListPage from './layouts/RoasteriesListPage/RoasteriesListPage';
+import { AuthProvider } from './auth/AuthContext';
 
 function App() {
   return (
-    <div className='d-flex flex-column min-vh-100'>
-      <Navbar />
-      <div className='flex-grow-1'>
-        <Routes>
-          {/* Home Page */}
-          <Route path="/" element={<HomePage />} />
+    <AuthProvider>
+      <div className='d-flex flex-column min-vh-100'>
+        <Navbar />
+        <div className='flex-grow-1'>
+          <Routes>
+            {/* Home Page */}
+            <Route path="/" element={<HomePage />} />
 
-          {/* Auth */}
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
+            {/* Auth */}
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Admin Page */}
-          <Route path="/admin" element={<AdminPage />} />
+            {/* Admin Page */}
+            <Route path="/admin" element={<AdminPage />} />
 
-          {/* Nested Routes for Admin Sections */}
-          <Route path="/admin/coffees" element={<ManageCoffees />} />
-          <Route path="/admin/coffees/add" element={<CreateCoffee />} />
-          <Route path="/admin/coffees/edit/:id" element={<EditCoffee />} />
-          <Route path="/admin/roasteries" element={<ManageRoasteries />} />
-          <Route path="/admin/roasteries/add" element={<CreateRoastery />} />
-          <Route path="/admin/roasteries/edit/:id" element={<EditRoastery />} />   
-                 
-           {/* Roasteries and Coffees Pages */}
-           <Route path="/roasteries" element={<RoasteriesListPage />} />
-           <Route path="/coffees" element={<CoffeesListPage />} />
-           <Route path="/coffees/:id" element={<CoffeePage />} />
+            {/* Nested Routes for Admin Sections */}
+            <Route path="/admin/coffees" element={<ManageCoffees />} />
+            <Route path="/admin/coffees/add" element={<CreateCoffee />} />
+            <Route path="/admin/coffees/edit/:id" element={<EditCoffee />} />
+            <Route path="/admin/roasteries" element={<ManageRoasteries />} />
+            <Route path="/admin/roasteries/add" element={<CreateRoastery />} />
+            <Route path="/admin/roasteries/edit/:id" element={<EditRoastery />} />
 
-        </Routes>
+            {/* Roasteries and Coffees Pages */}
+            <Route path="/roasteries" element={<RoasteriesListPage />} />
+            <Route path="/coffees" element={<CoffeesListPage />} />
+            <Route path="/coffees/:id" element={<CoffeePage />} />
+
+          </Routes>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </AuthProvider>
   );
 }
 

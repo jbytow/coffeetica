@@ -1,39 +1,27 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../lib/api';
+import { AuthContext } from './AuthContext';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null); // Store only the error message
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); 
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await apiClient.post('/auth/login', {
-        username,
-        password,
-      });
+      const response = await apiClient.post('/auth/login', { username, password });
 
-      // Save the JWT token in localStorage
-      localStorage.setItem('token', response.data);
-
-      // Save user ID and roles
-      localStorage.setItem('userId', response.data.id);
-      localStorage.setItem('roles', JSON.stringify(response.data.roles));
-
-      // Clear the error state if login is successful
+      await login(response.data.token);
       setError(null);
-      navigate('/dashboard'); // Redirect to the protected route
+      navigate('/dashboard');
     } catch (err: any) {
-      // Handle the error - extract the error message
-      const errorMessage =
-        err.response?.data?.error || 'An unexpected error occurred. Please try again.';
-      setError(errorMessage);
+      setError(err.response?.data?.error || 'An unexpected error occurred. Please try again.');
     }
   };
-
 
   return (
     <div className="container d-flex justify-content-center align-items-start pt-5 vh-100">

@@ -3,15 +3,22 @@ package com.example.coffeetica.user.controllers;
 
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
+import com.example.coffeetica.user.models.RoleEntity;
+import com.example.coffeetica.user.repositories.UserRepository;
+import com.example.coffeetica.user.security.JwtTokenProvider;
 import com.example.coffeetica.user.services.UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -20,6 +27,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/api/users/register")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
@@ -32,6 +45,20 @@ public class UserController {
             logger.error("Registration failed for user {}: {}", userDTO.getUsername(), e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/api/users/me")
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
+        String username = jwtTokenProvider.getUsernameFromJWT(token.replace("Bearer ", ""));
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return ResponseEntity.ok(Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "roles", user.getRoles().stream().map(RoleEntity::getName).toList()
+        ));
     }
 
     @PutMapping("/api/users/{id}")

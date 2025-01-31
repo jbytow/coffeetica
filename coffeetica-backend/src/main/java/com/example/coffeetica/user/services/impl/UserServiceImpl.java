@@ -7,9 +7,11 @@ import com.example.coffeetica.user.models.UserEntity;
 import com.example.coffeetica.user.repositories.RoleRepository;
 import com.example.coffeetica.user.repositories.UserRepository;
 import com.example.coffeetica.user.services.UserService;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
