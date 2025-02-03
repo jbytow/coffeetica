@@ -98,10 +98,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
-        logger.info("Loading user by username {}", username);
-        UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    public UserDetails loadUserByUsernameOrEmail(String identifier) {
+        logger.info("Loading user by identifier: {}", identifier);
+        UserEntity user = userRepository.findByUsernameOrEmail(identifier)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + identifier));
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
@@ -110,6 +110,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .map(role -> "ROLE_" + role.getName())
                         .toArray(String[]::new))
                 .build();
+    }
+
+    // Spring Security will call this method by default
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return loadUserByUsernameOrEmail(username);  // Delegate to the loadUserByUsernameOrEmail method
     }
 
     public Optional<UserDTO> findUserById(Long id) {

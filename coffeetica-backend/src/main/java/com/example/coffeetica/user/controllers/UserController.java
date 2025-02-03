@@ -49,7 +49,7 @@ public class UserController {
 
     @GetMapping("/api/users/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
-        String username = jwtTokenProvider.getUsernameFromJWT(token.replace("Bearer ", ""));
+        String username = jwtTokenProvider.getIdentifierFromJWT(token.replace("Bearer ", ""));
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 

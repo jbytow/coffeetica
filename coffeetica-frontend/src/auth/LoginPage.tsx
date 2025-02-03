@@ -4,7 +4,7 @@ import apiClient from '../lib/api';
 import { AuthContext } from './AuthContext';
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await apiClient.post('/auth/login', { username, password });
+      const response = await apiClient.post('/auth/login', { identifier, password });
 
       await login(response.data.token);
       setError(null);
@@ -30,13 +30,13 @@ const LoginPage: React.FC = () => {
           <h2 className="card-title text-center mb-4">Login</h2>
           <form onSubmit={handleLogin}>
             <div className="mb-3">
-              <label htmlFor="username" className="form-label">Username</label>
+              <label htmlFor="identifier" className="form-label">Username or E-mail</label>
               <input
                 type="text"
-                id="username"
+                id="identifier"
                 className="form-control"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 required
               />
             </div>
