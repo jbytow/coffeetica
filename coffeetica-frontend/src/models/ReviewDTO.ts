@@ -4,7 +4,9 @@ export interface ReviewDTO {
     brewingMethod: string;
     brewingDescription: string;
     rating: number;
+    createdAt: string;
     coffeeId: number;
     userId: number;
+    userName: string;
   }
   

@@ -35,6 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(entity -> {
                     ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
                     reviewDTO.setUserId(entity.getUser().getId());
+                    reviewDTO.setUserName(entity.getUser().getUsername());
                     reviewDTO.setCoffeeId(entity.getCoffee().getId());
                     return reviewDTO;
                 })
@@ -47,6 +48,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(entity -> {
                     ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
                     reviewDTO.setUserId(entity.getUser().getId());
+                    reviewDTO.setUserName(entity.getUser().getUsername());
                     reviewDTO.setCoffeeId(entity.getCoffee().getId());
                     return reviewDTO;
                 });

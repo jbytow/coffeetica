@@ -7,8 +7,10 @@ public class ReviewDTO {
     private String brewingMethod;
     private String brewingDescription;
     private Integer rating;
+    private String createdAt;
     private Long coffeeId;
     private Long userId;
+    private String userName;
 
     // Getters and Setters
     public Long getId() {
@@ -51,6 +53,10 @@ public class ReviewDTO {
         this.rating = rating;
     }
 
+    public String getCreatedAt() { return createdAt; }
+
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
     public Long getCoffeeId() {
         return coffeeId;
     }
@@ -66,4 +72,8 @@ public class ReviewDTO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public String getUserName() { return userName; }
+
+    public void setUserName(String userName) { this.userName = userName; }
 }

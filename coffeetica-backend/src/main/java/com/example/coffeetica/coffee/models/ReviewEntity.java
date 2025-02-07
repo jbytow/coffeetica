@@ -3,6 +3,8 @@ package com.example.coffeetica.coffee.models;
 import com.example.coffeetica.user.models.UserEntity;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "reviews")
 public class ReviewEntity {
@@ -22,6 +24,9 @@ public class ReviewEntity {
 
     @Column(nullable = false)
     private Integer rating;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coffee_id", nullable = false)
@@ -79,6 +84,10 @@ public class ReviewEntity {
     public void setCoffee(CoffeeEntity coffee) {
         this.coffee = coffee;
     }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public UserEntity getUser() {
         return user;
