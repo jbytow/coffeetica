@@ -1,19 +1,24 @@
 import React from "react";
 import { CoffeeDTO } from "../../../models/CoffeeDTO";
 import { LeaveAReview } from "../../Utils/LeaveAReview";
+import { ReviewRequestDTO } from "../../../models/ReviewRequestDTO";
 
 export const ReviewBox: React.FC<{
     coffee: CoffeeDTO | undefined;
     mobile: boolean;
     isAuthenticated: boolean;
     isReviewLeft: boolean;
-    submitReview: (rating: number, content: string, brewingMethod: string, brewingDescription: string) => void;
+    submitReview: (reviewData: ReviewRequestDTO) => void;
 }> = (props) => {
     function reviewRender() {
-        if (props.isAuthenticated && !props.isReviewLeft) {
-            return <LeaveAReview submitReview={props.submitReview} />;
+        if (props.isAuthenticated && !props.isReviewLeft && props.coffee?.id) {
+            return <LeaveAReview submitReview={props.submitReview} coffeeId={props.coffee.id} />;
         } else if (props.isAuthenticated && props.isReviewLeft) {
-            return <p><b>Thank you for your review!</b></p>;
+            return (
+                <p>
+                    <b>Thank you for your review!</b>
+                </p>
+            );
         }
         return (
             <div>

@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { StarsSelector } from "./StarsSelector";
+import { AuthContext } from "../../auth/AuthContext";
+import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
 
-export const LeaveAReview: React.FC<{ submitReview: any }> = (props) => {
+export const LeaveAReview: React.FC<{
+    submitReview: (data: ReviewRequestDTO) => void;
+    coffeeId: number;
+}> = ({ submitReview, coffeeId }) => {
+    const { user } = useContext(AuthContext);
     const [starInput, setStarInput] = useState(0);
     const [reviewDescription, setReviewDescription] = useState("");
     const [brewingMethod, setBrewingMethod] = useState("");
@@ -63,9 +69,16 @@ export const LeaveAReview: React.FC<{ submitReview: any }> = (props) => {
                 <div>
                     <button
                         type="button"
-                        onClick={() =>
-                            props.submitReview(starInput, reviewDescription, brewingMethod, brewingDescription)
-                        }
+                        onClick={() => {
+                            const reviewData: ReviewRequestDTO = {
+                                coffeeId,
+                                rating: starInput,
+                                content: reviewDescription,
+                                brewingMethod,
+                                brewingDescription,
+                            };
+                            submitReview(reviewData);
+                        }}
                         className="btn btn-primary mt-3"
                     >
                         Submit Review

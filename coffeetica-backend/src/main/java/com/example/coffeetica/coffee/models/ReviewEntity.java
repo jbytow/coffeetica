@@ -23,7 +23,7 @@ public class ReviewEntity {
     private String brewingDescription;
 
     @Column(nullable = false)
-    private Integer rating;
+    private Double rating;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -69,11 +69,11 @@ public class ReviewEntity {
         this.brewingDescription = brewingDescription;
     }
 
-    public Integer getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 

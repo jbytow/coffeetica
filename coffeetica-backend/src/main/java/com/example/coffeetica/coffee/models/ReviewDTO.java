@@ -6,7 +6,7 @@ public class ReviewDTO {
     private String content;
     private String brewingMethod;
     private String brewingDescription;
-    private Integer rating;
+    private Double rating;
     private String createdAt;
     private Long coffeeId;
     private Long userId;
@@ -45,11 +45,11 @@ public class ReviewDTO {
         this.brewingDescription = brewingDescription;
     }
 
-    public Integer getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 

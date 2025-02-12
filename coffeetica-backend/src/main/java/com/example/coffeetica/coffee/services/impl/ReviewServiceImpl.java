@@ -1,13 +1,19 @@
 package com.example.coffeetica.coffee.services.impl;
 
+import com.example.coffeetica.coffee.models.CoffeeEntity;
 import com.example.coffeetica.coffee.models.ReviewDTO;
 import com.example.coffeetica.coffee.models.ReviewEntity;
+import com.example.coffeetica.coffee.models.ReviewRequestDTO;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
 import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.services.ReviewService;
+import com.example.coffeetica.user.models.UserEntity;
 import com.example.coffeetica.user.repositories.UserRepository;
+import com.example.coffeetica.user.security.SecurityService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +34,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private SecurityService securityService;
 
     @Override
     public List<ReviewDTO> findAllReviews() {
@@ -55,14 +64,39 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDTO saveReview(ReviewDTO reviewDTO) {
-        ReviewEntity entity = modelMapper.map(reviewDTO, ReviewEntity.class);
-        entity.setUser(userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found")));
-        entity.setCoffee(coffeeRepository.findById(reviewDTO.getCoffeeId())
-                .orElseThrow(() -> new RuntimeException("Coffee not found")));
+    public ReviewDTO saveReview(ReviewRequestDTO reviewRequestDTO) {
+
+        // 1) Pobierz ID zalogowanego użytkownika z tokena (JWT)
+        Long userId = securityService.getCurrentUserId();
+
+        // 2) Wyszukaj usera w bazie
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 3) Wyszukaj kawę w bazie na podstawie coffeeId z requestu
+        CoffeeEntity coffee = coffeeRepository.findById(reviewRequestDTO.getCoffeeId())
+                .orElseThrow(() -> new RuntimeException("Coffee not found"));
+
+        // 4) Zmapuj ReviewRequestDTO -> ReviewEntity
+        ReviewEntity entity = modelMapper.map(reviewRequestDTO, ReviewEntity.class);
+
+        // Ręcznie przypisz powiązania (user, coffee)
+        entity.setUser(user);
+        entity.setCoffee(coffee);
+
+        // 5) Zapisz w repo
         ReviewEntity savedEntity = reviewRepository.save(entity);
-        return modelMapper.map(savedEntity, ReviewDTO.class);
+
+        // 6) Zmapuj ReviewEntity -> ReviewDTO (do odpowiedzi)
+        ReviewDTO savedReviewDTO = modelMapper.map(savedEntity, ReviewDTO.class);
+
+        // ModelMapper nie zawsze przenosi ID relacji, więc często trzeba je uzupełnić:
+        savedReviewDTO.setUserId(savedEntity.getUser().getId());
+        savedReviewDTO.setUserName(savedEntity.getUser().getUsername());
+        savedReviewDTO.setCoffeeId(savedEntity.getCoffee().getId());
+        savedReviewDTO.setCreatedAt(savedEntity.getCreatedAt().toString());
+
+        return savedReviewDTO;
     }
 
     @Override

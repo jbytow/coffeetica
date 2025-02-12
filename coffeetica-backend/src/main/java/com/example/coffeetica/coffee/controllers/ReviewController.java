@@ -1,12 +1,14 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.ReviewDTO;
+import com.example.coffeetica.coffee.models.ReviewRequestDTO;
 import com.example.coffeetica.coffee.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +31,10 @@ public class ReviewController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+
     @PostMapping("/api/reviews")
-    public ResponseEntity<ReviewDTO> createReview(@RequestBody ReviewDTO reviewDTO) {
-        ReviewDTO savedReviewDTO = reviewService.saveReview(reviewDTO);
+    public ResponseEntity<ReviewDTO> createReview(@Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
+        ReviewDTO savedReviewDTO = reviewService.saveReview(reviewRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReviewDTO);
     }
 

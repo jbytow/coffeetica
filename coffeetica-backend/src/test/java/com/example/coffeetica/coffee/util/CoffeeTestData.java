@@ -71,7 +71,7 @@ public final class CoffeeTestData {
         review.setContent("Great coffee with a nutty flavor.");
         review.setBrewingMethod("Espresso");
         review.setBrewingDescription("Brewed with a professional espresso machine.");
-        review.setRating(5);
+        review.setRating(5D);
         review.setCoffee(createTestCoffeeEntity());
         review.setUser(UserTestData.createTestUserEntity());
         return review;
@@ -83,7 +83,7 @@ public final class CoffeeTestData {
         reviewDTO.setContent("Great coffee with a nutty flavor.");
         reviewDTO.setBrewingMethod("Espresso");
         reviewDTO.setBrewingDescription("Brewed with a professional espresso machine.");
-        reviewDTO.setRating(5);
+        reviewDTO.setRating(5D);
         reviewDTO.setCoffeeId(1L);
         return reviewDTO;
     }

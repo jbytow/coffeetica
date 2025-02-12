@@ -5,6 +5,7 @@ import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import { StarsReview } from "../Utils/StarsReview";
 import { ReviewBox } from "./components/ReviewBox";
 import { LatestReviews } from "./components/LatestReviews";
+import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
 
 
 export const CoffeePage = () => {
@@ -32,7 +33,7 @@ export const CoffeePage = () => {
     fetchCoffee();
   }, [coffeeId, isReviewLeft]);
 
-  const submitReview = async (rating: number, content: string) => {
+  const submitReview = async (reviewData: ReviewRequestDTO) => {
     if (!token) {
       alert("You must be logged in to submit a review.");
       return;
@@ -40,8 +41,8 @@ export const CoffeePage = () => {
 
     try {
       await apiClient.post(
-        `/reviews`,
-        { coffeeId: Number(coffeeId), rating, content },
+        "/reviews",
+        reviewData,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -99,7 +100,7 @@ export const CoffeePage = () => {
                 <strong>Flavor Profile:</strong> {coffee?.flavorProfile}
               </p>
               <p>
-                <strong>Notes:</strong> {coffee?.notes}
+                <strong>Notes:</strong> {coffee?.flavorNotes}
               </p>
               <p>
                 <strong>Processing Method:</strong> {coffee?.processingMethod}
@@ -165,7 +166,7 @@ export const CoffeePage = () => {
               <strong>Flavor Profile:</strong> {coffee?.flavorProfile}
             </p>
             <p>
-              <strong>Notes:</strong> {coffee?.notes}
+              <strong>Notes:</strong> {coffee?.flavorNotes}
             </p>
             <p>
               <strong>Processing Method:</strong> {coffee?.processingMethod}
