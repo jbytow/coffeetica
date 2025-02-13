@@ -1,40 +1,53 @@
-import React from "react";
+import React, { useContext } from "react";
 import { CoffeeDTO } from "../../../models/CoffeeDTO";
 import { LeaveAReview } from "../../Utils/LeaveAReview";
 import { ReviewRequestDTO } from "../../../models/ReviewRequestDTO";
+import { ReviewDTO } from "../../../models/ReviewDTO";
+import { AuthContext } from "../../../auth/AuthContext";
+import { Link } from "react-router-dom";
 
 export const ReviewBox: React.FC<{
     coffee: CoffeeDTO | undefined;
-    mobile: boolean;
-    isAuthenticated: boolean;
-    isReviewLeft: boolean;
+    userReview: ReviewDTO | null;
     submitReview: (reviewData: ReviewRequestDTO) => void;
-}> = (props) => {
+}> = ({ coffee, userReview, submitReview }) => {
+    const { isAuthenticated } = useContext(AuthContext);
+
     function reviewRender() {
-        if (props.isAuthenticated && !props.isReviewLeft && props.coffee?.id) {
-            return <LeaveAReview submitReview={props.submitReview} coffeeId={props.coffee.id} />;
-        } else if (props.isAuthenticated && props.isReviewLeft) {
+        if (!coffee?.id) {
+            return null;
+        }
+
+        if (!isAuthenticated) {
             return (
-                <p>
-                    <b>Thank you for your review!</b>
-                </p>
+                <div>
+                    <hr />
+                    <p>Sign in to be able to leave a review.</p>
+                    <Link to="/login" className="btn btn-primary">Sign in</Link>
+                </div>
             );
         }
-        return (
-            <div>
-                <hr />
-                <p>Sign in to be able to leave a review.</p>
-            </div>
-        );
+
+        if (userReview) {
+            return (
+                <div>
+                    <p><b>Your review:</b> {userReview.content}</p>
+                    <p><b>Rating:</b> {userReview.rating}</p>
+                    <p><b>Brewing Method:</b> {userReview.brewingMethod}</p>
+                    <hr />
+                    <p><b>Thank you for your review!</b></p>
+                </div>
+            );
+        }
+
+        return <LeaveAReview submitReview={submitReview} coffeeId={coffee.id} />;
     }
 
     return (
-        <div className={props.mobile ? "card d-flex mt-5" : "card col-3 container d-flex mb-5"}>
+        <div className="card col-3 container d-flex mb-5">
             <div className="card-body container">
-                <div className="mt-3">
-                    <h4 className="text-success">Leave a review</h4>
-                    {reviewRender()}
-                </div>
+                <h4 className="text-success">Leave a review</h4>
+                {reviewRender()}
             </div>
         </div>
     );

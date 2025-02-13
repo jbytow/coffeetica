@@ -9,6 +9,7 @@ import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.services.ReviewService;
 import com.example.coffeetica.user.models.UserEntity;
 import com.example.coffeetica.user.repositories.UserRepository;
+import com.example.coffeetica.user.security.JwtTokenProvider;
 import com.example.coffeetica.user.security.SecurityService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class ReviewServiceImpl implements ReviewService {
     private ModelMapper modelMapper;
 
     @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
     private SecurityService securityService;
 
     @Override
@@ -59,6 +63,19 @@ public class ReviewServiceImpl implements ReviewService {
                     reviewDTO.setUserId(entity.getUser().getId());
                     reviewDTO.setUserName(entity.getUser().getUsername());
                     reviewDTO.setCoffeeId(entity.getCoffee().getId());
+                    return reviewDTO;
+                });
+    }
+
+    @Override
+    public Optional<ReviewDTO> findReviewByUserAndCoffeeId(String token, Long coffeeId) {
+        Long userId = getUserIdFromToken(token); // Pobranie userId na podstawie username
+
+        return reviewRepository.findByUserIdAndCoffeeId(userId, coffeeId)
+                .map(entity -> {
+                    ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
+                    reviewDTO.setUserId(entity.getUser().getId());
+                    reviewDTO.setUserName(entity.getUser().getUsername());
                     return reviewDTO;
                 });
     }
@@ -115,5 +132,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void deleteReview(Long id) {
         reviewRepository.deleteById(id);
+    }
+
+    private Long getUserIdFromToken(String token) {
+        String username = jwtTokenProvider.getIdentifierFromJWT(token.replace("Bearer ", ""));
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getId();
     }
 }

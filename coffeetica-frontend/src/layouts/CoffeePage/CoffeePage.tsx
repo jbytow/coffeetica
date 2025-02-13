@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CoffeeDTO } from "../../models/CoffeeDTO";
 import apiClient from "../../lib/api";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
@@ -6,17 +6,23 @@ import { StarsReview } from "../Utils/StarsReview";
 import { ReviewBox } from "./components/ReviewBox";
 import { LatestReviews } from "./components/LatestReviews";
 import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
+import { ReviewDTO } from "../../models/ReviewDTO";
+import { AuthContext } from "../../auth/AuthContext";
+import { useParams } from "react-router-dom";
 
 
 export const CoffeePage = () => {
   const [coffee, setCoffee] = useState<CoffeeDTO | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
-  const [isReviewLeft, setIsReviewLeft] = useState(false);
+  const [userReview, setUserReview] = useState<ReviewDTO | null>(null);
+
+  const { isAuthenticated } = useContext(AuthContext);
+  const token = localStorage.getItem("token");
 
   // Extracting coffeeId from the current URL
-  const coffeeId = window.location.pathname.split("/")[2];
-  const token = localStorage.getItem("token"); // Get token for authentication
+  const { id } = useParams<{ id: string }>();
+  const coffeeId = id ? Number(id) : null;
 
   // Fetch coffee details
   useEffect(() => {
@@ -31,7 +37,34 @@ export const CoffeePage = () => {
       }
     };
     fetchCoffee();
-  }, [coffeeId, isReviewLeft]);
+  }, [coffeeId]);
+
+  // review download (if the user is logged in)
+  useEffect(() => {
+    const fetchUserReview = async () => {
+      if (!coffeeId || isNaN(coffeeId)) {
+        console.error("Invalid coffeeId:", coffeeId);
+        return;
+      }
+  
+      console.log(`Fetching review for coffeeId: ${coffeeId}`);
+  
+      try {
+        const response = await apiClient.get(`/reviews/user?coffeeId=${coffeeId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        console.log("Response:", response);
+        if (response.status === 200) {
+          setUserReview(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user review:", error);
+      }
+    };
+  
+    fetchUserReview();
+  }, [isAuthenticated, coffeeId, token]);
 
   const submitReview = async (reviewData: ReviewRequestDTO) => {
     if (!token) {
@@ -40,14 +73,10 @@ export const CoffeePage = () => {
     }
 
     try {
-      await apiClient.post(
-        "/reviews",
-        reviewData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setIsReviewLeft(true);
+      const response = await apiClient.post("/reviews", reviewData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserReview(response.data);
     } catch (error: any) {
       setHttpError(error.message);
     }
@@ -122,9 +151,7 @@ export const CoffeePage = () => {
           {/* Review Box */}
           <ReviewBox
             coffee={coffee}
-            mobile={false}
-            isAuthenticated={!!token}
-            isReviewLeft={isReviewLeft}
+            userReview={userReview}
             submitReview={submitReview}
           />
         </div>
@@ -186,9 +213,7 @@ export const CoffeePage = () => {
             {/* Review Box */}
             <ReviewBox
               coffee={coffee}
-              mobile={true}
-              isAuthenticated={!!token}
-              isReviewLeft={isReviewLeft}
+              userReview={userReview}
               submitReview={submitReview}
             />
           </div>

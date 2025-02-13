@@ -11,6 +11,8 @@ public interface ReviewService {
 
     Optional<ReviewDTO> findReviewById(Long id);
 
+    Optional<ReviewDTO> findReviewByUserAndCoffeeId(String token, Long coffeeId);
+
     ReviewDTO saveReview(ReviewRequestDTO reviewRequestDTO);
 
     ReviewDTO updateReview(Long id, ReviewDTO reviewDetails);

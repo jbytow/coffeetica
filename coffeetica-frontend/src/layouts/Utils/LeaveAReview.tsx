@@ -1,13 +1,11 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { StarsSelector } from "./StarsSelector";
-import { AuthContext } from "../../auth/AuthContext";
 import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
 
 export const LeaveAReview: React.FC<{
     submitReview: (data: ReviewRequestDTO) => void;
     coffeeId: number;
 }> = ({ submitReview, coffeeId }) => {
-    const { user } = useContext(AuthContext);
     const [starInput, setStarInput] = useState(0);
     const [reviewDescription, setReviewDescription] = useState("");
     const [brewingMethod, setBrewingMethod] = useState("");

@@ -2,7 +2,10 @@ package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.ReviewDTO;
 import com.example.coffeetica.coffee.models.ReviewRequestDTO;
+import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.services.ReviewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,13 @@ import java.util.Optional;
 @RestController
 public class ReviewController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
+
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    ReviewRepository reviewRepository;
 
     @GetMapping("/api/reviews")
     public List<ReviewDTO> getAllReviews() {
@@ -31,6 +39,15 @@ public class ReviewController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/api/reviews/user")
+    public ResponseEntity<ReviewDTO> getUserReview(
+            @RequestParam Long coffeeId,
+            @RequestHeader("Authorization") String token) {
+
+        return reviewService.findReviewByUserAndCoffeeId(token, coffeeId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
 
     @PostMapping("/api/reviews")
     public ResponseEntity<ReviewDTO> createReview(@Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
