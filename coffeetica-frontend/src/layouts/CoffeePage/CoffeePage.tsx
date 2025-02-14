@@ -2,13 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { CoffeeDTO } from "../../models/CoffeeDTO";
 import apiClient from "../../lib/api";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import { StarsReview } from "../Utils/StarsReview";
 import { ReviewBox } from "./components/ReviewBox";
 import { LatestReviews } from "./components/LatestReviews";
 import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
 import { ReviewDTO } from "../../models/ReviewDTO";
 import { AuthContext } from "../../auth/AuthContext";
 import { useParams } from "react-router-dom";
+import { StarsDisplay } from "../Utils/StarsDisplay";
 
 
 export const CoffeePage = () => {
@@ -23,6 +23,15 @@ export const CoffeePage = () => {
   // Extracting coffeeId from the current URL
   const { id } = useParams<{ id: string }>();
   const coffeeId = id ? Number(id) : null;
+
+  // average rating calculation
+  const calculateAverageRating = (reviews: ReviewDTO[]): number => {
+    if (!reviews.length) return 0;
+    const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return Math.round((total / reviews.length) * 2) / 2; // Zaokrąglanie do 0.5
+  };
+
+  const averageRating = coffee?.reviews ? calculateAverageRating(coffee.reviews) : 0;
 
   // Fetch coffee details
   useEffect(() => {
@@ -46,14 +55,14 @@ export const CoffeePage = () => {
         console.error("Invalid coffeeId:", coffeeId);
         return;
       }
-  
+
       console.log(`Fetching review for coffeeId: ${coffeeId}`);
-  
+
       try {
         const response = await apiClient.get(`/reviews/user?coffeeId=${coffeeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         console.log("Response:", response);
         if (response.status === 200) {
           setUserReview(response.data);
@@ -62,7 +71,7 @@ export const CoffeePage = () => {
         console.error("Error fetching user review:", error);
       }
     };
-  
+
     fetchUserReview();
   }, [isAuthenticated, coffeeId, token]);
 
@@ -116,6 +125,14 @@ export const CoffeePage = () => {
           <div className="col-4 col-md-4 container">
             <div className="ml-2">
               <h2>{coffee?.name}</h2>
+              {coffee?.reviews && coffee.reviews.length > 0 ? (
+                <div className="d-flex align-items-center mb-3">
+                  <StarsDisplay rating={averageRating} /> {/* ✅ Użycie nowego komponentu */}
+                  <span className="ms-2 text-muted">({coffee.reviews.length} reviews)</span>
+                </div>
+              ) : (
+                <p className="text-muted">No reviews yet</p>
+              )}
               <p>
                 <strong>Country of Origin:</strong> {coffee?.countryOfOrigin}
               </p>
@@ -137,15 +154,6 @@ export const CoffeePage = () => {
               <p>
                 <strong>Production Year:</strong> {coffee?.productionYear}
               </p>
-              <StarsReview
-                rating={
-                  coffee?.reviews
-                    ? coffee.reviews.reduce((sum, review) => sum + review.rating, 0) /
-                    coffee.reviews.length
-                    : 0
-                }
-                size={32}
-              />
             </div>
           </div>
           {/* Review Box */}
@@ -180,6 +188,14 @@ export const CoffeePage = () => {
         <div className="mt-4">
           <div className="ml-2">
             <h2>{coffee?.name}</h2>
+            {coffee?.reviews && coffee.reviews.length > 0 ? (
+              <div className="d-flex align-items-center mb-3">
+                <span className="badge bg-primary fs-5">{averageRating} ⭐</span>
+                <span className="ms-2 text-muted">({coffee.reviews.length} reviews)</span>
+              </div>
+            ) : (
+              <p className="text-muted">No reviews yet</p>
+            )}
             <p>
               <strong>Country of Origin:</strong> {coffee?.countryOfOrigin}
             </p>
@@ -201,15 +217,6 @@ export const CoffeePage = () => {
             <p>
               <strong>Production Year:</strong> {coffee?.productionYear}
             </p>
-            <StarsReview
-              rating={
-                coffee?.reviews
-                  ? coffee.reviews.reduce((sum, review) => sum + review.rating, 0) /
-                  coffee.reviews.length
-                  : 0
-              }
-              size={32}
-            />
             {/* Review Box */}
             <ReviewBox
               coffee={coffee}

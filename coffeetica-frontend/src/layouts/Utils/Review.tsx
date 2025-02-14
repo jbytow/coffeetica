@@ -1,37 +1,40 @@
 import React from "react";
 import { ReviewDTO } from "../../models/ReviewDTO";
-import { StarsReview } from "./StarsReview";
+import { StarsDisplay } from "./StarsDisplay";
 
 
-export const Review: React.FC<{ review: ReviewDTO }> = (props) => {
-    // Format the review date (assuming the backend provides a valid date format)
-    const date = new Date(); // Placeholder since `ReviewDTO` doesn't include `date`
+export const Review: React.FC<{ review: ReviewDTO }> = ({ review }) => {
+
+    const date = new Date(review.createdAt);
     const longMonth = date.toLocaleString("en-us", { month: "long" });
     const dateDay = date.getDate();
     const dateYear = date.getFullYear();
-    const dateRender = `${longMonth} ${dateDay}, ${dateYear}`;
+    const formattedDate = `${longMonth} ${dateDay}, ${dateYear}`;
 
     return (
-        <div>
-            <div className="col-sm-8 col-md-8">
-                <h5>User ID: {props.review.userId}</h5>
-                <div className="row">
-                    <div className="col">{dateRender}</div>
-                    <div className="col">
-                        <StarsReview rating={props.review.rating} size={16} />
-                    </div>
+        <div className="review-container py-3 border-bottom">
+            <div className="row align-items-center mb-2">
+                <div className="col">
+                    <h5 className="mb-1">{review.userName}</h5>
                 </div>
-                <div className="mt-2">
-                    <p>
-                        <strong>Brewing Method:</strong> {props.review.brewingMethod}
-                    </p>
-                    <p>{props.review.content}</p>
-                    <p>
-                        <strong>Brewing Description:</strong> {props.review.brewingDescription}
-                    </p>
+                <div className="col text-end text-muted small">{formattedDate}</div>
+            </div>
+
+            <div className="row align-items-center mb-2">
+                <div className="col">
+                    <StarsDisplay rating={review.rating} size={16} />
                 </div>
             </div>
-            <hr />
+
+            <div className="review-content mt-2">
+                <p>
+                    <strong>Brewing Method:</strong> {review.brewingMethod}
+                </p>
+                <p>{review.content}</p>
+                <p>
+                    <strong>Brewing Description:</strong> {review.brewingDescription}
+                </p>
+            </div>
         </div>
     );
 };
