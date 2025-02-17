@@ -56,9 +56,9 @@ public class ReviewController {
     }
 
     @PutMapping("/api/reviews/{id}")
-    public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long id, @RequestBody ReviewDTO reviewDetails) {
+    public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
-            ReviewDTO updatedReviewDTO = reviewService.updateReview(id, reviewDetails);
+            ReviewDTO updatedReviewDTO = reviewService.updateReview(id, reviewRequestDTO);
             return ResponseEntity.ok(updatedReviewDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

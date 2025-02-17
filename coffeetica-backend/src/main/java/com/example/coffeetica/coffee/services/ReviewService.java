@@ -15,7 +15,7 @@ public interface ReviewService {
 
     ReviewDTO saveReview(ReviewRequestDTO reviewRequestDTO);
 
-    ReviewDTO updateReview(Long id, ReviewDTO reviewDetails);
+    ReviewDTO updateReview(Long id, ReviewRequestDTO reviewRequestDTO);
 
     void deleteReview(Long id);
 }

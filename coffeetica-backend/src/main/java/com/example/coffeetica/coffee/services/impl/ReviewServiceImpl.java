@@ -13,8 +13,6 @@ import com.example.coffeetica.user.security.JwtTokenProvider;
 import com.example.coffeetica.user.security.SecurityService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Optional<ReviewDTO> findReviewByUserAndCoffeeId(String token, Long coffeeId) {
-        Long userId = getUserIdFromToken(token); // Pobranie userId na podstawie username
+        Long userId = getUserIdFromToken(token); // get userId from username
 
         return reviewRepository.findByUserIdAndCoffeeId(userId, coffeeId)
                 .map(entity -> {
@@ -83,31 +81,31 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewDTO saveReview(ReviewRequestDTO reviewRequestDTO) {
 
-        // 1) Pobierz ID zalogowanego użytkownika z tokena (JWT)
+        // 1) Retrieve the ID of the logged-in user from the token (JWT)
         Long userId = securityService.getCurrentUserId();
 
-        // 2) Wyszukaj usera w bazie
+        // 2) Find the user in the database
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 3) Wyszukaj kawę w bazie na podstawie coffeeId z requestu
+        // 3) Find the coffee in the database based on coffeeId from the request
         CoffeeEntity coffee = coffeeRepository.findById(reviewRequestDTO.getCoffeeId())
                 .orElseThrow(() -> new RuntimeException("Coffee not found"));
 
-        // 4) Zmapuj ReviewRequestDTO -> ReviewEntity
+        // 4) Map ReviewRequestDTO -> ReviewEntity
         ReviewEntity entity = modelMapper.map(reviewRequestDTO, ReviewEntity.class);
 
-        // Ręcznie przypisz powiązania (user, coffee)
+        // Manually assign relationships (user, coffee)
         entity.setUser(user);
         entity.setCoffee(coffee);
 
-        // 5) Zapisz w repo
+        // 5) Save to the repository
         ReviewEntity savedEntity = reviewRepository.save(entity);
 
-        // 6) Zmapuj ReviewEntity -> ReviewDTO (do odpowiedzi)
+        // 6) Map ReviewEntity -> ReviewDTO (for response)
         ReviewDTO savedReviewDTO = modelMapper.map(savedEntity, ReviewDTO.class);
 
-        // ModelMapper nie zawsze przenosi ID relacji, więc często trzeba je uzupełnić:
+        // ModelMapper does not always transfer ID relationships, so they often need to be manually set
         savedReviewDTO.setUserId(savedEntity.getUser().getId());
         savedReviewDTO.setUserName(savedEntity.getUser().getUsername());
         savedReviewDTO.setCoffeeId(savedEntity.getCoffee().getId());
@@ -117,16 +115,36 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDTO updateReview(Long id, ReviewDTO reviewDetails) {
+    public ReviewDTO updateReview(Long id, ReviewRequestDTO reviewRequestDTO) {
+        // Retrieve the existing review
         ReviewEntity entity = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
-        modelMapper.map(reviewDetails, entity);
-        entity.setUser(userRepository.findById(reviewDetails.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found")));
-        entity.setCoffee(coffeeRepository.findById(reviewDetails.getCoffeeId())
-                .orElseThrow(() -> new RuntimeException("Coffee not found")));
+
+        // Retrieve the ID of the logged-in user
+        Long currentUserId = securityService.getCurrentUserId();
+
+        // Check if the user editing the review is its owner
+        if (!entity.getUser().getId().equals(currentUserId)) {
+            throw new RuntimeException("You are not allowed to edit this review.");
+        }
+
+        // Update only the fields that can be modified
+        entity.setContent(reviewRequestDTO.getContent());
+        entity.setBrewingMethod(reviewRequestDTO.getBrewingMethod());
+        entity.setBrewingDescription(reviewRequestDTO.getBrewingDescription());
+        entity.setRating(reviewRequestDTO.getRating());
+
+        // Save changes
         ReviewEntity updatedEntity = reviewRepository.save(entity);
-        return modelMapper.map(updatedEntity, ReviewDTO.class);
+
+        // Map the entity to ReviewDTO for response
+        ReviewDTO updatedReviewDTO = modelMapper.map(updatedEntity, ReviewDTO.class);
+        updatedReviewDTO.setUserId(updatedEntity.getUser().getId());
+        updatedReviewDTO.setUserName(updatedEntity.getUser().getUsername());
+        updatedReviewDTO.setCoffeeId(updatedEntity.getCoffee().getId());
+        updatedReviewDTO.setCreatedAt(updatedEntity.getCreatedAt().toString());
+
+        return updatedReviewDTO;
     }
 
     @Override
