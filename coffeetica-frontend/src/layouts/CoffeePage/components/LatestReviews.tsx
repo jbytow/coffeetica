@@ -3,39 +3,47 @@ import { Link } from "react-router-dom";
 import { ReviewDTO } from "../../../models/ReviewDTO";
 import { Review } from "../../Utils/Review";
 
-export const LatestReviews: React.FC<{
-    reviews: ReviewDTO[];
-    coffeeId: number | undefined;
-    mobile: boolean;
-}> = (props) => {
+interface LatestReviewsProps {
+  reviews: ReviewDTO[];
+  coffeeId?: number;
+  mobile: boolean;
+}
 
-    return (
-        <div className={props.mobile ? "mt-3" : "row mt-5"}>
-            <div className="col-sm-10 col-md-10">
-                {props.reviews.length > 0 ? (
-                    <>
-                        {props.reviews.slice(0, 3).map((eachReview) => (
-                            <Review review={eachReview} key={eachReview.id} />
-                        ))}
-
-                        <div className="m-3">
-                            <Link
-                                type="button"
-                                className="btn main-color btn-md text-white"
-                                to={`/reviewlist/${props.coffeeId}`}
-                            >
-                                View All Reviews
-                            </Link>
-                        </div>
-                    </>
-                ) : (
-                    <div className="m-3">
-                        <p className="lead">
-                            Currently, there are no reviews for this coffee.
-                        </p>
-                    </div>
-                )}
+export const LatestReviews: React.FC<LatestReviewsProps> = ({
+  reviews,
+  coffeeId,
+  mobile,
+}) => {
+  return (
+    <section className={`latest-reviews ${mobile ? "mt-3" : "mt-5"}`}>
+      {/* Zamiast .container i .justify-content-center, 
+         używamy prostej struktury: row i col-12 */}
+      <div className="row mx-0">
+        {reviews.length > 0 ? (
+          <>
+            {reviews.slice(0, 3).map((eachReview) => (
+              <div className="col-12 mb-3 p-0" key={eachReview.id}>
+                <Review review={eachReview} />
+              </div>
+            ))}
+            <div className="col-12 p-0">
+              <Link
+                type="button"
+                className="btn main-color btn-md text-white"
+                to={`/reviewlist/${coffeeId}`}
+              >
+                View All Reviews
+              </Link>
             </div>
-        </div>
-    );
+          </>
+        ) : (
+          <div className="col-12 p-0">
+            <p className="lead mb-0">
+              Currently, there are no reviews for this coffee.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 };

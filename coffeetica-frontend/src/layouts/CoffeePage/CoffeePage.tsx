@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { CoffeeDTO } from "../../models/CoffeeDTO";
 import apiClient from "../../lib/api";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import { ReviewBox } from "./components/ReviewBox";
+import { ReviewBox } from "./components/ReviewBox/ReviewBox";
 import { LatestReviews } from "./components/LatestReviews";
 import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
 import { ReviewDTO } from "../../models/ReviewDTO";
@@ -28,7 +28,7 @@ export const CoffeePage = () => {
   const calculateAverageRating = (reviews: ReviewDTO[]): number => {
     if (!reviews.length) return 0;
     const total = reviews.reduce((sum, review) => sum + review.rating, 0);
-    return Math.round((total / reviews.length) * 2) / 2; // Zaokrąglanie do 0.5
+    return Math.round((total / reviews.length) * 2) / 2;
   };
 
   const averageRating = coffee?.reviews ? calculateAverageRating(coffee.reviews) : 0;
@@ -51,19 +51,17 @@ export const CoffeePage = () => {
   // review download (if the user is logged in)
   useEffect(() => {
     const fetchUserReview = async () => {
-      if (!coffeeId || isNaN(coffeeId)) {
-        console.error("Invalid coffeeId:", coffeeId);
+      if (!isAuthenticated || !token || !coffeeId || isNaN(coffeeId)) {
         return;
       }
-
+  
       console.log(`Fetching review for coffeeId: ${coffeeId}`);
-
+  
       try {
         const response = await apiClient.get(`/reviews/user?coffeeId=${coffeeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        console.log("Response:", response);
+  
         if (response.status === 200) {
           setUserReview(response.data);
         }
@@ -71,7 +69,7 @@ export const CoffeePage = () => {
         console.error("Error fetching user review:", error);
       }
     };
-
+  
     fetchUserReview();
   }, [isAuthenticated, coffeeId, token]);
 
@@ -127,7 +125,7 @@ export const CoffeePage = () => {
               <h2>{coffee?.name}</h2>
               {coffee?.reviews && coffee.reviews.length > 0 ? (
                 <div className="d-flex align-items-center mb-3">
-                  <StarsDisplay rating={averageRating} /> {/* ✅ Użycie nowego komponentu */}
+                  <StarsDisplay rating={averageRating} />
                   <span className="ms-2 text-muted">({coffee.reviews.length} reviews)</span>
                 </div>
               ) : (
@@ -189,13 +187,13 @@ export const CoffeePage = () => {
           <div className="ml-2">
             <h2>{coffee?.name}</h2>
             {coffee?.reviews && coffee.reviews.length > 0 ? (
-              <div className="d-flex align-items-center mb-3">
-                <span className="badge bg-primary fs-5">{averageRating} ⭐</span>
-                <span className="ms-2 text-muted">({coffee.reviews.length} reviews)</span>
-              </div>
-            ) : (
-              <p className="text-muted">No reviews yet</p>
-            )}
+                <div className="d-flex align-items-center mb-3">
+                  <StarsDisplay rating={averageRating} />
+                  <span className="ms-2 text-muted">({coffee.reviews.length} reviews)</span>
+                </div>
+              ) : (
+                <p className="text-muted">No reviews yet</p>
+              )}
             <p>
               <strong>Country of Origin:</strong> {coffee?.countryOfOrigin}
             </p>

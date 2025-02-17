@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { CoffeeDTO } from "../../../models/CoffeeDTO";
-import { LeaveAReview } from "../../Utils/LeaveAReview";
-import { ReviewRequestDTO } from "../../../models/ReviewRequestDTO";
-import { ReviewDTO } from "../../../models/ReviewDTO";
-import { AuthContext } from "../../../auth/AuthContext";
+import { CoffeeDTO } from "../../../../models/CoffeeDTO";
+import { LeaveAReview } from "../../../Utils/LeaveAReview";
+import { ReviewRequestDTO } from "../../../../models/ReviewRequestDTO";
+import { ReviewDTO } from "../../../../models/ReviewDTO";
+import { AuthContext } from "../../../../auth/AuthContext";
 import { Link } from "react-router-dom";
 
 export const ReviewBox: React.FC<{
