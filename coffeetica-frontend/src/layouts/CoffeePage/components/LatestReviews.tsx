@@ -16,8 +16,6 @@ export const LatestReviews: React.FC<LatestReviewsProps> = ({
 }) => {
   return (
     <section className={`latest-reviews ${mobile ? "mt-3" : "mt-5"}`}>
-      {/* Zamiast .container i .justify-content-center, 
-         używamy prostej struktury: row i col-12 */}
       <div className="row mx-0">
         {reviews.length > 0 ? (
           <>
@@ -29,7 +27,7 @@ export const LatestReviews: React.FC<LatestReviewsProps> = ({
             <div className="col-12 p-0">
               <Link
                 type="button"
-                className="btn main-color btn-md text-white"
+                className="btn btn-outline-primary btn-md px-4"
                 to={`/reviewlist/${coffeeId}`}
               >
                 View All Reviews

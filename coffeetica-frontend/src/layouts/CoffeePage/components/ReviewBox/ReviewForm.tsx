@@ -6,9 +6,9 @@ import { ReviewDTO } from "../../../../models/ReviewDTO";
 
 interface ReviewFormProps {
   coffeeId: number;
-  initialReview?: ReviewDTO; 
+  initialReview?: ReviewDTO; // If exists, it's edit mode
   onSubmit: (data: ReviewRequestDTO) => void; 
-  onCancel?: () => void; // Jeśli chcesz mieć przycisk "Anuluj" w trybie edycji
+  onCancel?: () => void; // "Cancel" button for edit mode
 }
 
 export const ReviewForm: React.FC<ReviewFormProps> = ({
@@ -17,6 +17,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  // Form state:
   const [starInput, setStarInput] = useState<number>(
     initialReview ? initialReview.rating : 0
   );
@@ -30,11 +31,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     initialReview ? initialReview.brewingDescription || "" : ""
   );
 
-  const handleStarChange = (value: number) => {
-    setStarInput(value);
-  };
-
   const handleSubmit = () => {
+    // Create a ReviewRequestDTO object (used for both POST/PUT)
     const reviewData: ReviewRequestDTO = {
       coffeeId,
       rating: starInput,
@@ -47,14 +45,15 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 
   return (
     <div style={{ cursor: "pointer" }}>
-      {/* Komponent wyboru gwiazdek */}
       <div className="mt-2">
-        <StarsSelector rating={starInput} onRatingChange={handleStarChange} />
+        <StarsSelector
+          rating={starInput}
+          onRatingChange={(value) => setStarInput(value)}
+        />
       </div>
 
-      <form method="POST" action="#">
+      <form method="POST" action="#" onSubmit={(e) => e.preventDefault()}>
         <hr />
-
         {/* Brewing Method */}
         <div className="mb-3">
           <label className="form-label">Brewing Method</label>

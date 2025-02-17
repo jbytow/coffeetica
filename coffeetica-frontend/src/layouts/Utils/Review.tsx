@@ -7,7 +7,7 @@ interface ReviewProps {
 }
 
 export const Review: React.FC<ReviewProps> = ({ review }) => {
-  // Formatowanie daty
+  // Date formatting
   const dateObj = new Date(review.createdAt);
   const formattedDate = dateObj.toLocaleString("en-us", {
     month: "long",
@@ -15,13 +15,13 @@ export const Review: React.FC<ReviewProps> = ({ review }) => {
     year: "numeric",
   });
 
-  // Logika do wyświetlania oceny (5 → 5/5, 3.5 → 3.5/5)
+  // Logic for displaying the rating (e.g., 5 → 5/5, 3.5 → 3.5/5)
   const ratingValue = parseFloat(review.rating.toString());
   const displayRating = Number.isInteger(ratingValue)
     ? `${ratingValue}/5`
     : `${ratingValue.toFixed(1)}/5`;
 
-  // "Read more" - kontrola długości treści
+  // "Read more" - control content length for long reviews
   const [isExpanded, setIsExpanded] = useState(false);
   const MAX_LENGTH = 100;
   const contentToShow =
@@ -35,7 +35,7 @@ export const Review: React.FC<ReviewProps> = ({ review }) => {
 
   return (
     <article className="card review">
-      {/* Nagłówek karty: nazwa usera, gwiazdki i data */}
+      {/* Card header: user name, stars, and date */}
       <div className="card-header d-flex align-items-center">
         <h5 className="mb-0 me-3">{review.userName}</h5>
         <div className="d-flex align-items-center me-2">
@@ -45,7 +45,7 @@ export const Review: React.FC<ReviewProps> = ({ review }) => {
         <small className="text-muted ms-auto">{formattedDate}</small>
       </div>
 
-      {/* Zawartość karty */}
+      {/* Card content */}
       <div className="card-body">
         <p className="mb-2">
           <strong>Brewing Method:</strong> {review.brewingMethod}

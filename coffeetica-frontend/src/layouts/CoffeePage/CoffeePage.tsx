@@ -15,6 +15,7 @@ export const CoffeePage = () => {
   const [coffee, setCoffee] = useState<CoffeeDTO | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
+
   const [userReview, setUserReview] = useState<ReviewDTO | null>(null);
 
   const { isAuthenticated } = useContext(AuthContext);
@@ -73,21 +74,60 @@ export const CoffeePage = () => {
     fetchUserReview();
   }, [isAuthenticated, coffeeId, token]);
 
-  const submitReview = async (reviewData: ReviewRequestDTO) => {
-    if (!token) {
-      alert("You must be logged in to submit a review.");
-      return;
-    }
+// ---- 3 FUNCTIONS FOR HANDLING REVIEWS ----
+const createReview = async (reviewData: ReviewRequestDTO) => {
+  // Creates a NEW review
+  if (!token) {
+    alert("You must be logged in to create a review.");
+    return;
+  }
+  try {
+    const response = await apiClient.post<ReviewDTO>("/reviews", reviewData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUserReview(response.data);
+  } catch (error: any) {
+    setHttpError(error.message);
+  }
+};
 
-    try {
-      const response = await apiClient.post("/reviews", reviewData, {
+const updateReview = async (reviewId: number, updatedReview: ReviewRequestDTO) => {
+  // UPDATES an EXISTING review
+  if (!token) {
+    alert("You must be logged in to update a review.");
+    return;
+  }
+  try {
+    const response = await apiClient.put<ReviewDTO>(
+      `/reviews/${reviewId}`, // PUT /api/reviews/{id}
+      updatedReview,
+      {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      setUserReview(response.data);
-    } catch (error: any) {
-      setHttpError(error.message);
-    }
-  };
+      }
+    );
+    setUserReview(response.data);
+  } catch (error: any) {
+    setHttpError(error.message);
+  }
+};
+
+const deleteReview = async (reviewId: number) => {
+  // DELETES a review
+  if (!token) {
+    alert("You must be logged in to delete a review.");
+    return;
+  }
+  try {
+    await apiClient.delete(`/reviews/${reviewId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // After deleting the review from the backend, clear `userReview` from the frontend state
+    setUserReview(null);
+  } catch (error: any) {
+    setHttpError(error.message);
+  }
+};
+// ---- END OF FUNCTIONS ----
 
   // Handle loading state
   if (isLoading) {
@@ -156,10 +196,12 @@ export const CoffeePage = () => {
           </div>
           {/* Review Box */}
           <ReviewBox
-            coffee={coffee}
-            userReview={userReview}
-            submitReview={submitReview}
-          />
+              coffee={coffee}
+              userReview={userReview}
+              createReview={createReview}
+              updateReview={updateReview}
+              deleteReview={deleteReview}
+            />
         </div>
         <hr />
         <LatestReviews
@@ -219,7 +261,9 @@ export const CoffeePage = () => {
             <ReviewBox
               coffee={coffee}
               userReview={userReview}
-              submitReview={submitReview}
+              createReview={createReview}
+              updateReview={updateReview}
+              deleteReview={deleteReview}
             />
           </div>
         </div>
