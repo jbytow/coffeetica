@@ -32,7 +32,7 @@ export const ReviewBox: React.FC<ReviewBoxProps> = ({
     // Unauthenticated user → show message
     if (!isAuthenticated) {
         return (
-            <div className="card col-3 container d-flex mb-5">
+            <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
                 <div className="card-body container">
                     <h4 className="text-success">Leave a review</h4>
                     <hr />
@@ -48,7 +48,7 @@ export const ReviewBox: React.FC<ReviewBoxProps> = ({
     // No existing review → allow user to create one (POST)
     if (!userReview) {
         return (
-            <div className="card col-3 container d-flex mb-5">
+            <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
                 <div className="card-body container">
                     <h4 className="text-success">Add a Review</h4>
                     <hr />
@@ -66,7 +66,7 @@ export const ReviewBox: React.FC<ReviewBoxProps> = ({
     // User is editing an existing review (PUT)
     if (isEditing && userReview) {
         return (
-            <div className="card col-3 container d-flex mb-5">
+            <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
                 <div className="card-body container">
                     <h4 className="text-success">Edit Your Review</h4>
                     <hr />
@@ -94,7 +94,7 @@ export const ReviewBox: React.FC<ReviewBoxProps> = ({
 
     // Existing review → display it
     return (
-        <div className="card col-3 container d-flex mb-5">
+        <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
             <div className="card-body container">
                 <ReviewDisplay
                     review={userReview}
