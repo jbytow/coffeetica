@@ -19,11 +19,10 @@ export const ReviewDisplay: React.FC<ReviewDisplayProps> = ({
       <hr />
 
       {/* Rating */}
-      <div className="mb-3">
-        <label className="form-label">
-          <StarsDisplay rating={review.rating} /> {review.rating}/5
-        </label>
-      </div>
+      <div className="mb-3 d-flex align-items-center">
+  <StarsDisplay rating={review.rating} />
+  <span className="ms-3">{review.rating}/5</span>
+</div>
 
       {/* Brewing Method */}
       <div className="mb-3">

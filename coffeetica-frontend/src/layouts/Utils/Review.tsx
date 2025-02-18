@@ -37,13 +37,19 @@ export const Review: React.FC<ReviewProps> = ({ review }) => {
     <article className="card review">
       {/* Card header: user name, stars, and date */}
       <div className="card-header d-flex align-items-center">
-        <h5 className="mb-0 me-3">{review.userName}</h5>
-        <div className="d-flex align-items-center me-2">
-          <StarsDisplay rating={review.rating} size={16} />
-          <span className="ms-2 text-muted">{displayRating}</span>
-        </div>
-        <small className="text-muted ms-auto">{formattedDate}</small>
-      </div>
+  <h5 className="mb-0 me-3 align-self-center">{review.userName}</h5>
+  <div className="d-flex align-items-center me-2">
+    <div className="align-self-center mb-1">
+      <StarsDisplay rating={review.rating} size={20} />
+    </div>
+    <div className="align-self-center ms-2">
+      <span className="text-muted">{displayRating}</span>
+    </div>
+  </div>
+  <small className="text-muted ms-auto align-self-center">
+    {formattedDate}
+  </small>
+</div>
 
       {/* Card content */}
       <div className="card-body">
