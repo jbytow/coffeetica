@@ -13,6 +13,8 @@ import com.example.coffeetica.user.security.JwtTokenProvider;
 import com.example.coffeetica.user.security.SecurityService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +53,18 @@ public class ReviewServiceImpl implements ReviewService {
                     return reviewDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ReviewDTO> findReviewsByCoffeeId(Long coffeeId, Pageable pageable) {
+        return reviewRepository.findByCoffeeId(coffeeId, pageable)
+                .map(entity -> {
+                    ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
+                    reviewDTO.setUserId(entity.getUser().getId());
+                    reviewDTO.setUserName(entity.getUser().getUsername());
+                    reviewDTO.setCoffeeId(entity.getCoffee().getId());
+                    return reviewDTO;
+                });
     }
 
     @Override

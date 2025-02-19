@@ -7,6 +7,10 @@ import com.example.coffeetica.coffee.services.ReviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +30,39 @@ public class ReviewController {
     @Autowired
     ReviewRepository reviewRepository;
 
-    @GetMapping("/api/reviews")
+    @GetMapping("/api/reviews/all")
     public List<ReviewDTO> getAllReviews() {
         return reviewService.findAllReviews();
+    }
+
+    @GetMapping("/api/reviews")
+    public Page<ReviewDTO> getReviewsByCoffeeId(
+            @RequestParam Long coffeeId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            // Default sorting by creation date
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            // Sorting direction – used only for rating
+            @RequestParam(required = false) String direction) {
+
+        Sort sort;
+        if ("createdAt".equalsIgnoreCase(sortBy)) {
+            // Sorting by date always from newest to oldest
+            sort = Sort.by("createdAt").descending();
+        } else if ("rating".equalsIgnoreCase(sortBy)) {
+            // When sorting by rating, the direction depends on the provided parameter
+            if ("asc".equalsIgnoreCase(direction)) {
+                sort = Sort.by("rating").ascending();
+            } else {
+                sort = Sort.by("rating").descending();
+            }
+        } else {
+            // If an unknown criterion is provided, apply default sorting by date
+            sort = Sort.by("createdAt").descending();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return reviewService.findReviewsByCoffeeId(coffeeId, pageable);
     }
 
     @GetMapping("/api/reviews/{id}")
