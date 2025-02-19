@@ -13,6 +13,7 @@ import { StarsDisplay } from "../Utils/StarsDisplay";
 
 export const CoffeePage = () => {
   const [coffee, setCoffee] = useState<CoffeeDTO | undefined>();
+  const [reviews, setReviews] = useState<ReviewDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
 
@@ -47,6 +48,28 @@ export const CoffeePage = () => {
       }
     };
     fetchCoffee();
+  }, [coffeeId]);
+
+    // Fetch reviews
+    useEffect(() => {
+      const fetchReviews = async () => {
+          if (!coffeeId) return;
+          try {
+              const response = await apiClient.get(`/reviews`, {
+                  params: {
+                      coffeeId,
+                      sortBy: "createdAt", // Always fetch the latest reviews first
+                      direction: "desc", // Newest first
+                      page: 0, // First page
+                      size: 3, // Fetch only 3 reviews from backend
+                  },
+              });
+              setReviews(response.data.content); // Get reviews from the API response
+          } catch (error) {
+              console.error("Error fetching reviews:", error);
+          }
+      };
+      fetchReviews();
   }, [coffeeId]);
 
   // review download (if the user is logged in)
@@ -205,7 +228,7 @@ const deleteReview = async (reviewId: number) => {
         </div>
         <hr />
         <LatestReviews
-          reviews={coffee?.reviews || []}
+          reviews={reviews}
           coffeeId={coffee?.id}
           mobile={false}
         />
@@ -269,7 +292,7 @@ const deleteReview = async (reviewId: number) => {
         </div>
         <hr />
         <LatestReviews
-          reviews={coffee?.reviews || []}
+          reviews={reviews}
           coffeeId={coffee?.id}
           mobile={true}
         />

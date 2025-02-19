@@ -16,6 +16,7 @@ import EditRoastery from './layouts/AdminPage/components/ManageRoasteries/EditRo
 import CoffeesListPage from './layouts/CoffeesListPage/CoffeesListPage';
 import RoasteriesListPage from './layouts/RoasteriesListPage/RoasteriesListPage';
 import { AuthProvider } from './auth/AuthContext';
+import { ReviewListPage } from './layouts/CoffeePage/components/ReviewListPage/ReviewListPage';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             <Route path="/roasteries" element={<RoasteriesListPage />} />
             <Route path="/coffees" element={<CoffeesListPage />} />
             <Route path="/coffees/:id" element={<CoffeePage />} />
+            <Route path="/coffees/:coffeeId/reviews" element={<ReviewListPage />} />
 
           </Routes>
         </div>

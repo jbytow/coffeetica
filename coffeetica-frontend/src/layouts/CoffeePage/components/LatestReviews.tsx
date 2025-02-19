@@ -29,20 +29,20 @@ export const LatestReviews: React.FC<LatestReviewsProps> = ({
       <div className="row">
         {reviews.length > 0 ? (
           <>
-            {/* Display up to 3 latest reviews */}
-            {reviews.slice(0, 3).map((eachReview) => (
+            {/* Display fetched reviews (now limited to 3 from backend) */}
+            {reviews.map((eachReview) => (
               <div className="col-12 mb-3" key={eachReview.id}>
                 <Review review={eachReview} />
               </div>
             ))}
-              <hr />
+            <hr />
             {/* Button: View All Reviews */}
             <div className="col-12">
 
               <Link
                 type="button"
                 className="btn btn-outline-primary btn-md px-4"
-                to={`/reviewlist/${coffeeId}`}
+                to={`/coffees/${coffeeId}/reviews`}
               >
                 View All Reviews
               </Link>
