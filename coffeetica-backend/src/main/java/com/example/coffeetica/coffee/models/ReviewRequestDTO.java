@@ -1,9 +1,6 @@
 package com.example.coffeetica.coffee.models;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 public class ReviewRequestDTO {
     @NotNull(message = "Coffee ID is required")
@@ -16,9 +13,11 @@ public class ReviewRequestDTO {
     @NotBlank(message = "Review content cannot be empty")
     private String content;
 
+    @Size(max = 50, message = "Brewing Method cannot exceed 50 characters")
     @NotBlank(message = "Brewing method is required")
     private String brewingMethod;
 
+    @Size(max = 200, message = "Brewing Description cannot exceed 200 characters")
     @NotNull(message = "Description is required")
     private String brewingDescription;
 

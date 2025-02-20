@@ -3,6 +3,7 @@ package com.example.coffeetica.coffee.models;
 import com.example.coffeetica.user.models.UserEntity;
 import jakarta.persistence.*;
 
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,9 +17,12 @@ public class ReviewEntity {
     @Column(nullable = true)
     private String content;
 
+
+    @Size(max = 50)
     @Column(nullable = false)
     private String brewingMethod;
 
+    @Size(max = 200)
     @Column(nullable = true)
     private String brewingDescription;
 

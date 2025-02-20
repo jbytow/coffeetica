@@ -56,26 +56,29 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         <hr />
         {/* Brewing Method */}
         <div className="mb-3">
-          <label className="form-label">Brewing Method</label>
+          <label className="form-label">Brewing Method <small className="text-muted">(max: 50)</small></label>
           <input
             type="text"
             className="form-control"
             placeholder="e.g. French Press, Espresso"
             value={brewingMethod}
             onChange={(e) => setBrewingMethod(e.target.value)}
+            maxLength={50}
             required
           />
         </div>
 
         {/* Brewing Description */}
         <div className="mb-3">
-          <label className="form-label">Brewing Description (optional)</label>
+          <label className="form-label">Brewing Description <small className="text-muted">(max: 200)</small></label>
           <textarea
             className="form-control"
             placeholder="Describe your brewing process..."
             rows={2}
             value={brewingDescription}
             onChange={(e) => setBrewingDescription(e.target.value)}
+            maxLength={200}
+            required
           />
         </div>
 
