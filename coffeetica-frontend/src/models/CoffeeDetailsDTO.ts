@@ -1,6 +1,7 @@
+import { ReviewDTO } from "./ReviewDTO";
 import { RoasteryDTO } from "./RoasteryDTO";
 
-export interface CoffeeDTO {
+export interface CoffeeDetailsDTO {
     id: number;
     name: string;
     countryOfOrigin: string;
@@ -10,6 +11,11 @@ export interface CoffeeDTO {
     flavorNotes: string[];
     processingMethod: string;
     productionYear: number;
-    imageUrl?: string;
+    imageUrl: string;
     roastery: RoasteryDTO;
+  
+    // aggregated fields
+    averageRating: number;
+    totalReviewsCount: number;
+    latestReviews: ReviewDTO[];
   }
