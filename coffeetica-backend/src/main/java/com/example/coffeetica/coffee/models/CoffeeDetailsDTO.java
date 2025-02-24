@@ -4,9 +4,10 @@ import com.example.coffeetica.coffee.models.enums.FlavorProfile;
 import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
 
+import java.util.List;
 import java.util.Set;
 
-public class CoffeeDTO {
+public class CoffeeDetailsDTO {
 
     private Long id;
     private String name;
@@ -17,12 +18,18 @@ public class CoffeeDTO {
     private Set<String> flavorNotes;
     private String processingMethod;
     private Integer productionYear;
-
     private String imageUrl; // URL of the uploaded image
+    private RoasteryDTO roastery; // Roastery details
 
-    private RoasteryDTO roastery;
+    // Aggregated fields:
+    private Double averageRating; // Average rating of the coffee
+    private Integer totalReviewsCount; // Total number of reviews
+    private List<ReviewDTO> latestReviews; // Maximum of 3 latest reviews
 
-    // Getters and setters
+    // Default constructor (required for serialization)
+    public CoffeeDetailsDTO() {}
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -71,12 +78,10 @@ public class CoffeeDTO {
         this.flavorProfile = flavorProfile;
     }
 
-    // Getter
     public Set<String> getFlavorNotes() {
         return flavorNotes;
     }
 
-    // Setter
     public void setFlavorNotes(Set<String> flavorNotes) {
         this.flavorNotes = flavorNotes;
     }
@@ -97,9 +102,13 @@ public class CoffeeDTO {
         this.productionYear = productionYear;
     }
 
-    public String getImageUrl() { return imageUrl; }
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public RoasteryDTO getRoastery() {
         return roastery;
@@ -109,5 +118,27 @@ public class CoffeeDTO {
         this.roastery = roastery;
     }
 
-}
+    public Double getAverageRating() {
+        return averageRating;
+    }
 
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public Integer getTotalReviewsCount() {
+        return totalReviewsCount;
+    }
+
+    public void setTotalReviewsCount(Integer totalReviewsCount) {
+        this.totalReviewsCount = totalReviewsCount;
+    }
+
+    public List<ReviewDTO> getLatestReviews() {
+        return latestReviews;
+    }
+
+    public void setLatestReviews(List<ReviewDTO> latestReviews) {
+        this.latestReviews = latestReviews;
+    }
+}

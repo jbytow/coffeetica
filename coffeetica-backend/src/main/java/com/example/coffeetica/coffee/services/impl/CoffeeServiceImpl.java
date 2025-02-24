@@ -1,12 +1,11 @@
 package com.example.coffeetica.coffee.services.impl;
 
-import com.example.coffeetica.coffee.models.CoffeeDTO;
-import com.example.coffeetica.coffee.models.CoffeeEntity;
-import com.example.coffeetica.coffee.models.RoasteryEntity;
+import com.example.coffeetica.coffee.models.*;
 import com.example.coffeetica.coffee.models.enums.FlavorProfile;
 import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
+import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.specification.CoffeeSpecification;
@@ -19,14 +18,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CoffeeServiceImpl implements CoffeeService {
 
     @Autowired
     private CoffeeRepository coffeeRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private RoasteryRepository roasteryRepository;
@@ -66,6 +70,45 @@ public class CoffeeServiceImpl implements CoffeeService {
     public Optional<CoffeeDTO> findCoffeeById(Long id) {
         return coffeeRepository.findById(id)
                 .map(entity -> modelMapper.map(entity, CoffeeDTO.class));
+    }
+
+    @Override
+    public Optional<CoffeeDetailsDTO> findCoffeeDetails(Long coffeeId) {
+        return coffeeRepository.findById(coffeeId)
+                .map(coffeeEntity -> {
+                    // Map all basic fields
+                    CoffeeDetailsDTO details = modelMapper.map(coffeeEntity, CoffeeDetailsDTO.class);
+
+                    // Manually populate additional fields
+
+                    // Retrieve the last 3 reviews
+                    List<ReviewEntity> latestReviews =
+                            reviewRepository.findTop3ByCoffeeIdOrderByCreatedAtDesc(coffeeId);
+
+                    List<ReviewDTO> reviewDTOs = latestReviews.stream()
+                            .map(reviewEntity -> {
+                                ReviewDTO dto = modelMapper.map(reviewEntity, ReviewDTO.class);
+                                // Assign missing attributes
+                                dto.setUserId(reviewEntity.getUser().getId());
+                                dto.setUserName(reviewEntity.getUser().getUsername());
+                                dto.setCoffeeId(reviewEntity.getCoffee().getId());
+                                return dto;
+                            })
+                            .collect(Collectors.toList());
+                    details.setLatestReviews(reviewDTOs);
+
+                    // Calculate the average rating
+                    Double avg = Optional.ofNullable(
+                            reviewRepository.findAverageRatingByCoffeeId(coffeeId)
+                    ).orElse(0.0);
+                    details.setAverageRating(avg);
+
+                    // Count the total number of reviews
+                    int count = reviewRepository.countByCoffeeId(coffeeId).intValue();
+                    details.setTotalReviewsCount(count);
+
+                    return details;
+                });
     }
 
     @Override

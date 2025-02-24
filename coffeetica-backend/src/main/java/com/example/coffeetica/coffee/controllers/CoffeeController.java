@@ -1,6 +1,7 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
+import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
 import com.example.coffeetica.coffee.models.enums.FlavorProfile;
 import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
@@ -32,16 +33,7 @@ public class CoffeeController {
     @Autowired
     private CoffeeService coffeeService;
 
-//    @GetMapping(path = "/api/coffees")
-//    public Page<CoffeeDTO> getAllCoffees(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "9") int size,
-//            @RequestParam(defaultValue = "id") String sortBy,
-//            @RequestParam(defaultValue = "desc") String direction) {
-//        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-//        Pageable pageable = PageRequest.of(page, size, sort);
-//        return coffeeService.findAllCoffees(pageable);
-//    }
+
 
     @GetMapping("/api/coffees")
     public Page<CoffeeDTO> getCoffees(
@@ -70,12 +62,12 @@ public class CoffeeController {
     }
 
     @GetMapping(path = "/api/coffees/{id}")
-    public ResponseEntity<CoffeeDTO> retrieveCoffee(@PathVariable Long id) {
-        final Optional<CoffeeDTO> foundCoffee = coffeeService.findCoffeeById(id);
-        return foundCoffee
-                .map(coffee -> new ResponseEntity<>(coffee, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<CoffeeDetailsDTO> getCoffeeDetails(@PathVariable Long id) {
+        Optional<CoffeeDetailsDTO> detailsOpt = coffeeService.findCoffeeDetails(id);
+        return detailsOpt.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
+
 
     @PostMapping(path = "/api/coffees")
     public ResponseEntity<CoffeeDTO> createCoffee(@RequestBody CoffeeDTO coffeeDTO) {
@@ -119,4 +111,26 @@ public class CoffeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
         }
     }
+
+// Old Methods:
+
+    //    @GetMapping(path = "/api/coffees/{id}")
+//    public ResponseEntity<CoffeeDTO> retrieveCoffee(@PathVariable Long id) {
+//        final Optional<CoffeeDTO> foundCoffee = coffeeService.findCoffeeById(id);
+//        return foundCoffee
+//                .map(coffee -> new ResponseEntity<>(coffee, HttpStatus.OK))
+//                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//    }
+
+    //    @GetMapping(path = "/api/coffees")
+//    public Page<CoffeeDTO> getAllCoffees(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "9") int size,
+//            @RequestParam(defaultValue = "id") String sortBy,
+//            @RequestParam(defaultValue = "desc") String direction) {
+//        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//        return coffeeService.findAllCoffees(pageable);
+//    }
+
 }

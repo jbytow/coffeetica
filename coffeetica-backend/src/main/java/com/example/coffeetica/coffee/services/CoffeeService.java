@@ -2,6 +2,7 @@ package com.example.coffeetica.coffee.services;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 
+import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
 import com.example.coffeetica.coffee.models.enums.FlavorProfile;
 import com.example.coffeetica.coffee.models.enums.Region;
 import com.example.coffeetica.coffee.models.enums.RoastLevel;
@@ -33,6 +34,8 @@ public interface CoffeeService {
     );
 
     Optional<CoffeeDTO> findCoffeeById(Long id);
+
+    Optional<CoffeeDetailsDTO> findCoffeeDetails(Long coffeeId);
 
     CoffeeDTO saveCoffee(CoffeeDTO coffeeDTO);
 
