@@ -33,9 +33,9 @@ const RoasteryFilterPanel: React.FC<RoasteryFilterProps> = ({
 
   return (
     <div className="filter-panel mb-4">
-      <div className="row align-items-center">
+      <div className="row g-3">
         {/* Name */}
-        <div className="col">
+        <div className="col-xl-2 col-lg-2 col-md-6 col-sm-12">
           <input
             type="text"
             className="form-control"
@@ -46,7 +46,7 @@ const RoasteryFilterPanel: React.FC<RoasteryFilterProps> = ({
         </div>
 
         {/* Country */}
-        <div className="col">
+        <div className="col-xl-2 col-lg-2 col-md-6 col-sm-12">
           <input
             type="text"
             className="form-control"
@@ -57,7 +57,7 @@ const RoasteryFilterPanel: React.FC<RoasteryFilterProps> = ({
         </div>
 
         {/* Min Founding Year */}
-        <div className="col">
+        <div className="col-xl-2 col-lg-2 col-md-6 col-sm-12">
           <input
             type="number"
             className="form-control"
@@ -70,7 +70,7 @@ const RoasteryFilterPanel: React.FC<RoasteryFilterProps> = ({
         </div>
 
         {/* Max Founding Year */}
-        <div className="col">
+        <div className="col-xl-2 col-lg-2 col-md-6 col-sm-12">
           <input
             type="number"
             className="form-control"
@@ -83,7 +83,7 @@ const RoasteryFilterPanel: React.FC<RoasteryFilterProps> = ({
         </div>
 
         {/* Buttons */}
-        <div className="col-auto d-flex justify-content-end">
+        <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 d-flex justify-content-end align-items-center">
           <button
             className="btn btn-outline-secondary me-2"
             onClick={handleClearFilters}
@@ -98,5 +98,6 @@ const RoasteryFilterPanel: React.FC<RoasteryFilterProps> = ({
     </div>
   );
 };
+
 
 export default RoasteryFilterPanel;

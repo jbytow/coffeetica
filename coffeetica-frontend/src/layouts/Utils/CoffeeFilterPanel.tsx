@@ -81,8 +81,11 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
   return (
     <div className="filter-panel mb-4">
       {error && <p className="text-danger">{error}</p>}
-      <div className="row">
-        <div className="col-2">
+
+      {/* Main filters + Show More and Search */}
+
+      <div className="row g-3">
+        <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
           <input
             type="text"
             className="form-control"
@@ -91,7 +94,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
             onChange={(e) => handleInputChange("name", e.target.value)}
           />
         </div>
-        <div className="col-2">
+        <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
           <select
             className="form-select"
             value={localFilters.roasteryName}
@@ -105,7 +108,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
             ))}
           </select>
         </div>
-        <div className="col-2">
+        <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
           <select
             className="form-select"
             value={localFilters.region}
@@ -119,7 +122,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
             ))}
           </select>
         </div>
-        <div className="col-2">
+        <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
           <select
             className="form-select"
             value={localFilters.roastLevel}
@@ -133,7 +136,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
             ))}
           </select>
         </div>
-        <div className="col-2">
+        <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
           <select
             className="form-select"
             value={localFilters.flavorProfile}
@@ -147,37 +150,33 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
             ))}
           </select>
         </div>
-        <div className="col-2 d-flex justify-content-between align-items-center">
+
+        {/* Last column */}
+        <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12 d-flex align-items-center justify-content-between">
           <button
-            className="btn btn-link d-flex align-items-center"
-            style={{
-              textDecoration: 'none',
-              color: 'inherit',
-              fontWeight: 'bold',
-            }}
+            className="btn btn-link text-decoration-none text-reset text-nowrap fw-bold d-flex align-items-center"
             onClick={() => setShowMore(!showMore)}
           >
             {showMore ? (
               <>
-                Show Less <i className="bi bi-chevron-up ms-2"></i>
+                Show Less <i className="bi bi-chevron-up ms-1"></i>
               </>
             ) : (
               <>
-                Show More <i className="bi bi-chevron-down ms-2"></i>
+                Show More <i className="bi bi-chevron-down ms-1"></i>
               </>
             )}
           </button>
-          <button
-            className="btn btn-light"
-            onClick={handleSearch}
-          >
+          <button className="btn btn-light" onClick={handleSearch}>
             <i className="bi bi-search" style={{ fontSize: '16px', color: '#000' }}></i>
           </button>
         </div>
       </div>
+
+      {/* Show more filters */}
       {showMore && (
-        <div className="row mt-3">
-          <div className="col-2">
+        <div className="row g-3 mt-2">
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
             <input
               type="text"
               className="form-control"
@@ -186,7 +185,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
               onChange={(e) => handleInputChange("countryOfOrigin", e.target.value)}
             />
           </div>
-          <div className="col-2">
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
             <input
               type="text"
               className="form-control"
@@ -195,7 +194,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
               onChange={(e) => handleInputChange("flavorNotes", e.target.value)}
             />
           </div>
-          <div className="col-2">
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
             <input
               type="text"
               className="form-control"
@@ -204,7 +203,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
               onChange={(e) => handleInputChange("processingMethod", e.target.value)}
             />
           </div>
-          <div className="col-2">
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
             <input
               type="number"
               className="form-control"
@@ -213,7 +212,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
               onChange={(e) => handleInputChange("minProductionYear", parseInt(e.target.value))}
             />
           </div>
-          <div className="col-2">
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12">
             <input
               type="number"
               className="form-control"
@@ -222,7 +221,7 @@ const CoffeeFilterPanel: React.FC<CoffeeFilterProps> = ({ filters, onFiltersSubm
               onChange={(e) => handleInputChange("maxProductionYear", e.target.value)}
             />
           </div>
-          <div className="col-2 d-flex justify-content-end align-items-center">
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-12 d-flex align-items-center justify-content-end">
             <button
               className="btn btn-outline-secondary"
               onClick={handleClearFilters}
