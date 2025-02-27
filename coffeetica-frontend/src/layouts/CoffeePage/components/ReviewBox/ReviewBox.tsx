@@ -29,79 +29,78 @@ export const ReviewBox: React.FC<ReviewBoxProps> = ({
         return null;
     }
 
-    // Unauthenticated user → show message
-    if (!isAuthenticated) {
-        return (
-            <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
-                <div className="card-body container">
-                    <h4 className="text-success">Leave a review</h4>
-                    <hr />
-                    <p>Sign in to be able to leave a review.</p>
-                    <Link to="/login" className="btn btn-primary">
-                        Sign in
-                    </Link>
-                </div>
-            </div>
-        );
-    }
-
-    // No existing review → allow user to create one (POST)
-    if (!userReview) {
-        return (
-            <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
-                <div className="card-body container">
-                    <h4 className="text-success">Add a Review</h4>
-                    <hr />
-                    <ReviewForm
-                        coffeeId={coffee.id}
-                        onSubmit={(data) => {
-                            createReview(data);
-                        }}
-                    />
-                </div>
-            </div>
-        );
-    }
-
-    // User is editing an existing review (PUT)
-    if (isEditing && userReview) {
-        return (
-            <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
-                <div className="card-body container">
-                    <h4 className="text-success">Edit Your Review</h4>
-                    <hr />
-                    <ReviewForm
-                        coffeeId={coffee.id}
-                        initialReview={userReview}
-                        onSubmit={(formData) => {
-                            // Create an object for the PUT request, including the review ID
-                            const updatedReview: ReviewRequestDTO = {
-                                coffeeId: coffee.id,
-                                rating: formData.rating,
-                                content: formData.content,
-                                brewingMethod: formData.brewingMethod,
-                                brewingDescription: formData.brewingDescription,
-                            };
-                            updateReview(userReview.id, updatedReview);
-                            setIsEditing(false);
-                        }}
-                        onCancel={() => setIsEditing(false)}
-                    />
-                </div>
-            </div>
-        );
-    }
-
-    // Existing review → display it
+  // Unauthenticated user → show message
+  if (!isAuthenticated) {
     return (
-        <div className="card col-12 col-md-6 col-lg-3 container d-flex mb-5">
-            <div className="card-body container">
-                <ReviewDisplay
-                    review={userReview}
-                    onEdit={() => setIsEditing(true)}
-                    onDelete={() => deleteReview(userReview.id)}
-                />
-            </div>
+      <div className="card mb-4">
+        <div className="card-body">
+          <h4 className="text-success">Leave a review</h4>
+          <hr />
+          <p>Sign in to be able to leave a review.</p>
+          <Link to="/login" className="btn btn-primary">
+            Sign in
+          </Link>
         </div>
+      </div>
     );
+  }
+
+  // No existing review → allow user to create one (POST)
+  if (!userReview) {
+    return (
+      <div className="card mb-4">
+        <div className="card-body">
+          <h4 className="text-success">Add a Review</h4>
+          <hr />
+          <ReviewForm
+            coffeeId={coffee.id}
+            onSubmit={(data) => {
+              createReview(data);
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // User is editing an existing review (PUT)
+  if (isEditing && userReview) {
+    return (
+      <div className="card mb-4">
+        <div className="card-body">
+          <h4 className="text-success">Edit Your Review</h4>
+          <hr />
+          <ReviewForm
+            coffeeId={coffee.id}
+            initialReview={userReview}
+            onSubmit={(formData) => {
+              const updatedReview: ReviewRequestDTO = {
+                coffeeId: coffee.id,
+                rating: formData.rating,
+                content: formData.content,
+                brewingMethod: formData.brewingMethod,
+                brewingDescription: formData.brewingDescription,
+              };
+              updateReview(userReview.id, updatedReview);
+              setIsEditing(false);
+            }}
+            onCancel={() => setIsEditing(false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Existing review → display it
+  return (
+    <div className="card mb-4">
+      <div className="card-body">
+        <ReviewDisplay
+          review={userReview}
+          onEdit={() => setIsEditing(true)}
+          onDelete={() => deleteReview(userReview.id)}
+        />
+      </div>
+    </div>
+  );
 };

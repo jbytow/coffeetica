@@ -126,59 +126,71 @@ export const CoffeePage = () => {
   const latestReviews = coffee?.latestReviews ?? [];
 
   return (
-    <div>
-      {/* Desktop version */}
-      <div className="container d-none d-lg-block">
-        <div className="row mt-5">
-          <div className="col-sm-2 col-md-2">
-            {coffee?.imageUrl ? (
-              <img
-                src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
-                width="226"
-                height="349"
-                alt="Coffee"
-              />
-            ) : (
-              <div>No Image Available</div>
-            )}
-          </div>
-          <div className="col-4 col-md-4 container">
-            <div className="ml-2">
-              <h2>{coffee?.name}</h2>
-              {totalReviewsCount > 0 ? (
-                <div className="d-flex align-items-center mb-3">
-                  <StarsDisplay rating={averageRating} />
-                  <span className="ms-2 text-muted">
-                    ({totalReviewsCount} reviews)
-                  </span>
-                </div>
-              ) : (
-                <p className="text-muted">No reviews yet</p>
-              )}
-              <p>
-                <strong>Country of Origin:</strong> {coffee?.countryOfOrigin}
-              </p>
-              <p>
-                <strong>Region:</strong> {coffee?.region}
-              </p>
-              <p>
-                <strong>Roast Level:</strong> {coffee?.roastLevel}
-              </p>
-              <p>
-                <strong>Flavor Profile:</strong> {coffee?.flavorProfile}
-              </p>
-              <p>
-                <strong>Notes:</strong> {coffee?.flavorNotes.join(", ")}
-              </p>
-              <p>
-                <strong>Processing Method:</strong> {coffee?.processingMethod}
-              </p>
-              <p>
-                <strong>Production Year:</strong> {coffee?.productionYear}
-              </p>
+    <div className="container mt-5">
+      {/* Rząd z obrazkiem, opisem i boxem recenzji - widoczne w każdej szerokości, a Bootstrap sam dostosuje kolumny */}
+      <div className="row">
+        {/* Kolumna z obrazkiem kawy */}
+        <div className="col-12 col-md-4 col-lg-3 mb-3" style={{ maxWidth: "400px" }}>
+  {coffee?.imageUrl ? (
+    <div
+      className="ratio"
+      style={{
+        aspectRatio: "300 / 400",
+      }}
+    >
+      <img
+        src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+        alt="Coffee"
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      />
+    </div>
+  ) : (
+    <div>No Image Available</div>
+  )}
+</div>
+
+        {/* Kolumna z informacjami o kawie */}
+        <div className="col-12 col-md-8 col-lg-5 mb-3">
+          <h2>{coffee?.name}</h2>
+          {totalReviewsCount > 0 ? (
+            <div className="d-flex align-items-center mb-3">
+              <StarsDisplay rating={averageRating} />
+              <span className="ms-2 text-muted">
+                ({totalReviewsCount} reviews)
+              </span>
             </div>
-          </div>
-          {/* Review Box */}
+          ) : (
+            <p className="text-muted">No reviews yet</p>
+          )}
+          <p>
+            <strong>Country of Origin:</strong> {coffee?.countryOfOrigin}
+          </p>
+          <p>
+            <strong>Region:</strong> {coffee?.region}
+          </p>
+          <p>
+            <strong>Roast Level:</strong> {coffee?.roastLevel}
+          </p>
+          <p>
+            <strong>Flavor Profile:</strong> {coffee?.flavorProfile}
+          </p>
+          <p>
+            <strong>Notes:</strong>{" "}
+            {coffee?.flavorNotes?.join(", ")}
+          </p>
+          <p>
+            <strong>Processing Method:</strong> {coffee?.processingMethod}
+          </p>
+          <p>
+            <strong>Production Year:</strong> {coffee?.productionYear}
+          </p>
+        </div>
+
+        {/* Kolumna z ReviewBox */}
+        <div className="col-12 col-lg-4">
           <ReviewBox
             coffee={coffee}
             userReview={userReview}
@@ -187,79 +199,16 @@ export const CoffeePage = () => {
             deleteReview={deleteReview}
           />
         </div>
-        <hr />
-        <LatestReviews
-          reviews={latestReviews}
-          coffeeId={coffee?.id}
-          mobile={false}
-        />
       </div>
 
-      {/* Mobile version */}
-      <div className="container d-lg-none mt-5">
-        <div className="d-flex justify-content-center align-items-center">
-          {coffee?.imageUrl ? (
-            <img
-              src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
-              width="226"
-              height="349"
-              alt="Coffee"
-            />
-          ) : (
-            <div>No Image Available</div>
-          )}
-        </div>
-        <div className="col-4 col-md-4 container">
-          <div className="ml-2">
-            <h2>{coffee?.name}</h2>
-            {totalReviewsCount > 0 ? (
-              <div className="d-flex align-items-center mb-3">
-                <StarsDisplay rating={averageRating} />
-                <span className="ms-2 text-muted">
-                  ({totalReviewsCount} reviews)
-                </span>
-              </div>
-            ) : (
-              <p className="text-muted">No reviews yet</p>
-            )}
-            <p>
-              <strong>Country of Origin:</strong> {coffee?.countryOfOrigin}
-            </p>
-            <p>
-              <strong>Region:</strong> {coffee?.region}
-            </p>
-            <p>
-              <strong>Roast Level:</strong> {coffee?.roastLevel}
-            </p>
-            <p>
-              <strong>Flavor Profile:</strong> {coffee?.flavorProfile}
-            </p>
-            <p>
-              <strong>Notes:</strong> {coffee?.flavorNotes.join(", ")}
-            </p>
-            <p>
-              <strong>Processing Method:</strong> {coffee?.processingMethod}
-            </p>
-            <p>
-              <strong>Production Year:</strong> {coffee?.productionYear}
-            </p>
-            {/* Review Box */}
-            <ReviewBox
-              coffee={coffee}
-              userReview={userReview}
-              createReview={createReview}
-              updateReview={updateReview}
-              deleteReview={deleteReview}
-            />
-          </div>
-        </div>
-        <hr />
-        <LatestReviews
-          reviews={latestReviews}
-          coffeeId={coffee?.id}
-          mobile={true}
-        />
-      </div>
+      <hr />
+
+      {/* Komponent z najnowszymi recenzjami */}
+      <LatestReviews
+        reviews={latestReviews}
+        coffeeId={coffee?.id}
+        mobile={false} 
+      />
     </div>
   );
 };
