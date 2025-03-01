@@ -5,6 +5,7 @@ import apiClient from "../../lib/api";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import RoasteryFilterPanel from "../Utils/RoasteryFilterPanel";
 import { Pagination } from "../Utils/Pagination";
+import { Link } from "react-router-dom";
 
 const RoasteriesListPage: React.FC = () => {
     const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);
@@ -107,8 +108,13 @@ const RoasteriesListPage: React.FC = () => {
                         <div className="col-md-9">
                             <div className="card-body">
                                 <div className="row align-items-center mb-2">
-                                    <div className="col-md-5">
-                                            <h5 className="card-title">{roastery.name}</h5>
+                                <div className="col-md-5">
+                                        <Link
+                                            to={`/roasteries/${roastery.id}`}
+                                            className="fs-4 text-decoration-none"
+                                        >
+                                            {roastery.name}
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="row">

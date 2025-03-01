@@ -13,4 +13,6 @@ public interface CoffeeRepository extends JpaRepository<CoffeeEntity, Long>, Jpa
 
     Page<CoffeeEntity> findAll(Pageable pageable);
 
+    Page<CoffeeEntity> findByRoasteryId(Long roasteryId, Pageable pageable);
+
 }

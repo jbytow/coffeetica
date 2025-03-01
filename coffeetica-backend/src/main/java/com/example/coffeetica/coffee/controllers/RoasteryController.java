@@ -1,16 +1,15 @@
 package com.example.coffeetica.coffee.controllers;
 
+import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.RoasteryDTO;
-import com.example.coffeetica.coffee.models.RoasteryEntity;
+import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.services.RoasteryService;
-import com.example.coffeetica.coffee.specification.RoasterySpecification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +29,9 @@ public class RoasteryController {
 
     @Autowired
     private RoasteryService roasteryService;
+
+    @Autowired
+    private CoffeeService coffeeService;
 
     @GetMapping("/api/roasteries")
     public List<RoasteryDTO> getAllRoasteries() {
@@ -61,6 +63,23 @@ public class RoasteryController {
         return roasteryDTO
                 .map(roastery -> new ResponseEntity<>(roastery, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/api/roasteries/{id}/coffees")
+    public ResponseEntity<Page<CoffeeDTO>> getAllCoffeesByRoasteryId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+
+        if (!roasteryService.isRoasteryExists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Page<CoffeeDTO> coffees = coffeeService.findCoffeesByRoasteryId(id, page, size, sortBy, direction);
+        return ResponseEntity.ok(coffees);
     }
 
     @PostMapping("/api/roasteries")

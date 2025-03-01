@@ -17,6 +17,7 @@ import CoffeesListPage from './layouts/CoffeesListPage/CoffeesListPage';
 import RoasteriesListPage from './layouts/RoasteriesListPage/RoasteriesListPage';
 import { AuthProvider } from './auth/AuthContext';
 import { ReviewListPage } from './layouts/CoffeePage/components/ReviewListPage/ReviewListPage';
+import { RoasteryPage } from './layouts/RoasteryPage/RoasteryPage';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
 
             {/* Roasteries and Coffees Pages */}
             <Route path="/roasteries" element={<RoasteriesListPage />} />
+            <Route path="/roasteries/:id" element={<RoasteryPage />} />
             <Route path="/coffees" element={<CoffeesListPage />} />
             <Route path="/coffees/:id" element={<CoffeePage />} />
             <Route path="/coffees/:coffeeId/reviews" element={<ReviewListPage />} />

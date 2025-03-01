@@ -11,6 +11,8 @@ import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.specification.CoffeeSpecification;
 
 import com.example.coffeetica.utility.FileHelper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -109,6 +111,26 @@ public class CoffeeServiceImpl implements CoffeeService {
 
                     return details;
                 });
+    }
+
+    @Override
+    public Page<CoffeeDTO> findCoffeesByRoasteryId(Long roasteryId,
+                                                   int page,
+                                                   int size,
+                                                   String sortBy,
+                                                   String direction) {
+        // sorting and pagination
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // repository
+        Page<CoffeeEntity> coffeeEntities =
+                coffeeRepository.findByRoasteryId(roasteryId, pageable);
+
+        // mapping
+        return coffeeEntities.map(entity -> modelMapper.map(entity, CoffeeDTO.class));
     }
 
     @Override

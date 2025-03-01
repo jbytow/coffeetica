@@ -37,6 +37,8 @@ public interface CoffeeService {
 
     Optional<CoffeeDetailsDTO> findCoffeeDetails(Long coffeeId);
 
+    Page<CoffeeDTO> findCoffeesByRoasteryId(Long roasteryId, int page, int size, String sortBy, String direction);
+
     CoffeeDTO saveCoffee(CoffeeDTO coffeeDTO);
 
     CoffeeDTO updateCoffee(Long id, CoffeeDTO coffeeDTODetails);
