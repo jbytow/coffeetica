@@ -7,13 +7,16 @@ import { CoffeeDTO } from "../../models/CoffeeDTO";
 import { FeaturedCoffee } from "./components/FeaturedCoffee";
 import { LatestCoffees } from "./components/LatestCoffees";
 
+/**
+ * Displays roastery details along with its featured coffee and latest added coffees.
+ */
 export const RoasteryPage = () => {
     const [roastery, setRoastery] = useState<RoasteryDTO | undefined>();
     const [latestCoffees, setLatestCoffees] = useState<CoffeeDTO[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [httpError, setHttpError] = useState<string | null>(null);
   
-    // Odczytujemy roasteryId z URL
+    // Extract roasteryId from URL parameters
     const { id } = useParams<{ id: string }>();
     const roasteryId = id ? Number(id) : null;
   
@@ -25,17 +28,17 @@ export const RoasteryPage = () => {
         }
   
         try {
-          // 1) Pobranie szczegółów palarni
+          // Fetch roastery details from the backend
           const roasteryResponse = await apiClient.get<RoasteryDTO>(
             `/roasteries/${roasteryId}`
           );
           setRoastery(roasteryResponse.data);
   
-          // 2) Pobranie najnowszych kaw tej palarni (3 ostatnie)
-          //    Zwracane jest Page<CoffeeDTO>, więc trzeba użyć .content
-          const coffeesResponse = await apiClient.get<{
-            content: CoffeeDTO[];
-          }>(`/roasteries/${roasteryId}/coffees?page=0&size=3&sortBy=id&direction=desc`);
+          // Fetch latest coffees for the roastery (first 3 items)
+          // The backend returns a Page<CoffeeDTO> so we use the content field
+          const coffeesResponse = await apiClient.get<{ content: CoffeeDTO[] }>(
+            `/roasteries/${roasteryId}/coffees?page=0&size=3&sortBy=id&direction=desc`
+          );
           setLatestCoffees(coffeesResponse.data.content);
         } catch (error: any) {
           setHttpError(error.message);
@@ -59,7 +62,7 @@ export const RoasteryPage = () => {
       );
     }
   
-    // Jeśli brak danych o palarni (np. 404)
+    // If roastery details are not found (e.g. 404)
     if (!roastery) {
       return (
         <div className="container mt-5">
@@ -71,11 +74,8 @@ export const RoasteryPage = () => {
     return (
       <div className="container mt-5">
         <div className="row">
-          {/* Kolumna z obrazkiem palarni */}
-          <div
-            className="col-12 col-md-4 col-lg-3 mb-3"
-            style={{ maxWidth: "400px" }}
-          >
+          {/* Column for roastery image */}
+          <div className="col-12 col-md-4 col-lg-3 mb-3" style={{ maxWidth: "400px" }}>
             {roastery.imageUrl ? (
               <div className="ratio" style={{ aspectRatio: "300 / 400" }}>
                 <img
@@ -89,7 +89,7 @@ export const RoasteryPage = () => {
             )}
           </div>
   
-          {/* Kolumna z informacjami o palarni */}
+          {/* Column for roastery details */}
           <div className="col-12 col-md-8 col-lg-5 mb-3">
             <h2>{roastery.name}</h2>
             <p>
@@ -101,18 +101,14 @@ export const RoasteryPage = () => {
             {roastery.websiteUrl && (
               <p>
                 <strong>Website:</strong>{" "}
-                <a
-                  href={roastery.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={roastery.websiteUrl} target="_blank" rel="noopener noreferrer">
                   {roastery.websiteUrl}
                 </a>
               </p>
             )}
           </div>
   
-          {/* (Opcjonalnie) Miejsce na np. komponent FeaturedCoffee, itp. */}
+          {/* Column for featured coffee component */}
           <div className="col-12 col-lg-4">
             <FeaturedCoffee roasteryId={roasteryId} />
           </div>
@@ -120,8 +116,8 @@ export const RoasteryPage = () => {
   
         <hr />
   
-        {/* Sekcja z najnowszymi kawami w osobnym komponencie */}
-        <LatestCoffees coffees={latestCoffees} roasteryName={roastery?.name}/>
+        {/* Section displaying the latest added coffees */}
+        <LatestCoffees coffees={latestCoffees} roasteryName={roastery.name} />
       </div>
     );
   };

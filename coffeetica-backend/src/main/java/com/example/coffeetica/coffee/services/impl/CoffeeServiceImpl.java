@@ -134,6 +134,17 @@ public class CoffeeServiceImpl implements CoffeeService {
     }
 
     @Override
+    public CoffeeDetailsDTO findFeaturedCoffee(Long roasteryId) {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<CoffeeEntity> page = coffeeRepository.findFeaturedCoffeeByRoasteryId(roasteryId, pageable);
+        if (page.hasContent()) {
+            Long coffeeId = page.getContent().get(0).getId();
+            return findCoffeeDetails(coffeeId).orElse(null);
+        }
+        return null;
+    }
+
+    @Override
     public CoffeeDTO saveCoffee(CoffeeDTO coffeeDTO) {
         CoffeeEntity entity = modelMapper.map(coffeeDTO, CoffeeEntity.class);
         CoffeeEntity savedEntity = coffeeRepository.save(entity);

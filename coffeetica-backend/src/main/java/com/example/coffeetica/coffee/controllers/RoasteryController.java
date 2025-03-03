@@ -1,6 +1,7 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
+import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
 import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.services.RoasteryService;
@@ -80,6 +81,16 @@ public class RoasteryController {
 
         Page<CoffeeDTO> coffees = coffeeService.findCoffeesByRoasteryId(id, page, size, sortBy, direction);
         return ResponseEntity.ok(coffees);
+    }
+
+    @GetMapping("/api/roasteries/{id}/featured-coffee")
+    public ResponseEntity<CoffeeDetailsDTO> getFeaturedCoffee(@PathVariable("id") Long id) {
+        CoffeeDetailsDTO featuredCoffee = coffeeService.findFeaturedCoffee(id);
+        if (featuredCoffee != null) {
+            return ResponseEntity.ok(featuredCoffee);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/api/roasteries")
