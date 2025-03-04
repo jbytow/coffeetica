@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ public class CoffeeController {
 
 
     @GetMapping("/api/coffees")
+    @PreAuthorize("permitAll()")
     public Page<CoffeeDTO> getCoffees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String countryOfOrigin,
@@ -62,6 +64,7 @@ public class CoffeeController {
     }
 
     @GetMapping(path = "/api/coffees/{id}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CoffeeDetailsDTO> getCoffeeDetails(@PathVariable Long id) {
         Optional<CoffeeDetailsDTO> detailsOpt = coffeeService.findCoffeeDetails(id);
         return detailsOpt.map(ResponseEntity::ok)
@@ -70,23 +73,27 @@ public class CoffeeController {
 
 
     @PostMapping(path = "/api/coffees")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<CoffeeDTO> createCoffee(@RequestBody CoffeeDTO coffeeDTO) {
         CoffeeDTO savedCoffeeDTO = coffeeService.saveCoffee(coffeeDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCoffeeDTO);
     }
 
     @PutMapping("/api/coffees/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public CoffeeDTO updateCoffee(@PathVariable Long id, @RequestBody CoffeeDTO coffeeDTODetails) {
         return coffeeService.updateCoffee(id, coffeeDTODetails);
     }
 
     @DeleteMapping("/api/coffees/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity deleteCoffee(@PathVariable Long id) {
         coffeeService.deleteCoffee(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/api/coffees/{id}/upload-image")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<String> uploadCoffeeImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) {
@@ -111,26 +118,4 @@ public class CoffeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
         }
     }
-
-// Old Methods:
-
-    //    @GetMapping(path = "/api/coffees/{id}")
-//    public ResponseEntity<CoffeeDTO> retrieveCoffee(@PathVariable Long id) {
-//        final Optional<CoffeeDTO> foundCoffee = coffeeService.findCoffeeById(id);
-//        return foundCoffee
-//                .map(coffee -> new ResponseEntity<>(coffee, HttpStatus.OK))
-//                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//    }
-
-    //    @GetMapping(path = "/api/coffees")
-//    public Page<CoffeeDTO> getAllCoffees(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "9") int size,
-//            @RequestParam(defaultValue = "id") String sortBy,
-//            @RequestParam(defaultValue = "desc") String direction) {
-//        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-//        Pageable pageable = PageRequest.of(page, size, sort);
-//        return coffeeService.findAllCoffees(pageable);
-//    }
-
 }

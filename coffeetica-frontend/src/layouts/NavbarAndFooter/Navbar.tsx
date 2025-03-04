@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../../auth/AuthContext';
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const { isAuthenticated, hasRole, user, logout } = useContext(AuthContext);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark py-3">
@@ -31,6 +31,17 @@ const Navbar: React.FC = () => {
             <li className="nav-item">
               <Link className="nav-link" to="/contact">Contact</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/coffees">Coffees</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/roasteries">Roasteries</Link>
+            </li>
+            {isAuthenticated && hasRole("Admin") && (
+            <li className="nav-item">
+              <Link className="nav-link" to="/admin">Admin</Link>
+            </li>
+            )}
           </ul>
           <ul className="navbar-nav">
             {isAuthenticated ? (

@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ManageCoffees from "./components/ManageCoffees/ManageCoffees";
 import ManageRoasteries from "./components/ManageRoasteries/ManageRoasteries";
+import { AuthContext } from "../../auth/AuthContext";
+import { Navigate } from "react-router-dom";
 // In the future, you can add more sections like ManageUsers
 // import ManageUsers from "./ManageUsers";
 
 const AdminPage: React.FC = () => {
   // State to keep track of the currently active section
+  const {  hasRole } = useContext(AuthContext);
   const [activeSection, setActiveSection] = useState("coffees");
+
+  if (!hasRole("Admin")) {
+    return <Navigate to="/" replace />;
+  }
 
   // Function to render the appropriate section based on the active state
   const renderActiveSection = () => {

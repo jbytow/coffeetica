@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,11 +36,13 @@ public class RoasteryController {
     private CoffeeService coffeeService;
 
     @GetMapping("/api/roasteries")
+    @PreAuthorize("permitAll()")
     public List<RoasteryDTO> getAllRoasteries() {
         return roasteryService.findAllRoasteries();
     }
 
     @GetMapping("/api/roasteries/filter")
+    @PreAuthorize("permitAll()")
     public Page<RoasteryDTO> getFilteredRoasteries(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String country,
@@ -59,6 +62,7 @@ public class RoasteryController {
     }
 
     @GetMapping("/api/roasteries/{id}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<RoasteryDTO> getRoasteryById(@PathVariable Long id) {
         Optional<RoasteryDTO> roasteryDTO = roasteryService.findRoasteryById(id);
         return roasteryDTO
@@ -67,6 +71,7 @@ public class RoasteryController {
     }
 
     @GetMapping("/api/roasteries/{id}/coffees")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Page<CoffeeDTO>> getAllCoffeesByRoasteryId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
@@ -84,6 +89,7 @@ public class RoasteryController {
     }
 
     @GetMapping("/api/roasteries/{id}/featured-coffee")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CoffeeDetailsDTO> getFeaturedCoffee(@PathVariable("id") Long id) {
         CoffeeDetailsDTO featuredCoffee = coffeeService.findFeaturedCoffee(id);
         if (featuredCoffee != null) {
@@ -94,12 +100,14 @@ public class RoasteryController {
     }
 
     @PostMapping("/api/roasteries")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<RoasteryDTO> createRoastery(@RequestBody RoasteryDTO roasteryDTO) {
         RoasteryDTO savedRoasteryDTO = roasteryService.saveRoastery(roasteryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRoasteryDTO);
     }
 
     @PutMapping("/api/roasteries/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<RoasteryDTO> updateRoastery(@PathVariable Long id, @RequestBody RoasteryDTO roasteryDetails) {
         try {
             RoasteryDTO updatedRoasteryDTO = roasteryService.updateRoastery(id, roasteryDetails);
@@ -110,6 +118,7 @@ public class RoasteryController {
     }
 
     @DeleteMapping("/api/roasteries/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity deleteRoastery(@PathVariable Long id) {
         roasteryService.deleteRoastery(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -117,6 +126,7 @@ public class RoasteryController {
 
 
     @PostMapping("/api/roasteries/{id}/upload-image")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<String> uploadRoasteryImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) {

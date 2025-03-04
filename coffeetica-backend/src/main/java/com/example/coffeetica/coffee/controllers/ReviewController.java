@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,11 +32,13 @@ public class ReviewController {
     ReviewRepository reviewRepository;
 
     @GetMapping("/api/reviews/all")
+    @PreAuthorize("permitAll()")
     public List<ReviewDTO> getAllReviews() {
         return reviewService.findAllReviews();
     }
 
     @GetMapping("/api/reviews")
+    @PreAuthorize("permitAll()")
     public Page<ReviewDTO> getReviewsByCoffeeId(
             @RequestParam Long coffeeId,
             @RequestParam(defaultValue = "0") int page,
@@ -66,6 +69,7 @@ public class ReviewController {
     }
 
     @GetMapping("/api/reviews/{id}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long id) {
         Optional<ReviewDTO> reviewDTO = reviewService.findReviewById(id);
         return reviewDTO
@@ -74,6 +78,7 @@ public class ReviewController {
     }
 
     @GetMapping("/api/reviews/user")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewDTO> getUserReview(
             @RequestParam Long coffeeId,
             @RequestHeader("Authorization") String token) {
@@ -84,12 +89,14 @@ public class ReviewController {
     }
 
     @PostMapping("/api/reviews")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewDTO> createReview(@Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
         ReviewDTO savedReviewDTO = reviewService.saveReview(reviewRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReviewDTO);
     }
 
     @PutMapping("/api/reviews/{id}")
+    @PreAuthorize("hasRole('Admin') or @securityService.isReviewOwner(#id)")
     public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
             ReviewDTO updatedReviewDTO = reviewService.updateReview(id, reviewRequestDTO);
@@ -100,6 +107,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/api/reviews/{id}")
+    @PreAuthorize("hasRole('Admin') or @securityService.isReviewOwner(#id)")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

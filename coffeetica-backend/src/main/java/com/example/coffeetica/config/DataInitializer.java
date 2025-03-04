@@ -29,6 +29,9 @@ public class DataInitializer {
     @Value("${superadmin.username:superadmin}")
     private String superAdminUsername;
 
+    @Value("${superadmin.username:superadmin@email.com}")
+    private String superAdminEmail;
+
     @Value("${superadmin.password:superadminpassword}")
     private String superAdminPassword;
 
@@ -41,11 +44,18 @@ public class DataInitializer {
         if (!userRepository.existsByUsername(superAdminUsername)) {
             RoleEntity superAdminRole = roleRepository.findByName("SuperAdmin")
                     .orElseThrow(() -> new RuntimeException("Role not found: SuperAdmin"));
+
+            RoleEntity adminRole = roleRepository.findByName("Admin")
+                    .orElseThrow(() -> new RuntimeException("Role not found: Admin"));
+
             Set<RoleEntity> roles = new HashSet<>();
             roles.add(superAdminRole);
+            roles.add(adminRole);
+
 
             UserEntity superAdmin = new UserEntity();
             superAdmin.setUsername(superAdminUsername);
+            superAdmin.setEmail(superAdminEmail);
             superAdmin.setPassword(passwordEncoder.encode(superAdminPassword));
             superAdmin.setRoles(roles);
 

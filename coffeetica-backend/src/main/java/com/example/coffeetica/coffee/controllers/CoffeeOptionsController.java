@@ -1,6 +1,7 @@
 package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.services.CoffeeOptionsService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/coffees/options")
+@RequestMapping
 public class CoffeeOptionsController {
 
     private final CoffeeOptionsService coffeeOptionsService;
@@ -17,17 +18,20 @@ public class CoffeeOptionsController {
         this.coffeeOptionsService = coffeeOptionsService;
     }
 
-    @GetMapping("/flavor-profiles")
+    @GetMapping("/api/coffees/options/flavor-profiles")
+    @PreAuthorize("permitAll()")
     public List<String> getFlavorProfiles() {
         return coffeeOptionsService.getFlavorProfiles();
     }
 
-    @GetMapping("/regions")
+    @GetMapping("/api/coffees/options/regions")
+    @PreAuthorize("permitAll()")
     public List<String> getRegions() {
         return coffeeOptionsService.getRegions();
     }
 
-    @GetMapping("/roast-levels")
+    @GetMapping("/api/coffees/options/roast-levels")
+    @PreAuthorize("permitAll()")
     public List<String> getRoastLevels() {
         return coffeeOptionsService.getRoastLevels();
     }

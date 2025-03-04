@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class UserController {
     private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/api/users/register")
+    @PreAuthorize("permitAll()") // Public endpoint
     public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
         logger.debug("Attempting to register user {}", userDTO.getUsername());
         try {
@@ -48,6 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
         String username = jwtTokenProvider.getIdentifierFromJWT(token.replace("Bearer ", ""));
         UserEntity user = userRepository.findByUsername(username)
@@ -62,6 +65,7 @@ public class UserController {
     }
 
     @PutMapping("/api/users/{id}")
+    @PreAuthorize("hasRole('Admin') or @securityService.getCurrentUserId() == #id")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         logger.debug("Attempting to update user {}", id);
         try {
@@ -76,6 +80,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         logger.debug("Attempting to delete user {}", id);
         try {
