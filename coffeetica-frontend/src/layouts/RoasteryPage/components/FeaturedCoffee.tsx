@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../../lib/api";
 import { CoffeeDetailsDTO } from "../../../models/CoffeeDetailsDTO";
-import { StarsDisplay } from "../../Utils/StarsDisplay";
-import { SpinnerLoading } from "../../Utils/SpinnerLoading";
+import { StarsDisplay } from "../../Utils/reviews/StarsDisplay";
+import { SpinnerLoading } from "../../Utils/ui/SpinnerLoading";
 
 
 interface FeaturedCoffeeProps {

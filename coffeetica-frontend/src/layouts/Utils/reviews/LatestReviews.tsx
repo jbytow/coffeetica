@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ReviewDTO } from "../../../models/ReviewDTO";
-import { Review } from "../../Utils/Review";
+import { Review } from "./Review";
 
 interface LatestReviewsProps {
   reviews: ReviewDTO[];

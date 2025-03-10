@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ReviewDTO } from "../../../../models/ReviewDTO";
 import apiClient from "../../../../lib/api";
-import { SpinnerLoading } from "../../../Utils/SpinnerLoading";
-import { Review } from "../../../Utils/Review";
-import { Pagination } from "../../../Utils/Pagination";
+import { SpinnerLoading } from "../../../Utils/ui/SpinnerLoading";
+import { Review } from "../../../Utils/reviews/Review";
+import { Pagination } from "../../../Utils/ui/Pagination";
 
 export const ReviewListPage = () => {
     const { coffeeId } = useParams<{ coffeeId: string }>();

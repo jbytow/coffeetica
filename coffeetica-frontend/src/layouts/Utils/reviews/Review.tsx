@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ReviewDTO } from "../../models/ReviewDTO";
+import { ReviewDTO } from "../../../models/ReviewDTO";
 import { StarsDisplay } from "./StarsDisplay";
 import { Link } from "react-router-dom";
 

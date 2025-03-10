@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { CoffeeDTO } from "../../models/CoffeeDTO";
 import { CoffeeFilters } from "../../models/CofffeeFilters";
 import apiClient from "../../lib/api";
-import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import CoffeeFilterPanel from "../Utils/CoffeeFilterPanel";
-import { Pagination } from "../Utils/Pagination";
+import { SpinnerLoading } from "../Utils/ui/SpinnerLoading";
+import CoffeeFilterPanel from "../Utils/filters/CoffeeFilterPanel";
+import { Pagination } from "../Utils/ui/Pagination";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const CoffeesListPage: React.FC = () => {

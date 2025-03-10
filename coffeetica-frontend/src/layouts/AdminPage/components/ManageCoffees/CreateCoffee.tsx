@@ -3,7 +3,7 @@ import { CoffeeDTO } from "../../../../models/CoffeeDTO";
 import apiClient from "../../../../lib/api";
 import { RoasteryDTO } from "../../../../models/RoasteryDTO";
 import { useNavigate } from "react-router-dom";
-import SearchableDropdown from "../../../Utils/SearchableDropdown";
+import SearchableDropdown from "../../../Utils/ui/SearchableDropdown";
 
 const CreateCoffee: React.FC = () => {
   const [roasteries, setRoasteries] = useState<RoasteryDTO[]>([]);

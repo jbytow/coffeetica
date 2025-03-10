@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { RoasteryDTO } from "../../models/RoasteryDTO";
 import { RoasteryFilters } from "../../models/RoasteryFilters";
 import apiClient from "../../lib/api";
-import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import RoasteryFilterPanel from "../Utils/RoasteryFilterPanel";
-import { Pagination } from "../Utils/Pagination";
+import { SpinnerLoading } from "../Utils/ui/SpinnerLoading";
+import RoasteryFilterPanel from "../Utils/filters/RoasteryFilterPanel";
+import { Pagination } from "../Utils/ui/Pagination";
 import { Link } from "react-router-dom";
 
 const RoasteriesListPage: React.FC = () => {

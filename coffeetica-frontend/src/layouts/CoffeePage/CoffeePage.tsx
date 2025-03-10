@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import apiClient from "../../lib/api";
-import { SpinnerLoading } from "../Utils/SpinnerLoading";
+import { SpinnerLoading } from "../Utils/ui/SpinnerLoading";
 import { ReviewBox } from "./components/ReviewBox/ReviewBox";
-import { LatestReviews } from "./components/LatestReviews";
+import { LatestReviews } from "../Utils/reviews/LatestReviews";
 import { ReviewRequestDTO } from "../../models/ReviewRequestDTO";
 import { ReviewDTO } from "../../models/ReviewDTO";
 import { AuthContext } from "../../auth/AuthContext";
 import { Link, useParams } from "react-router-dom";
-import { StarsDisplay } from "../Utils/StarsDisplay";
+import { StarsDisplay } from "../Utils/reviews/StarsDisplay";
 import { CoffeeDetailsDTO } from "../../models/CoffeeDetailsDTO";
 
 /**

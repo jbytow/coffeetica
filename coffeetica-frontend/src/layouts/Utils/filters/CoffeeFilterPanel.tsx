@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import apiClient from '../../lib/api';
-import { CoffeeFilters } from '../../models/CofffeeFilters';
-import { RoasteryDTO } from '../../models/RoasteryDTO';
+import apiClient from '../../../lib/api';
+import { CoffeeFilters } from '../../../models/CofffeeFilters';
+import { RoasteryDTO } from '../../../models/RoasteryDTO';
 
 interface CoffeeFilterProps {
   filters: CoffeeFilters;

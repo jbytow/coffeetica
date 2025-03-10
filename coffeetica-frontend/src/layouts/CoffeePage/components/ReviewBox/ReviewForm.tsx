@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { ReviewRequestDTO } from "../../../../models/ReviewRequestDTO";
-import { StarsSelector } from "../../../Utils/StarsSelector";
+import { StarsSelector } from "../../../Utils/reviews/StarsSelector";
 import { ReviewDTO } from "../../../../models/ReviewDTO";
 
 interface ReviewFormProps {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { RoasteryFilters } from "../../models/RoasteryFilters";
+import { RoasteryFilters } from "../../../models/RoasteryFilters";
 
 interface RoasteryFilterProps {
   filters: RoasteryFilters;

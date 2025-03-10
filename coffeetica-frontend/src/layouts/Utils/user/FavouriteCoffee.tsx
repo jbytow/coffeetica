@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { CoffeeDetailsDTO } from "../../models/CoffeeDetailsDTO";
-import apiClient from "../../lib/api";
-import { SpinnerLoading } from "./SpinnerLoading";
-import { StarsDisplay } from "./StarsDisplay";
+import { CoffeeDetailsDTO } from "../../../models/CoffeeDetailsDTO";
+import apiClient from "../../../lib/api";
+import { SpinnerLoading } from "../ui/SpinnerLoading";
+import { StarsDisplay } from "../reviews/StarsDisplay";
 
 interface FavouriteCoffeeProps {
   userId: number;

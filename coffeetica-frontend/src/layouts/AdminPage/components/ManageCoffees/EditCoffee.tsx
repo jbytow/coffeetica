@@ -4,8 +4,8 @@ import apiClient from "../../../../lib/api";
 
 import { CoffeeDTO } from "../../../../models/CoffeeDTO";
 import { RoasteryDTO } from "../../../../models/RoasteryDTO";
-import { SpinnerLoading } from "../../../Utils/SpinnerLoading";
-import SearchableDropdown from "../../../Utils/SearchableDropdown";
+import { SpinnerLoading } from "../../../Utils/ui/SpinnerLoading";
+import SearchableDropdown from "../../../Utils/ui/SearchableDropdown";
 
 const EditCoffee: React.FC = () => {
   const { id } = useParams<{ id: string }>();

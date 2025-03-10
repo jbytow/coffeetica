@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../lib/api";
-import { SpinnerLoading } from "../Utils/SpinnerLoading";
+import { SpinnerLoading } from "../Utils/ui/SpinnerLoading";
 import { useParams } from "react-router-dom";
 import { RoasteryDTO } from "../../models/RoasteryDTO";
 import { CoffeeDTO } from "../../models/CoffeeDTO";

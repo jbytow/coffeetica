@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ReviewDTO } from "../../../../models/ReviewDTO";
-import { StarsDisplay } from "../../../Utils/StarsDisplay";
+import { StarsDisplay } from "../../../Utils/reviews/StarsDisplay";
 
 interface ReviewDisplayProps {
   review: ReviewDTO;

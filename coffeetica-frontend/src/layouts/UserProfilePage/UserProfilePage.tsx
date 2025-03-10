@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../auth/AuthContext";
 import { UserDTO } from "../../models/UserDTO";
 import apiClient from "../../lib/api";
-import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import { FavouriteCoffee } from "../Utils/FavouriteCoffee";
+import { SpinnerLoading } from "../Utils/ui/SpinnerLoading";
+import { FavouriteCoffee } from "../Utils/user/FavouriteCoffee";
 import { useNavigate } from "react-router-dom";
 import { ReviewDTO } from "../../models/ReviewDTO";
-import { LatestReviews } from "../CoffeePage/components/LatestReviews";
+import { LatestReviews } from "../Utils/reviews/LatestReviews";
 
 /**
  * Displays and manages the currently authenticated user's profile information,
