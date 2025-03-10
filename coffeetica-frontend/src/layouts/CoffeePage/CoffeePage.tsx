@@ -203,11 +203,12 @@ export const CoffeePage = () => {
 
       <hr />
 
-      {/* Component displaying the latest reviews */}
+      {/* LatestReviews for coffee => show userName, i.e. showCoffeeInsteadOfUser={false} */}
       <LatestReviews
         reviews={latestReviews}
         coffeeId={coffee?.id}
         mobile={false}
+        showCoffeeInsteadOfUser={false}
       />
     </div>
   );

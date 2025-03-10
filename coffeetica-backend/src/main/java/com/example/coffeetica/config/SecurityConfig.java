@@ -53,8 +53,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // Publicly accessible endpoints (no authentication required)
-                        .requestMatchers(HttpMethod.GET, "/api/coffees/**").permitAll() // Coffee catalog
                         .requestMatchers(HttpMethod.GET, "/api/roasteries/**").permitAll() // Roasteries catalog
+                        .requestMatchers(HttpMethod.GET, "/api/coffees/**").permitAll() // Coffee catalog
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll() // Reviews catalog
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll() // Static image uploads
 
                         // Authentication and registration endpoints (public)

@@ -39,33 +39,40 @@ public class ReviewController {
 
     @GetMapping("/api/reviews")
     @PreAuthorize("permitAll()")
-    public Page<ReviewDTO> getReviewsByCoffeeId(
-            @RequestParam Long coffeeId,
+    public Page<ReviewDTO> getReviews(
+            @RequestParam(required = false) Long coffeeId,
+            @RequestParam(required = false) Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            // Default sorting by creation date
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            // Sorting direction – used only for rating
             @RequestParam(required = false) String direction) {
 
+        // Sorting
         Sort sort;
         if ("createdAt".equalsIgnoreCase(sortBy)) {
-            // Sorting by date always from newest to oldest
             sort = Sort.by("createdAt").descending();
         } else if ("rating".equalsIgnoreCase(sortBy)) {
-            // When sorting by rating, the direction depends on the provided parameter
             if ("asc".equalsIgnoreCase(direction)) {
                 sort = Sort.by("rating").ascending();
             } else {
                 sort = Sort.by("rating").descending();
             }
         } else {
-            // If an unknown criterion is provided, apply default sorting by date
             sort = Sort.by("createdAt").descending();
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return reviewService.findReviewsByCoffeeId(coffeeId, pageable);
+
+        // If userId is provided => user-based
+        if (userId != null) {
+            return reviewService.findReviewsByUserId(userId, pageable);
+        }
+        // else if coffeeId is provided => coffee-based
+        else if (coffeeId != null) {
+            return reviewService.findReviewsByCoffeeId(coffeeId, pageable);
+        }
+        // else => return an empty page or handle error
+        return Page.empty();
     }
 
     @GetMapping("/api/reviews/{id}")

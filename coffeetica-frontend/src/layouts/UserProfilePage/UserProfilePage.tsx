@@ -5,36 +5,41 @@ import apiClient from "../../lib/api";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
 import { FavouriteCoffee } from "../Utils/FavouriteCoffee";
 import { useNavigate } from "react-router-dom";
+import { ReviewDTO } from "../../models/ReviewDTO";
+import { LatestReviews } from "../CoffeePage/components/LatestReviews";
 
 /**
  * Displays and manages the currently authenticated user's profile information,
  * including email editing and navigation to the password change page.
+ * Also shows the last three reviews by this user at the bottom,
+ * handling all loading/error states locally.
  */
 export const UserProfilePage = () => {
   const { isAuthenticated, updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Loading/error states for retrieving user data
+  // Basic user info loading
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
 
-  // Holds the user's data
   const [userDetails, setUserDetails] = useState<UserDTO | null>(null);
 
-  // Email editing states
+  // Email editing
   const [email, setEmail] = useState("");
   const [isEditingEmail, setIsEditingEmail] = useState(false);
-
-  // Feedback messages
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // JWT token for authenticated requests
+  // JWT token
   const token = localStorage.getItem("token");
 
+  // For the last 3 user reviews
+  const [latestReviews, setLatestReviews] = useState<ReviewDTO[]>([]);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState<boolean>(true);
+
   /**
-   * Fetches the current user's data from the backend.
-   * If not authenticated, stops loading immediately.
+   * 1) Fetch user data
    */
   useEffect(() => {
     if (!isAuthenticated) {
@@ -62,7 +67,40 @@ export const UserProfilePage = () => {
   }, [isAuthenticated, token]);
 
   /**
-   * Handles the email update request to the backend.
+   * 2) Fetch last 3 reviews by this user
+   */
+  useEffect(() => {
+    if (!userDetails) {
+      setReviewsLoading(false);
+      return;
+    }
+
+    const fetchLatestReviews = async () => {
+      setReviewsLoading(true);
+      setReviewsError(null);
+
+      try {
+        // We'll pass userId, page=0, size=3, sortBy=createdAt => newest first
+        const response = await apiClient.get<{ content: ReviewDTO[] }>("/reviews", {
+          params: {
+            userId: userDetails.id,
+            page: 0,
+            size: 3,
+            sortBy: "createdAt",
+          },
+        });
+        setLatestReviews(response.data.content);
+      } catch (err: any) {
+        setReviewsError(err.message);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+    fetchLatestReviews();
+  }, [userDetails]);
+
+  /**
+   * Handle email update
    */
   const handleUpdateEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,18 +132,15 @@ export const UserProfilePage = () => {
     }
   };
 
-  /**
-   * Navigates to the separate page where the user can change their password.
-   */
+  // Navigate to change password
   const handleGoToChangePassword = () => {
     navigate("/profile/change-password");
   };
 
-  // Render conditions
+  // Render logic
   if (isLoading) {
     return <SpinnerLoading />;
   }
-
   if (!isAuthenticated) {
     return (
       <div className="container mt-5">
@@ -115,7 +150,6 @@ export const UserProfilePage = () => {
       </div>
     );
   }
-
   if (httpError) {
     return (
       <div className="container mt-5">
@@ -123,26 +157,20 @@ export const UserProfilePage = () => {
       </div>
     );
   }
-
   if (!userDetails) {
     return (
       <div className="container mt-5">
-        <p className="alert alert-warning">
-          User data could not be found.
-        </p>
+        <p className="alert alert-warning">User data could not be found.</p>
       </div>
     );
   }
 
-  // Main layout
   return (
     <div className="container mt-5">
       <h2 className="mb-4">My Profile</h2>
 
-      {/* Two columns (8:4). align-items-stretch ensures the cards share the same height */}
+      {/* 2 columns: left user info, right favourite coffee */}
       <div className="row g-3 align-items-stretch">
-
-        {/* Left column: user information */}
         <div className="col-12 col-lg-8">
           <div className="card h-100">
             <div className="card-header">
@@ -175,9 +203,7 @@ export const UserProfilePage = () => {
                       </div>
                     )}
                     {errorMsg && (
-                      <div className="alert alert-danger mt-2">
-                        {errorMsg}
-                      </div>
+                      <div className="alert alert-danger mt-2">{errorMsg}</div>
                     )}
                     <form className="mt-2" onSubmit={handleUpdateEmail}>
                       <div className="mb-3">
@@ -233,8 +259,22 @@ export const UserProfilePage = () => {
             </div>
           </div>
         </div>
-
       </div>
+
+      {/* We handle reviewsLoading/reviewsError ourselves, no 'loading/error' in LatestReviews */}
+      <hr className="my-4" />
+      {reviewsLoading ? (
+        <SpinnerLoading />
+      ) : reviewsError ? (
+        <div className="alert alert-danger">{reviewsError}</div>
+      ) : (
+        <LatestReviews
+          reviews={latestReviews}
+          userId={userDetails.id}
+          mobile={false}
+          showCoffeeInsteadOfUser={true}
+        />
+      )}
     </div>
   );
 };

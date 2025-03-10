@@ -6,6 +6,7 @@ export interface ReviewDTO {
     rating: number;
     createdAt: string;
     coffeeId: number;
+    coffeeName: string;
     userId: number;
     userName: string;
   }

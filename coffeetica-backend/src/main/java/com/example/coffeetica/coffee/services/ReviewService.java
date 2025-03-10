@@ -13,6 +13,8 @@ public interface ReviewService {
 
     Page<ReviewDTO> findReviewsByCoffeeId(Long coffeeId, Pageable pageable);
 
+    Page<ReviewDTO> findReviewsByUserId(Long userId, Pageable pageable);
+
     Optional<ReviewDTO> findReviewById(Long id);
 
     Optional<ReviewDTO> findReviewByUserAndCoffeeId(String token, Long coffeeId);

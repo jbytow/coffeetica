@@ -14,6 +14,8 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     Page<ReviewEntity> findByCoffeeId(Long coffeeId, Pageable pageable);
 
+    Page<ReviewEntity> findByUserId(Long userId, Pageable pageable);
+
     Optional<ReviewEntity> findByUserIdAndCoffeeId(Long userId, Long coffeeId);
 
     List<ReviewEntity> findTop3ByCoffeeIdOrderByCreatedAtDesc(Long coffeeId);

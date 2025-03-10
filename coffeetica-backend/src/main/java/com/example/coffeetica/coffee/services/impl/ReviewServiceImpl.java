@@ -56,18 +56,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Page<ReviewDTO> findReviewsByCoffeeId(Long coffeeId, Pageable pageable) {
-        return reviewRepository.findByCoffeeId(coffeeId, pageable)
-                .map(entity -> {
-                    ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
-                    reviewDTO.setUserId(entity.getUser().getId());
-                    reviewDTO.setUserName(entity.getUser().getUsername());
-                    reviewDTO.setCoffeeId(entity.getCoffee().getId());
-                    return reviewDTO;
-                });
-    }
-
-    @Override
     public Optional<ReviewDTO> findReviewById(Long id) {
         return reviewRepository.findById(id)
                 .map(entity -> {
@@ -75,6 +63,33 @@ public class ReviewServiceImpl implements ReviewService {
                     reviewDTO.setUserId(entity.getUser().getId());
                     reviewDTO.setUserName(entity.getUser().getUsername());
                     reviewDTO.setCoffeeId(entity.getCoffee().getId());
+                    reviewDTO.setCoffeeName(entity.getCoffee().getName());
+                    return reviewDTO;
+                });
+    }
+
+    @Override
+    public Page<ReviewDTO> findReviewsByCoffeeId(Long coffeeId, Pageable pageable) {
+        return reviewRepository.findByCoffeeId(coffeeId, pageable)
+                .map(entity -> {
+                    ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
+                    reviewDTO.setUserId(entity.getUser().getId());
+                    reviewDTO.setUserName(entity.getUser().getUsername());
+                    reviewDTO.setCoffeeId(entity.getCoffee().getId());
+                    reviewDTO.setCoffeeName(entity.getCoffee().getName());
+                    return reviewDTO;
+                });
+    }
+
+    @Override
+    public Page<ReviewDTO> findReviewsByUserId(Long userId, Pageable pageable) {
+        return reviewRepository.findByUserId(userId, pageable)
+                .map(entity -> {
+                    ReviewDTO reviewDTO = modelMapper.map(entity, ReviewDTO.class);
+                    reviewDTO.setUserId(entity.getUser().getId());
+                    reviewDTO.setUserName(entity.getUser().getUsername());
+                    reviewDTO.setCoffeeId(entity.getCoffee().getId());
+                    reviewDTO.setCoffeeName(entity.getCoffee().getName());
                     return reviewDTO;
                 });
     }
@@ -165,6 +180,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void deleteReview(Long id) {
         reviewRepository.deleteById(id);
     }
+
 
     private Long getUserIdFromToken(String token) {
         String username = jwtTokenProvider.getIdentifierFromJWT(token.replace("Bearer ", ""));
