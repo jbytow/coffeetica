@@ -18,6 +18,8 @@ import RoasteriesListPage from './layouts/RoasteriesListPage/RoasteriesListPage'
 import { AuthProvider } from './auth/AuthContext';
 import { ReviewListPage } from './layouts/CoffeePage/components/ReviewListPage/ReviewListPage';
 import { RoasteryPage } from './layouts/RoasteryPage/RoasteryPage';
+import UserProfilePage from './layouts/UserProfilePage/UserProfilePage';
+import ChangePasswordPage from './layouts/UserProfilePage/components/ChangePasswordPage';
 
 function App() {
   return (
@@ -32,6 +34,13 @@ function App() {
             {/* Auth */}
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Logged User Profile */}
+            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/profile/change-password" element={<ChangePasswordPage />} />
+
+            {/* Strona profilu innych użytkowników */}
+            {/* <Route path="/users/:id" element={<UserDetailsPage />} /> */}
 
             {/* Admin Page */}
             <Route path="/admin" element={<AdminPage />} />

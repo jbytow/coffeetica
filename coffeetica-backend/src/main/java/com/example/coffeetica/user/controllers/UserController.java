@@ -1,6 +1,8 @@
 package com.example.coffeetica.user.controllers;
 
 
+import com.example.coffeetica.coffee.models.ChangePasswordRequestDTO;
+import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
 import com.example.coffeetica.user.models.RoleEntity;
@@ -20,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -64,6 +67,22 @@ public class UserController {
         ));
     }
 
+    @PutMapping("/api/users/{id}/change-password")
+    @PreAuthorize("hasRole('Admin') or @securityService.getCurrentUserId() == #id")
+    public ResponseEntity<?> changeUserPassword(@PathVariable Long id,
+                                                @RequestBody ChangePasswordRequestDTO request) {
+        logger.debug("Attempting to change password for user {}", id);
+        try {
+            userService.changeUserPassword(id, request.getCurrentPassword(), request.getNewPassword());
+            logger.info("Password changed successfully for user {}", id);
+            return ResponseEntity.ok("Password changed successfully.");
+        } catch (Exception e) {
+            logger.error("Change password failed for user {}: {}", id, e.getMessage());
+            // Można też zwrócić status 400 lub 401, zależnie od przyczyny
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/api/users/{id}")
     @PreAuthorize("hasRole('Admin') or @securityService.getCurrentUserId() == #id")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
@@ -103,6 +122,21 @@ public class UserController {
         } catch (UsernameNotFoundException e) {
             logger.error("User not found with username {}: {}", username, e.getMessage());
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/api/users/{id}/favorite-coffee")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<?> getFavoriteCoffee(@PathVariable Long id) {
+        try {
+            Optional<CoffeeDetailsDTO> coffeeOpt = userService.findFavoriteCoffeeOfUser(id);
+            if (coffeeOpt.isPresent()) {
+                return ResponseEntity.ok(coffeeOpt.get());
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }

@@ -48,9 +48,13 @@ public class DataInitializer {
             RoleEntity adminRole = roleRepository.findByName("Admin")
                     .orElseThrow(() -> new RuntimeException("Role not found: Admin"));
 
+            RoleEntity userRole = roleRepository.findByName("User")
+                    .orElseThrow(() -> new RuntimeException("Role not found: User"));
+
             Set<RoleEntity> roles = new HashSet<>();
             roles.add(superAdminRole);
             roles.add(adminRole);
+            roles.add(userRole);
 
 
             UserEntity superAdmin = new UserEntity();

@@ -23,4 +23,13 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     @Query("SELECT AVG(r.rating) FROM ReviewEntity r WHERE r.coffee.id = :coffeeId")
     Double findAverageRatingByCoffeeId(@Param("coffeeId") Long coffeeId);
 
+    @Query("""
+    SELECT r
+    FROM ReviewEntity r
+    WHERE r.user.id = :userId 
+      AND r.rating = 5.0
+    ORDER BY r.createdAt DESC
+""")
+    Page<ReviewEntity> findReviewsWithRatingFiveByUserId(@Param("userId") Long userId, Pageable pageable);
+
 }

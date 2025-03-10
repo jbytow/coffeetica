@@ -8,6 +8,7 @@ interface AuthContextValue {
   login: (token: string) => Promise<void>;
   logout: () => void;
   hasRole: (role: string) => boolean;
+  updateUser: (user: UserDTO) => void;
 }
 
 interface AuthProviderProps {
@@ -20,6 +21,7 @@ export const AuthContext = createContext<AuthContextValue>({
   login: async () => { /* no-op */ },
   logout: () => { /* no-op */ },
   hasRole: () => false,
+  updateUser: () => {},
 });
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -62,12 +64,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return user?.roles?.includes(role) ?? false;
   }, [user]);
 
+  const updateUser = (updatedUser: UserDTO) => {
+    setUser(updatedUser);
+  };
+
   const value: AuthContextValue = {
     isAuthenticated,
     user,
     login,
     logout,
     hasRole,
+    updateUser,
   };
   
     return (

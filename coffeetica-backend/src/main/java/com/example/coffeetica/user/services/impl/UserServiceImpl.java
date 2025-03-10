@@ -1,6 +1,11 @@
 package com.example.coffeetica.user.services.impl;
 
 
+import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
+import com.example.coffeetica.coffee.models.CoffeeEntity;
+import com.example.coffeetica.coffee.models.ReviewEntity;
+import com.example.coffeetica.coffee.repositories.ReviewRepository;
+import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.user.models.RoleEntity;
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
@@ -13,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,6 +47,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private CoffeeService coffeeService;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Override
     public UserDTO registerNewUserAccount(UserDTO userDTO) throws Exception {
@@ -78,17 +91,46 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new Exception("User not found with id: " + userDTO.getId()));
 
+        // Zanim zmapujesz:
+        // Zapisz stare hasło
+        String oldPassword = user.getPassword();
+
+        // Zmapuj pola (username, email, itp.)
         modelMapper.map(userDTO, user);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<RoleEntity> roles = userDTO.getRoles().stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .collect(Collectors.toSet());
+        // Nie zmieniaj hasła w normalnym update:
+        user.setPassword(oldPassword);
 
-        user.setRoles(roles);
+        // Roles (jeśli chcesz pozwolić userowi aktualizować role, co nie jest zwyczajne,
+        // ale w kodzie to robisz). Zachowaj lub nadaj te role
+        if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
+            Set<RoleEntity> roles = userDTO.getRoles().stream()
+                    .map(roleName -> roleRepository.findByName(roleName)
+                            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                    .collect(Collectors.toSet());
+            user.setRoles(roles);
+        }
+
+        // Zapisz w bazie
         UserEntity updatedUser = userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
+    }
+
+    @Override
+    public void changeUserPassword(Long userId, String currentPassword, String newPassword) throws Exception {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
+
+        // Sprawdź, czy aktualne hasło jest prawidłowe (jeżeli użytkownik nie jest Adminem,
+        // bo Admin może zmieniać hasło bez znajomości starego)
+        // W typowych projektach i tak sprawdzasz, ale up to you:
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new Exception("Current password is incorrect.");
+        }
+
+        // Ustaw nowe hasło
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     @Override
@@ -128,5 +170,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userDTO.setRoles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
             return userDTO;
         });
+    }
+
+    public Optional<CoffeeDetailsDTO> findFavoriteCoffeeOfUser(Long userId) throws Exception {
+        // Upewniamy się, że user istnieje – w przeciwnym razie -> Exception/404
+        if (!userRepository.existsById(userId)) {
+            throw new Exception("User not found with id: " + userId);
+        }
+
+        // pobieramy recenzję(je) rating=5.0, sort=desc, limit=1
+        Page<ReviewEntity> topReviews = reviewRepository
+                .findReviewsWithRatingFiveByUserId(userId, PageRequest.of(0, 1));
+
+        if (topReviews.isEmpty()) {
+            return Optional.empty(); // brak recenzji z oceną 5
+        }
+
+        ReviewEntity review = topReviews.getContent().get(0);
+        // Mamy recenzję -> pobieramy kawę:
+        CoffeeEntity coffeeEntity = review.getCoffee();
+        // ... i mapujemy do CoffeeDetailsDTO:
+        return coffeeService.findCoffeeDetails(coffeeEntity.getId());
     }
 }
