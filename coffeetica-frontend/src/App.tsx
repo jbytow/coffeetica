@@ -7,8 +7,8 @@ import AdminPage from './layouts/AdminPage/AdminPage';
 import ManageCoffees from './layouts/AdminPage/components/ManageCoffees/ManageCoffees';
 import ManageRoasteries from './layouts/AdminPage/components/ManageRoasteries/ManageRoasteries';
 import { CoffeePage } from './layouts/CoffeePage/CoffeePage';
-import RegisterPage from './auth/RegisterPage';
-import LoginPage from './auth/LoginPage';
+import RegisterPage from './layouts/AuthPage/RegisterPage';
+import LoginPage from './layouts/AuthPage/LoginPage';
 import CreateCoffee from './layouts/AdminPage/components/ManageCoffees/CreateCoffee';
 import EditCoffee from './layouts/AdminPage/components/ManageCoffees/EditCoffee';
 import CreateRoastery from './layouts/AdminPage/components/ManageRoasteries/CreateRoastery';
@@ -16,10 +16,12 @@ import EditRoastery from './layouts/AdminPage/components/ManageRoasteries/EditRo
 import CoffeesListPage from './layouts/CoffeesListPage/CoffeesListPage';
 import RoasteriesListPage from './layouts/RoasteriesListPage/RoasteriesListPage';
 import { AuthProvider } from './auth/AuthContext';
-import { ReviewListPage } from './layouts/CoffeePage/components/ReviewListPage/ReviewListPage';
 import { RoasteryPage } from './layouts/RoasteryPage/RoasteryPage';
 import UserProfilePage from './layouts/UserProfilePage/UserProfilePage';
 import ChangePasswordPage from './layouts/UserProfilePage/components/ChangePasswordPage';
+import { CoffeeReviewsPage } from './layouts/CoffeePage/components/CoffeeReviewsPage/CoffeeReviewsPage';
+import { UserReviewsPage } from './layouts/UserReviewsPage/UserReviewsPage';
+import { UserDetailsPage } from './layouts/UserDetailsPage/UserDetailsPage';
 
 function App() {
   return (
@@ -40,7 +42,8 @@ function App() {
             <Route path="/profile/change-password" element={<ChangePasswordPage />} />
 
             {/* Strona profilu innych użytkowników */}
-            {/* <Route path="/users/:id" element={<UserDetailsPage />} /> */}
+            <Route path="/users/:id" element={<UserDetailsPage />} />
+            <Route path="/users/:userId/reviews" element={<UserReviewsPage />} />
 
             {/* Admin Page */}
             <Route path="/admin" element={<AdminPage />} />
@@ -58,7 +61,7 @@ function App() {
             <Route path="/roasteries/:id" element={<RoasteryPage />} />
             <Route path="/coffees" element={<CoffeesListPage />} />
             <Route path="/coffees/:id" element={<CoffeePage />} />
-            <Route path="/coffees/:coffeeId/reviews" element={<ReviewListPage />} />
+            <Route path="/coffees/:coffeeId/reviews" element={<CoffeeReviewsPage />} />
 
           </Routes>
         </div>

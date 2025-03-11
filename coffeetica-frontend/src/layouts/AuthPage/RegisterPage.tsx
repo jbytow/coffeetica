@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../lib/api';
+import apiClient from '../../lib/api';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');

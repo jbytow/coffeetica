@@ -52,6 +52,23 @@ public class UserController {
         }
     }
 
+    @GetMapping("/api/users/{id}")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        logger.debug("Attempting to load user by ID {}", id);
+        try {
+            Optional<UserDTO> userDTO = userService.findUserById(id);
+            if (userDTO.isPresent()) {
+                return ResponseEntity.ok(userDTO.get());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("User not found with ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/api/users/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
@@ -112,18 +129,18 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/users/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
-        logger.debug("Attempting to load user by username {}", username);
-        try {
-            UserDetails user = userService.loadUserByUsername(username);
-            logger.info("Loaded user successfully by username {}", username);
-            return ResponseEntity.ok(user);
-        } catch (UsernameNotFoundException e) {
-            logger.error("User not found with username {}: {}", username, e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @GetMapping("/api/users/{username}")
+//    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+//        logger.debug("Attempting to load user by username {}", username);
+//        try {
+//            UserDetails user = userService.loadUserByUsername(username);
+//            logger.info("Loaded user successfully by username {}", username);
+//            return ResponseEntity.ok(user);
+//        } catch (UsernameNotFoundException e) {
+//            logger.error("User not found with username {}: {}", username, e.getMessage());
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     @GetMapping("/api/users/{id}/favorite-coffee")
     @PreAuthorize("permitAll()")

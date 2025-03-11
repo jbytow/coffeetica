@@ -6,7 +6,7 @@ import { SpinnerLoading } from "../../../Utils/ui/SpinnerLoading";
 import { Review } from "../../../Utils/reviews/Review";
 import { Pagination } from "../../../Utils/ui/Pagination";
 
-export const ReviewListPage = () => {
+export const CoffeeReviewsPage = () => {
     const { coffeeId } = useParams<{ coffeeId: string }>();
 
     const [reviews, setReviews] = useState<ReviewDTO[]>([]);

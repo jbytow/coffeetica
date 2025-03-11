@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import apiClient from '../lib/api';
-import { AuthContext } from './AuthContext';
+import apiClient from '../../lib/api';
+import { AuthContext } from '../../auth/AuthContext';
 
 const LoginPage: React.FC = () => {
   const [identifier, setIdentifier] = useState('');
