@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -53,6 +55,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Override
+    public Page<UserDTO> findAllUsers(String search, int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<UserEntity> userEntities = userRepository.findBySearch(search, pageable);
+
+        return userEntities.map(entity -> {
+            UserDTO dto = new UserDTO();
+            dto.setId(entity.getId());
+            dto.setUsername(entity.getUsername());
+            dto.setEmail(entity.getEmail());
+            dto.setRoles(entity.getRoles().stream()
+                    .map(RoleEntity::getName)
+                    .collect(Collectors.toSet()));
+            return dto;
+        });
+    }
 
     @Override
     public UserDTO registerNewUserAccount(UserDTO userDTO) throws Exception {
@@ -192,4 +216,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         // ... i mapujemy do CoffeeDetailsDTO:
         return coffeeService.findCoffeeDetails(coffeeEntity.getId());
     }
+
+
 }

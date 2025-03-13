@@ -1,4 +1,4 @@
-package com.example.coffeetica.coffee.models;
+package com.example.coffeetica.user.models;
 
 import javax.validation.constraints.NotBlank;
 

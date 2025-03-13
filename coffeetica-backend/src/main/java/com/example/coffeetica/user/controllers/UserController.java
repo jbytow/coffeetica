@@ -1,7 +1,7 @@
 package com.example.coffeetica.user.controllers;
 
 
-import com.example.coffeetica.coffee.models.ChangePasswordRequestDTO;
+import com.example.coffeetica.user.models.ChangePasswordRequestDTO;
 import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
 import com.example.coffeetica.user.models.UserDTO;
 import com.example.coffeetica.user.models.UserEntity;
@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +37,18 @@ public class UserController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @GetMapping("/api/users")
+    @PreAuthorize("permitAll()")
+    public Page<UserDTO> getAllUsers(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        return userService.findAllUsers(search, page, size, sortBy, direction);
+    }
 
     @PostMapping("/api/users/register")
     @PreAuthorize("permitAll()") // Public endpoint

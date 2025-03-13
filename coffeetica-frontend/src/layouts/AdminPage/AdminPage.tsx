@@ -3,6 +3,7 @@ import ManageCoffees from "./components/ManageCoffees/ManageCoffees";
 import ManageRoasteries from "./components/ManageRoasteries/ManageRoasteries";
 import { AuthContext } from "../../auth/AuthContext";
 import { Navigate } from "react-router-dom";
+import ManageUsers from "./components/ManageUsers/ManageUsers";
 // In the future, you can add more sections like ManageUsers
 // import ManageUsers from "./ManageUsers";
 
@@ -22,9 +23,8 @@ const AdminPage: React.FC = () => {
         return <ManageCoffees />;
       case "roasteries":
         return <ManageRoasteries />;
-      // Uncomment and add more cases for additional sections in the future
-      // case "users":
-      //   return <ManageUsers />;
+      case "users":
+        return <ManageUsers />;
       default:
         return <p>Select a section to manage.</p>;
     }
@@ -52,15 +52,14 @@ const AdminPage: React.FC = () => {
               Manage Roasteries
             </button>
           </li>
-          {/* Add more tabs here for additional sections */}
-          {/* <li className="nav-item">
-            <button
-              className={`nav-link ${activeSection === "users" ? "active" : ""}`}
-              onClick={() => setActiveSection("users")}
-            >
-              Manage Users
-            </button>
-          </li> */}
+          <li className="nav-item">
+          <button
+            className={`nav-link ${activeSection === "users" ? "active" : ""}`}
+            onClick={() => setActiveSection("users")}
+          >
+            Manage Users
+          </button>
+          </li>
         </ul>
       </nav>
       {/* Render the active section */}
