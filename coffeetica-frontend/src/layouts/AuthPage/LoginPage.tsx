@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
 
       await login(response.data.token);
       setError(null);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.error || 'An unexpected error occurred. Please try again.');
     }

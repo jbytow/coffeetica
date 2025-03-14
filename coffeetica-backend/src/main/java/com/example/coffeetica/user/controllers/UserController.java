@@ -49,14 +49,14 @@ public class UserController {
 
     @PostMapping("/api/users/register")
     @PreAuthorize("permitAll()") // Public endpoint
-    public ResponseEntity<?> registerUser(@RequestBody UserDTO userDTO) {
-        logger.debug("Attempting to register user {}", userDTO.getUsername());
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO request) {
+        logger.debug("Attempting to register user {}", request.getUsername());
         try {
-            UserDTO savedUser = userService.registerNewUserAccount(userDTO);
-            logger.info("Registered user successfully {}", userDTO.getUsername());
+            UserDTO savedUser = userService.registerNewUserAccount(request);
+            logger.info("Registered user successfully {}", request.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (Exception e) {
-            logger.error("Registration failed for user {}: {}", userDTO.getUsername(), e.getMessage());
+            logger.error("Registration failed for user {}: {}", request.getUsername(), e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

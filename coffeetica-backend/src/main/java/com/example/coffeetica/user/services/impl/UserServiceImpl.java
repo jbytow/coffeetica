@@ -81,32 +81,32 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO registerNewUserAccount(UserDTO userDTO) throws Exception {
-        logger.info("Registering new user {}", userDTO.getUsername());
+    public UserDTO registerNewUserAccount(RegisterRequestDTO request) throws Exception {
+        logger.info("Registering new user {}", request.getUsername());
 
-        // Check if the username or email already exists
-        if (userRepository.existsByUsername(userDTO.getUsername())) {
-            throw new Exception("There is an account with that username: " + userDTO.getUsername());
+        // Sprawdzenie, czy użytkownik już istnieje
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new Exception("There is an account with that username: " + request.getUsername());
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new Exception("There is an account with that email address: " + request.getEmail());
         }
 
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new Exception("There is an account with that email address: " + userDTO.getEmail());
-        }
+        // Tworzenie nowego użytkownika
+        UserEntity user = new UserEntity();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Map UserDTO to UserEntity
-        UserEntity user = modelMapper.map(userDTO, UserEntity.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Always assign the "User" role
+        // Przypisanie domyślnej roli "User"
         RoleEntity userRole = roleRepository.findByName("User")
                 .orElseThrow(() -> new RuntimeException("Default role 'User' not found"));
 
         Set<RoleEntity> roles = new HashSet<>();
         roles.add(userRole);
-
         user.setRoles(roles);
 
-        // Save the user and return as DTO
+        // Zapis użytkownika w bazie
         UserEntity savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
@@ -116,10 +116,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
+        // Sprawdzenie, czy email jest już zajęty przez innego użytkownika
+        Optional<UserEntity> existingUserWithEmail = userRepository.findByEmail(request.getEmail());
+        if (existingUserWithEmail.isPresent() && !existingUserWithEmail.get().getId().equals(userId)) {
+            throw new Exception("This email is already in use by another account.");
         }
 
+        user.setEmail(request.getEmail());
         UserEntity updatedUser = userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
     }
@@ -145,10 +148,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new IllegalAccessException("You do not have permission to edit an Admin or SuperAdmin.");
         }
 
-        if (request.getUsername() != null) {
+        // Sprawdzenie unikalności nazwy użytkownika (jeśli zmieniana)
+        if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
+            Optional<UserEntity> existingUserWithUsername = userRepository.findByUsername(request.getUsername());
+            if (existingUserWithUsername.isPresent()) {
+                throw new Exception("This username is already taken.");
+            }
             user.setUsername(request.getUsername());
         }
-        if (request.getEmail() != null) {
+
+        // Sprawdzenie unikalności emaila (jeśli zmieniany)
+        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+            Optional<UserEntity> existingUserWithEmail = userRepository.findByEmail(request.getEmail());
+            if (existingUserWithEmail.isPresent()) {
+                throw new Exception("This email is already in use by another account.");
+            }
             user.setEmail(request.getEmail());
         }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/api';
+import { RegisterRequestDTO } from '../../models/RegisterRequestDTO';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -13,12 +14,9 @@ const RegisterPage: React.FC = () => {
   const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
+      const payload: RegisterRequestDTO = { username, email, password };
       // Send registration data to the backend
-      await apiClient.post('/users/register', {
-        username,
-        password,
-        email,
-      });
+      await apiClient.post('/users/register', payload);
       setSuccess('User registered successfully!');
       setError('');
       setTimeout(() => navigate('/login'), 2000); // Redirect to login page after 2 seconds
