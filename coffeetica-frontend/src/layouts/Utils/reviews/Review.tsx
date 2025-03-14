@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ReviewDTO } from "../../../models/ReviewDTO";
 import { StarsDisplay } from "./StarsDisplay";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../../auth/AuthContext";
+import apiClient from "../../../lib/api";
 
 interface ReviewProps {
   review: ReviewDTO;
@@ -15,6 +17,9 @@ export const Review: React.FC<ReviewProps> = ({
   review,
   showCoffeeInsteadOfUser = false,
 }) => {
+  const { hasRole } = useContext(AuthContext); // Pobieramy rolę użytkownika
+  const isAdmin = hasRole("Admin"); // Sprawdzamy, czy użytkownik jest Adminem
+  
   // Format date
   const dateObj = new Date(review.createdAt);
   const formattedDate = dateObj.toLocaleString("en-us", {
@@ -38,6 +43,18 @@ export const Review: React.FC<ReviewProps> = ({
       : review.content;
 
   const toggleReadMore = () => setIsExpanded(!isExpanded);
+
+  const handleDeleteReview = async () => {
+    if (window.confirm("Are you sure you want to delete this review?")) {
+      try {
+        await apiClient.delete(`/reviews/${review.id}`);
+        alert("Review deleted successfully!");
+        window.location.reload();
+      } catch (error: any) {
+        alert("Error deleting review: " + error.message);
+      }
+    }
+  };
 
   // Decide the heading
   const headingElement = showCoffeeInsteadOfUser ? (
@@ -82,6 +99,15 @@ export const Review: React.FC<ReviewProps> = ({
           )}
         </p>
       </div>
+
+      {/* Przycisk "Delete" widoczny tylko dla Admina */}
+      {isAdmin && (
+        <div className="card-footer text-end">
+          <button className="btn btn-danger btn-sm" onClick={handleDeleteReview}>
+            Delete
+          </button>
+        </div>
+      )}
     </article>
   );
 };
