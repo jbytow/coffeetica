@@ -68,7 +68,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
 
                         // User management
-                        .requestMatchers(HttpMethod.PUT, "/api/users/{id}").authenticated() // Users can update their own profile
+                        .requestMatchers(HttpMethod.PUT, "/api/users/{id}/update-email").authenticated() // Users can update their email
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}/change-password").authenticated() // Users can change their own passwords
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("Admin") // Admins can update any user
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("Admin") // Only Admins can delete users

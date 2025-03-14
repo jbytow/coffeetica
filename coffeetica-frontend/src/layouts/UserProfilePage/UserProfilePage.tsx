@@ -7,6 +7,7 @@ import { FavouriteCoffee } from "../Utils/user/FavouriteCoffee";
 import { useNavigate } from "react-router-dom";
 import { ReviewDTO } from "../../models/ReviewDTO";
 import { LatestReviews } from "../Utils/reviews/LatestReviews";
+import { UpdateUserRequestDTO } from "../../models/UpdateUserRequestDTO";
 
 /**
  * Displays and manages the currently authenticated user's profile information,
@@ -110,15 +111,10 @@ export const UserProfilePage = () => {
     if (!userDetails) return;
 
     try {
-      const payload: Partial<UserDTO> = {
-        id: userDetails.id,
-        username: userDetails.username,
-        email: email,
-        roles: userDetails.roles,
-      };
+      const payload: UpdateUserRequestDTO = { email }
 
       const response = await apiClient.put<UserDTO>(
-        `/users/${userDetails.id}`,
+        `/users/${userDetails.id}/update-email`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );

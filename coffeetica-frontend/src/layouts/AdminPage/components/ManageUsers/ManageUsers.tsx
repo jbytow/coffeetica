@@ -4,6 +4,9 @@ import apiClient from "../../../../lib/api";
 import { SpinnerLoading } from "../../../Utils/ui/SpinnerLoading";
 import { UserDTO } from "../../../../models/UserDTO";
 import { Pagination } from "../../../Utils/ui/Pagination";
+import { AdminUpdateUserRequestDTO } from "../../../../models/AdminUpdateUserRequestDTO";
+import { ResetPasswordRequestDTO } from "../../../../models/ResetPasswordRequestDTO";
+import { UpdateRoleRequestDTO } from "../../../../models/UpdateRoleRequestDTO";
 
 interface Page<T> {
   content: T[];
@@ -117,7 +120,7 @@ const ManageUsers: React.FC = () => {
   const saveEditUser = async () => {
     if (!editUserModal) return;
     try {
-      const payload: Partial<UserDTO> = {
+      const payload: AdminUpdateUserRequestDTO = {
         username: editName,
         email: editEmail,
       };
@@ -145,11 +148,10 @@ const ManageUsers: React.FC = () => {
   const saveEditPassword = async () => {
     if (!editPasswordModal) return;
     try {
-      const payload = {
-        currentPassword: "",
+      const payload: ResetPasswordRequestDTO = {
         newPassword,
       };
-      await apiClient.put(`/users/${editPasswordModal.id}/change-password`, payload);
+      await apiClient.put(`/users/${editPasswordModal.id}/reset-password`, payload);
       fetchUsers();
       closeEditPasswordModal();
     } catch (err: any) {
@@ -202,10 +204,10 @@ const ManageUsers: React.FC = () => {
   const saveEditRoles = async () => {
     if (!editRolesModal) return;
     try {
-      const payload: Partial<UserDTO> = {
+      const payload: UpdateRoleRequestDTO = {
         roles: tempRoles,
       };
-      await apiClient.put(`/users/${editRolesModal.id}`, payload);
+      await apiClient.put(`/users/${editRolesModal.id}/update-roles`, payload);
       fetchUsers();
       closeEditRolesModal();
     } catch (err: any) {

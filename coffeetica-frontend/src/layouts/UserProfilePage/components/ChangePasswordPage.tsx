@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../auth/AuthContext";
 import apiClient from "../../../lib/api";
+import { ChangePasswordRequestDTO } from "../../../models/ChangePasswordRequestDTO";
 
 
 /**
@@ -58,18 +59,11 @@ export const ChangePasswordPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await apiClient.put(
-        `/users/${user.id}/change-password`,
-        {
-          currentPassword,
-          newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const payload: ChangePasswordRequestDTO = { currentPassword, newPassword };
+  
+      await apiClient.put(`/users/${user.id}/change-password`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setSuccessMsg("Password has been changed successfully.");
       // Clear form fields

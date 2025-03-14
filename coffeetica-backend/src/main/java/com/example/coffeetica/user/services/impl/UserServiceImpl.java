@@ -6,11 +6,10 @@ import com.example.coffeetica.coffee.models.CoffeeEntity;
 import com.example.coffeetica.coffee.models.ReviewEntity;
 import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.services.CoffeeService;
-import com.example.coffeetica.user.models.RoleEntity;
-import com.example.coffeetica.user.models.UserDTO;
-import com.example.coffeetica.user.models.UserEntity;
+import com.example.coffeetica.user.models.*;
 import com.example.coffeetica.user.repositories.RoleRepository;
 import com.example.coffeetica.user.repositories.UserRepository;
+import com.example.coffeetica.user.security.SecurityService;
 import com.example.coffeetica.user.services.UserService;
 
 import org.modelmapper.ModelMapper;
@@ -55,6 +54,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private SecurityService securityService;
 
     @Override
     public Page<UserDTO> findAllUsers(String search, int page, int size, String sortBy, String direction) {
@@ -110,32 +112,46 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO) throws Exception {
-        logger.info("Updating user {}", userDTO.getId());
-        UserEntity user = userRepository.findById(userDTO.getId())
-                .orElseThrow(() -> new Exception("User not found with id: " + userDTO.getId()));
+    public UserDTO updateUserEmail(Long userId, UpdateUserRequestDTO request) throws Exception {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Zanim zmapujesz:
-        // Zapisz stare hasło
-        String oldPassword = user.getPassword();
-
-        // Zmapuj pola (username, email, itp.)
-        modelMapper.map(userDTO, user);
-
-        // Nie zmieniaj hasła w normalnym update:
-        user.setPassword(oldPassword);
-
-        // Roles (jeśli chcesz pozwolić userowi aktualizować role, co nie jest zwyczajne,
-        // ale w kodzie to robisz). Zachowaj lub nadaj te role
-        if (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) {
-            Set<RoleEntity> roles = userDTO.getRoles().stream()
-                    .map(roleName -> roleRepository.findByName(roleName)
-                            .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                    .collect(Collectors.toSet());
-            user.setRoles(roles);
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
         }
 
-        // Zapisz w bazie
+        UserEntity updatedUser = userRepository.save(user);
+        return modelMapper.map(updatedUser, UserDTO.class);
+    }
+
+    @Override
+    public UserDTO adminUpdateUser(Long userId, AdminUpdateUserRequestDTO request) throws Exception {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
+
+        // Pobierz ID i role aktualnie zalogowanego użytkownika
+        Long currentUserId = securityService.getCurrentUserId();
+        UserEntity currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new Exception("Current user not found"));
+
+        boolean isCurrentUserAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("Admin"));
+
+        boolean isTargetUserProtected = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("Admin") || role.getName().equals("SuperAdmin"));
+
+        // Blokowanie edycji danych SuperAdmina/Admina przez Admina
+        if (isCurrentUserAdmin && isTargetUserProtected) {
+            throw new IllegalAccessException("You do not have permission to edit an Admin or SuperAdmin.");
+        }
+
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+
         UserEntity updatedUser = userRepository.save(user);
         return modelMapper.map(updatedUser, UserDTO.class);
     }
@@ -145,11 +161,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Sprawdź, czy aktualne hasło jest prawidłowe (jeżeli użytkownik nie jest Adminem,
-        // bo Admin może zmieniać hasło bez znajomości starego)
-        // W typowych projektach i tak sprawdzasz, ale up to you:
+        // Pobierz ID zalogowanego użytkownika
+        Long currentUserId = securityService.getCurrentUserId();
+        if (!userId.equals(currentUserId)) {
+            throw new IllegalAccessException("You are not allowed to change this password.");
+        }
+
+        // Sprawdzenie poprawności obecnego hasła
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new Exception("Current password is incorrect.");
+            throw new IllegalArgumentException("Current password is incorrect.");
+        }
+
+        // Zapobieganie zmianie na to samo hasło
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the old password.");
         }
 
         // Ustaw nowe hasło
@@ -158,7 +183,53 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void deleteUser(Long userId) {
+    public void resetUserPassword(Long userId, String newPassword) throws Exception {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
+
+        // Pobierz ID i role aktualnie zalogowanego użytkownika (osoby próbującej resetować hasło)
+        Long currentUserId = securityService.getCurrentUserId();
+        UserEntity currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new Exception("Current user not found"));
+
+        boolean isCurrentUserAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("Admin"));
+
+        boolean isTargetUserProtected = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("Admin") || role.getName().equals("SuperAdmin"));
+
+        // Blokowanie resetowania hasła Admina/SuperAdmina przez Admina
+        if (isCurrentUserAdmin && isTargetUserProtected) {
+            throw new IllegalAccessException("You do not have permission to reset the password of an Admin or SuperAdmin.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        logger.info("Admin reset password for user {}", userId);
+    }
+
+    @Override
+    public void deleteUser(Long userId) throws Exception {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
+
+        // Pobierz ID i role aktualnie zalogowanego użytkownika (osoby próbującej usunąć)
+        Long currentUserId = securityService.getCurrentUserId();
+        UserEntity currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new Exception("Current user not found"));
+
+        boolean isCurrentUserAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("Admin"));
+
+        boolean isTargetUserProtected = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("Admin") || role.getName().equals("SuperAdmin"));
+
+        // Blokowanie usuwania Admina/SuperAdmina przez Admina
+        if (isCurrentUserAdmin && isTargetUserProtected) {
+            throw new IllegalAccessException("You do not have permission to delete an Admin or SuperAdmin.");
+        }
+
         logger.info("Deleting user {}", userId);
         userRepository.deleteById(userId);
     }
@@ -189,7 +260,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             UserDTO userDTO = new UserDTO();
             userDTO.setId(user.getId());
             userDTO.setUsername(user.getUsername());
-            userDTO.setPassword(user.getPassword());
             userDTO.setEmail(user.getEmail());
             userDTO.setRoles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
             return userDTO;
@@ -217,5 +287,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return coffeeService.findCoffeeDetails(coffeeEntity.getId());
     }
 
+    @Override
+    public UserDTO updateUserRoles(Long userId, Set<String> roles) throws Exception {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found with id: " + userId));
+
+        Set<RoleEntity> roleEntities = roles.stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
+                .collect(Collectors.toSet());
+
+        user.setRoles(roleEntities);
+        UserEntity updatedUser = userRepository.save(user);
+        return modelMapper.map(updatedUser, UserDTO.class);
+    }
 
 }
