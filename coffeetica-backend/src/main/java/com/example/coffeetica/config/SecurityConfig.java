@@ -4,11 +4,13 @@ import com.example.coffeetica.user.security.JwtAuthenticationFilter;
 import com.example.coffeetica.user.security.JwtTokenProvider;
 import com.example.coffeetica.user.services.UserService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     /**
@@ -68,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
 
                         // User management
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**/update-roles").hasRole("SuperAdmin") // Only SuperAdmin can edit roles
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}/update-email").authenticated() // Users can update their email
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}/change-password").authenticated() // Users can change their own passwords
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("Admin") // Admins can update any user
@@ -89,6 +93,17 @@ public class SecurityConfig {
                         // Any other request requires authentication
                         .anyRequest().authenticated()
                 )
+                // disable anonymous
+                .anonymous(anonymous -> anonymous.disable())
+
+
+                // custom entyr point for no authentication => 401
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
+                )
+
                 // Adds the JWT authentication filter before the username/password authentication filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

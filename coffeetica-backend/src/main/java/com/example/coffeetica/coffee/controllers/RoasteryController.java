@@ -6,7 +6,7 @@ import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.services.CoffeeService;
 import com.example.coffeetica.coffee.services.RoasteryService;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
@@ -26,22 +27,60 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 
+/**
+ * REST controller for managing roasteries. Provides endpoints for creating,
+ * retrieving, updating, and deleting roasteries, as well as uploading images.
+ */
 @RestController
+@RequestMapping("/api/roasteries")
 public class RoasteryController {
 
-    @Autowired
-    private RoasteryService roasteryService;
+    private final RoasteryService roasteryService;
+    private final CoffeeService coffeeService;
 
-    @Autowired
-    private CoffeeService coffeeService;
+    /**
+     * A file path for uploading roastery images, configured in application.properties.
+     * For example: app.upload.roasteries-path=uploads/roasteries/
+     */
+    @Value("${app.upload.roasteries-path:uploads/roasteries/}")
+    private String roasteriesUploadPath;
 
-    @GetMapping("/api/roasteries")
+    /**
+     * Constructs a new {@link RoasteryController}.
+     *
+     * @param roasteryService the roastery service
+     * @param coffeeService the coffee service
+     */
+    public RoasteryController(RoasteryService roasteryService, CoffeeService coffeeService) {
+        this.roasteryService = roasteryService;
+        this.coffeeService = coffeeService;
+    }
+
+    /**
+     * Retrieves all roasteries without filtering.
+     *
+     * @return a list of all roasteries
+     */
+    @GetMapping
     @PreAuthorize("permitAll()")
     public List<RoasteryDTO> getAllRoasteries() {
         return roasteryService.findAllRoasteries();
     }
 
-    @GetMapping("/api/roasteries/filter")
+    /**
+     * Retrieves a page of roasteries filtered by optional criteria.
+     *
+     * @param name roastery name filter
+     * @param country country filter
+     * @param minFoundingYear minimum founding year filter
+     * @param maxFoundingYear maximum founding year filter
+     * @param page page index
+     * @param size page size
+     * @param sortBy sort field
+     * @param direction sort direction (asc/desc)
+     * @return a page of filtered roasteries
+     */
+    @GetMapping("/filter")
     @PreAuthorize("permitAll()")
     public Page<RoasteryDTO> getFilteredRoasteries(
             @RequestParam(required = false) String name,
@@ -51,8 +90,8 @@ public class RoasteryController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
-
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -61,16 +100,32 @@ public class RoasteryController {
         return roasteryService.findFilteredRoasteries(name, country, minFoundingYear, maxFoundingYear, pageable);
     }
 
-    @GetMapping("/api/roasteries/{id}")
+    /**
+     * Retrieves a specific roastery by its ID.
+     *
+     * @param id the roastery ID
+     * @return the roastery data if found, otherwise 404 Not Found
+     */
+    @GetMapping("/{id}")
     @PreAuthorize("permitAll()")
     public ResponseEntity<RoasteryDTO> getRoasteryById(@PathVariable Long id) {
         Optional<RoasteryDTO> roasteryDTO = roasteryService.findRoasteryById(id);
         return roasteryDTO
-                .map(roastery -> new ResponseEntity<>(roastery, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/api/roasteries/{id}/coffees")
+    /**
+     * Retrieves all coffees associated with a specific roastery by its ID.
+     *
+     * @param id the roastery ID
+     * @param page page index
+     * @param size page size
+     * @param sortBy sort field
+     * @param direction sort direction (asc/desc)
+     * @return a page of coffees if the roastery exists, otherwise 404 Not Found
+     */
+    @GetMapping("/{id}/coffees")
     @PreAuthorize("permitAll()")
     public ResponseEntity<Page<CoffeeDTO>> getAllCoffeesByRoasteryId(
             @PathVariable Long id,
@@ -79,16 +134,20 @@ public class RoasteryController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "desc") String direction
     ) {
-
         if (!roasteryService.isRoasteryExists(id)) {
             return ResponseEntity.notFound().build();
         }
-
         Page<CoffeeDTO> coffees = coffeeService.findCoffeesByRoasteryId(id, page, size, sortBy, direction);
         return ResponseEntity.ok(coffees);
     }
 
-    @GetMapping("/api/roasteries/{id}/featured-coffee")
+    /**
+     * Retrieves a featured coffee for a given roastery.
+     *
+     * @param id the roastery ID
+     * @return the featured coffee if found, otherwise 404 Not Found
+     */
+    @GetMapping("/{id}/featured-coffee")
     @PreAuthorize("permitAll()")
     public ResponseEntity<CoffeeDetailsDTO> getFeaturedCoffee(@PathVariable("id") Long id) {
         CoffeeDetailsDTO featuredCoffee = coffeeService.findFeaturedCoffee(id);
@@ -99,56 +158,91 @@ public class RoasteryController {
         }
     }
 
-    @PostMapping("/api/roasteries")
+    /**
+     * Creates a new roastery.
+     *
+     * @param roasteryDTO the roastery data
+     * @return the created roastery with HTTP 201 Created
+     */
+    @PostMapping
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<RoasteryDTO> createRoastery(@RequestBody RoasteryDTO roasteryDTO) {
+    public ResponseEntity<RoasteryDTO> createRoastery(@Valid @RequestBody RoasteryDTO roasteryDTO) {
         RoasteryDTO savedRoasteryDTO = roasteryService.saveRoastery(roasteryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRoasteryDTO);
     }
 
-    @PutMapping("/api/roasteries/{id}")
+    /**
+     * Updates an existing roastery by its ID.
+     *
+     * @param id the roastery ID
+     * @param roasteryDetails the updated roastery data
+     * @return the updated roastery, or 404 if not found
+     */
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<RoasteryDTO> updateRoastery(@PathVariable Long id, @RequestBody RoasteryDTO roasteryDetails) {
+    public ResponseEntity<RoasteryDTO> updateRoastery(@PathVariable Long id,
+                                                      @Valid @RequestBody RoasteryDTO roasteryDetails) {
         try {
             RoasteryDTO updatedRoasteryDTO = roasteryService.updateRoastery(id, roasteryDetails);
             return ResponseEntity.ok(updatedRoasteryDTO);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    @DeleteMapping("/api/roasteries/{id}")
+    /**
+     * Deletes a roastery by its ID.
+     *
+     * @param id the roastery ID
+     * @return HTTP 204 No Content on successful deletion
+     */
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity deleteRoastery(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRoastery(@PathVariable Long id) {
         roasteryService.deleteRoastery(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 
-
-    @PostMapping("/api/roasteries/{id}/upload-image")
+    /**
+     * Uploads an image file for the specified roastery and updates its image URL.
+     * Validates file non-emptiness and checks size as a basic example.
+     *
+     * @param id the roastery ID
+     * @param file the multipart file to upload
+     * @return a message indicating success or failure
+     */
+    @PostMapping("/{id}/upload-image")
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<String> uploadRoasteryImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadRoasteryImage(@PathVariable Long id,
+                                                      @RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("No file provided");
             }
+            // Example file size check (e.g., limit to ~5MB)
+            if (file.getSize() > 5_000_000) {
+                return ResponseEntity.badRequest().body("File too large");
+            }
 
-            // Generate unique file name
+            // Generate a unique file name
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path uploadPath = Paths.get("uploads/roasteries/");
+            Path uploadPath = Paths.get(roasteriesUploadPath); // read from @Value property
             Files.createDirectories(uploadPath);
 
-            // Save file
+            // Save file to disk
             Path filePath = uploadPath.resolve(fileName);
             Files.write(filePath, file.getBytes());
 
             // Update database with image URL
-            String imageUrl = "/uploads/roasteries/" + fileName;
+            String imageUrl = "/" + roasteriesUploadPath + fileName;
+            // e.g. "/uploads/roasteries/<UUID_filename>"
+
             roasteryService.updateRoasteryImageUrl(id, imageUrl);
 
             return ResponseEntity.ok("File uploaded successfully: " + imageUrl);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("File upload failed: " + e.getMessage());
         }
     }
 }

@@ -6,10 +6,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing {@link ReviewEntity} persistence.
+ * Extends JPA repository for CRUD and pagination, plus custom queries.
+ */
+@Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     Page<ReviewEntity> findByCoffeeId(Long coffeeId, Pageable pageable);
@@ -26,12 +32,11 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     Double findAverageRatingByCoffeeId(@Param("coffeeId") Long coffeeId);
 
     @Query("""
-    SELECT r
-    FROM ReviewEntity r
-    WHERE r.user.id = :userId 
-      AND r.rating = 5.0
-    ORDER BY r.createdAt DESC
-""")
+            SELECT r
+            FROM ReviewEntity r
+            WHERE r.user.id = :userId
+              AND r.rating = 5.0
+            ORDER BY r.createdAt DESC
+            """)
     Page<ReviewEntity> findReviewsWithRatingFiveByUserId(@Param("userId") Long userId, Pageable pageable);
-
 }

@@ -9,8 +9,13 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Provides static methods for building JPA {@link Specification}s
+ * to filter coffee results by various attributes.
+ */
 public class CoffeeSpecification {
 
     public static Specification<CoffeeEntity> filterByAttributes(
@@ -23,78 +28,76 @@ public class CoffeeSpecification {
             String processingMethod,
             Integer minProductionYear,
             Integer maxProductionYear,
-            String roasteryName //
+            String roasteryName
     ) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Name (case insensitive, contains)
-            if (name != null && !name.isEmpty()) {
+            // Name (case-insensitive, contains)
+            if (name != null && !name.isBlank()) {
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("name")),
                         "%" + name.toLowerCase() + "%"
                 ));
             }
 
-            // Country of Origin (case insensitive, contains)
-            if (countryOfOrigin != null && !countryOfOrigin.isEmpty()) {
+            // Country of Origin (case-insensitive, contains)
+            if (countryOfOrigin != null && !countryOfOrigin.isBlank()) {
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("countryOfOrigin")),
                         "%" + countryOfOrigin.toLowerCase() + "%"
                 ));
             }
 
-            // Region (case sensitive - enum)
+            // Region, RoastLevel, FlavorProfile (enums)
             if (region != null) {
                 predicates.add(criteriaBuilder.equal(root.get("region"), region));
             }
-
-            // Roast Level (case sensitive - enum)
             if (roastLevel != null) {
                 predicates.add(criteriaBuilder.equal(root.get("roastLevel"), roastLevel));
             }
-
-            // Flavor Profile (case sensitive - enum)
             if (flavorProfile != null) {
                 predicates.add(criteriaBuilder.equal(root.get("flavorProfile"), flavorProfile));
             }
 
-            // Flavor Notes (case insensitive, contains)
+            // Flavor Notes (case-insensitive, partial match)
+            // This example uses OR logic to see if any note matches
             if (flavorNotes != null && !flavorNotes.isEmpty()) {
-                predicates.add(
-                        criteriaBuilder.or(
-                                flavorNotes.stream()
-                                        .map(note -> criteriaBuilder.like(
-                                                criteriaBuilder.lower(root.join("flavorNotes")),
-                                                "%" + note.toLowerCase() + "%"
-                                        ))
-                                        .toArray(Predicate[]::new)
-                        )
-                );
+                predicates.add(criteriaBuilder.or(
+                        flavorNotes.stream()
+                                .filter(Objects::nonNull)
+                                .map(note -> criteriaBuilder.like(
+                                        criteriaBuilder.lower(root.join("flavorNotes")),
+                                        "%" + note.toLowerCase() + "%"
+                                ))
+                                .toArray(Predicate[]::new)
+                ));
             }
 
-            // Processing Method (case insensitive, contains)
-            if (processingMethod != null && !processingMethod.isEmpty()) {
+            // Processing Method (case-insensitive, contains)
+            if (processingMethod != null && !processingMethod.isBlank()) {
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("processingMethod")),
                         "%" + processingMethod.toLowerCase() + "%"
                 ));
             }
 
-            // Production Year (numeric comparisons)
+            // Production Year range
             if (minProductionYear != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                        root.get("productionYear"), minProductionYear
+                        root.get("productionYear"),
+                        minProductionYear
                 ));
             }
             if (maxProductionYear != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                        root.get("productionYear"), maxProductionYear
+                        root.get("productionYear"),
+                        maxProductionYear
                 ));
             }
 
-            // Roastery Name (case insensitive, matches)
-            if (roasteryName != null && !roasteryName.isEmpty()) {
+            // Roastery name (case-insensitive match)
+            if (roasteryName != null && !roasteryName.isBlank()) {
                 predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(root.get("roastery").get("name")),
                         roasteryName.toLowerCase()

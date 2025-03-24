@@ -2,42 +2,63 @@ package com.example.coffeetica.coffee.controllers;
 
 import com.example.coffeetica.coffee.models.ReviewDTO;
 import com.example.coffeetica.coffee.models.ReviewRequestDTO;
-import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.services.ReviewService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
+import jakarta.validation.Valid;
 import java.util.Optional;
 
+/**
+ * REST controller for managing user reviews for coffees.
+ */
 @RestController
+@RequestMapping("/api/reviews")
 public class ReviewController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
+    private final ReviewService reviewService;
 
-    @Autowired
-    private ReviewService reviewService;
-
-    @Autowired
-    ReviewRepository reviewRepository;
-
-    @GetMapping("/api/reviews/all")
-    @PreAuthorize("permitAll()")
-    public List<ReviewDTO> getAllReviews() {
-        return reviewService.findAllReviews();
+    /**
+     * Constructs a new {@link ReviewController}.
+     *
+     * @param reviewService the review service
+     */
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
     }
 
-    @GetMapping("/api/reviews")
+    /**
+     * Retrieves all reviews with pagination, sorted by creation date.
+     *
+     * @param pageable pagination configuration
+     * @return a page of all reviews
+     */
+    @GetMapping("/all")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Page<ReviewDTO>> getAllReviews(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(reviewService.findAllReviews(pageable));
+    }
+
+    /**
+     * Retrieves reviews filtered by optional coffee or user ID, with pagination and sorting.
+     *
+     * @param coffeeId the coffee ID to filter by (optional)
+     * @param userId the user ID to filter by (optional)
+     * @param page page index
+     * @param size page size
+     * @param sortBy sorting field
+     * @param direction sort direction (asc/desc)
+     * @return a page of matching reviews
+     */
+    @GetMapping
     @PreAuthorize("permitAll()")
     public Page<ReviewDTO> getReviews(
             @RequestParam(required = false) Long coffeeId,
@@ -45,46 +66,46 @@ public class ReviewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false) String direction) {
+            @RequestParam(defaultValue = "desc") String direction) {
 
-        // Sorting
-        Sort sort;
-        if ("createdAt".equalsIgnoreCase(sortBy)) {
-            sort = Sort.by("createdAt").descending();
-        } else if ("rating".equalsIgnoreCase(sortBy)) {
-            if ("asc".equalsIgnoreCase(direction)) {
-                sort = Sort.by("rating").ascending();
-            } else {
-                sort = Sort.by("rating").descending();
-            }
-        } else {
-            sort = Sort.by("createdAt").descending();
-        }
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // If userId is provided => user-based
         if (userId != null) {
             return reviewService.findReviewsByUserId(userId, pageable);
-        }
-        // else if coffeeId is provided => coffee-based
-        else if (coffeeId != null) {
+        } else if (coffeeId != null) {
             return reviewService.findReviewsByCoffeeId(coffeeId, pageable);
         }
-        // else => return an empty page or handle error
+
         return Page.empty();
     }
 
-    @GetMapping("/api/reviews/{id}")
+    /**
+     * Retrieves a single review by its ID.
+     *
+     * @param id the review ID
+     * @return the matching review DTO, or 404 if not found
+     */
+    @GetMapping("/{id}")
     @PreAuthorize("permitAll()")
     public ResponseEntity<ReviewDTO> getReviewById(@PathVariable Long id) {
         Optional<ReviewDTO> reviewDTO = reviewService.findReviewById(id);
         return reviewDTO
-                .map(review -> new ResponseEntity<>(review, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @GetMapping("/api/reviews/user")
+    /**
+     * Retrieves a review for the current user and specific coffee.
+     *
+     * @param coffeeId the coffee ID
+     * @param token the authorization token
+     * @return the review if exists, otherwise no content
+     */
+    @GetMapping("/user")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewDTO> getUserReview(
             @RequestParam Long coffeeId,
@@ -95,16 +116,31 @@ public class ReviewController {
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-    @PostMapping("/api/reviews")
+    /**
+     * Creates a new review for the current user.
+     *
+     * @param reviewRequestDTO the review request payload
+     * @return the created review DTO with 201 status
+     */
+    @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewDTO> createReview(@Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
         ReviewDTO savedReviewDTO = reviewService.saveReview(reviewRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReviewDTO);
     }
 
-    @PutMapping("/api/reviews/{id}")
+    /**
+     * Updates an existing review by its ID.
+     * Allowed for Admins or the owner of the review.
+     *
+     * @param id the review ID
+     * @param reviewRequestDTO the updated review data
+     * @return the updated review DTO or 404 if not found
+     */
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('Admin') or @securityService.isReviewOwner(#id)")
-    public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
+    public ResponseEntity<ReviewDTO> updateReview(@PathVariable Long id,
+                                                  @Valid @RequestBody ReviewRequestDTO reviewRequestDTO) {
         try {
             ReviewDTO updatedReviewDTO = reviewService.updateReview(id, reviewRequestDTO);
             return ResponseEntity.ok(updatedReviewDTO);
@@ -113,10 +149,17 @@ public class ReviewController {
         }
     }
 
-    @DeleteMapping("/api/reviews/{id}")
+    /**
+     * Deletes a review by its ID.
+     * Allowed for Admins or the owner of the review.
+     *
+     * @param id the review ID
+     * @return 204 No Content on success
+     */
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Admin') or @securityService.isReviewOwner(#id)")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }

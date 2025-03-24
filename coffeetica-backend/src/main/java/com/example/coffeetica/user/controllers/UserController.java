@@ -21,20 +21,45 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * REST controller for managing users. Supports registration,
+ * updates, role changes, password resets, and retrieval operations.
+ */
 @RestController
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Constructs a new {@link UserController}.
+     *
+     * @param userService the user service layer
+     * @param userRepository the user repository
+     * @param jwtTokenProvider the JWT token provider for auth tokens
+     */
     @Autowired
-    private UserRepository userRepository;
+    public UserController(UserService userService,
+                          UserRepository userRepository,
+                          JwtTokenProvider jwtTokenProvider) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
+    /**
+     * Retrieves a paginated list of users, optionally filtered by a search term.
+     *
+     * @param search optional search string (username/email)
+     * @param page page index
+     * @param size page size
+     * @param sortBy field to sort by
+     * @param direction sort direction (asc/desc)
+     * @return a page of user DTOs
+     */
     @GetMapping("/api/users")
     @PreAuthorize("permitAll()")
     public Page<UserDTO> getAllUsers(
@@ -47,8 +72,14 @@ public class UserController {
         return userService.findAllUsers(search, page, size, sortBy, direction);
     }
 
+    /**
+     * Registers a new user account (public endpoint).
+     *
+     * @param request the registration request
+     * @return the created user DTO or an error message
+     */
     @PostMapping("/api/users/register")
-    @PreAuthorize("permitAll()") // Public endpoint
+    @PreAuthorize("permitAll()")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO request) {
         logger.debug("Attempting to register user {}", request.getUsername());
         try {
@@ -61,6 +92,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves a user by ID.
+     *
+     * @param id the user ID
+     * @return the user DTO if found, otherwise 404
+     */
     @GetMapping("/api/users/{id}")
     @PreAuthorize("permitAll()")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
@@ -78,6 +115,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves info about the currently authenticated user (username, email, roles).
+     *
+     * @param token the bearer token
+     * @return user info if found, otherwise 404
+     */
     @GetMapping("/api/users/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
@@ -93,6 +136,14 @@ public class UserController {
         ));
     }
 
+    /**
+     * Changes the password for the user with the given ID,
+     * only if it's the same user making the request.
+     *
+     * @param id the user ID
+     * @param request the old/new password data
+     * @return 200 OK if successful, otherwise an error
+     */
     @PutMapping("/api/users/{id}/change-password")
     @PreAuthorize("@securityService.getCurrentUserId() == #id")
     public ResponseEntity<?> changeUserPassword(@PathVariable Long id,
@@ -108,6 +159,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Resets another user's password (Admin only).
+     *
+     * @param id the user ID
+     * @param request containing the new password
+     * @return 200 OK if successful
+     */
     @PutMapping("/api/users/{id}/reset-password")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> resetUserPassword(@PathVariable Long id,
@@ -123,6 +181,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Updates the email of the user with the given ID, only if it's the same user making the request.
+     *
+     * @param id the user ID
+     * @param request the new email address
+     * @return 200 OK with updated user data, or error
+     */
     @PutMapping("/api/users/{id}/update-email")
     @PreAuthorize("@securityService.getCurrentUserId() == #id")
     public ResponseEntity<?> updateUserEmail(@PathVariable Long id, @RequestBody UpdateUserRequestDTO request) {
@@ -137,6 +202,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Allows an Admin to update another user's username/email.
+     *
+     * @param id the user ID
+     * @param request data containing username/email to update
+     * @return 200 OK if successful
+     */
     @PutMapping("/api/users/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> adminUpdateUser(@PathVariable Long id, @RequestBody AdminUpdateUserRequestDTO request) {
@@ -151,6 +223,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Deletes a user (Admin only). Blocks deleting Admin/SuperAdmin if you are only Admin.
+     *
+     * @param id the user ID
+     * @return 204 if successful, error otherwise
+     */
     @DeleteMapping("/api/users/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
@@ -165,6 +243,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Updates a user's roles (SuperAdmin only).
+     *
+     * @param id the user ID
+     * @param request containing the new roles
+     * @return 200 OK with updated user info
+     */
     @PutMapping("/api/users/{id}/update-roles")
     @PreAuthorize("hasRole('SuperAdmin')")
     public ResponseEntity<?> updateUserRoles(@PathVariable Long id,
@@ -180,19 +265,12 @@ public class UserController {
         }
     }
 
-//    @GetMapping("/api/users/{username}")
-//    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
-//        logger.debug("Attempting to load user by username {}", username);
-//        try {
-//            UserDetails user = userService.loadUserByUsername(username);
-//            logger.info("Loaded user successfully by username {}", username);
-//            return ResponseEntity.ok(user);
-//        } catch (UsernameNotFoundException e) {
-//            logger.error("User not found with username {}: {}", username, e.getMessage());
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-
+    /**
+     * Returns the user's "favorite coffee" if they have a review with rating=5.
+     *
+     * @param id the user ID
+     * @return the coffee details or 204 if no such coffee found
+     */
     @GetMapping("/api/users/{id}/favorite-coffee")
     @PreAuthorize("permitAll()")
     public ResponseEntity<?> getFavoriteCoffee(@PathVariable Long id) {

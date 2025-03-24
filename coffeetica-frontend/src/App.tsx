@@ -41,7 +41,7 @@ function App() {
             <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/profile/change-password" element={<ChangePasswordPage />} />
 
-            {/* Strona profilu innych użytkowników */}
+            {/* Users Profile Pages */}
             <Route path="/users/:id" element={<UserDetailsPage />} />
             <Route path="/users/:userId/reviews" element={<UserReviewsPage />} />
 

@@ -65,6 +65,26 @@ public final class CoffeeTestData {
         return coffeeDTO;
     }
 
+    public static CoffeeDetailsDTO createTestCoffeeDetailsDTO() {
+        CoffeeDetailsDTO coffeeDetailsDTO = new CoffeeDetailsDTO();
+        coffeeDetailsDTO.setId(1L);
+        coffeeDetailsDTO.setName("Nutty Brazil");
+        coffeeDetailsDTO.setCountryOfOrigin("Brazil");
+        coffeeDetailsDTO.setRegion(Region.SOUTH_AMERICA);
+        coffeeDetailsDTO.setRoastLevel(RoastLevel.MEDIUM);
+        coffeeDetailsDTO.setFlavorProfile(FlavorProfile.NUTTY);
+        coffeeDetailsDTO.setFlavorNotes(new HashSet<>(List.of("Chocolate", "Nuts")));
+        coffeeDetailsDTO.setProcessingMethod("Washed");
+        coffeeDetailsDTO.setProductionYear(2024);
+        coffeeDetailsDTO.setRoastery(createTestRoasteryDTO());
+
+        coffeeDetailsDTO.setAverageRating(4.8);
+        coffeeDetailsDTO.setTotalReviewsCount(123);
+        coffeeDetailsDTO.setLatestReviews(List.of(createTestReviewDTO()));
+
+        return coffeeDetailsDTO;
+    }
+
     public static ReviewEntity createTestReviewEntity() {
         ReviewEntity review = new ReviewEntity();
         review.setId(1L);
@@ -86,5 +106,15 @@ public final class CoffeeTestData {
         reviewDTO.setRating(5D);
         reviewDTO.setCoffeeId(1L);
         return reviewDTO;
+    }
+
+    public static ReviewRequestDTO createTestReviewRequestDTO() {
+        ReviewRequestDTO request = new ReviewRequestDTO();
+        request.setCoffeeId(1L);
+        request.setRating(5.0);
+        request.setContent("Great coffee with a nutty flavor.");
+        request.setBrewingMethod("Espresso");
+        request.setBrewingDescription("Brewed with a professional espresso machine.");
+        return request;
     }
 }

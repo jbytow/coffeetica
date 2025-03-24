@@ -2,14 +2,16 @@ package com.example.coffeetica.coffee.services.impl;
 
 import com.example.coffeetica.coffee.models.CoffeeDTO;
 import com.example.coffeetica.coffee.models.CoffeeEntity;
-import com.example.coffeetica.coffee.models.enums.FlavorProfile;
-import com.example.coffeetica.coffee.models.enums.Region;
-import com.example.coffeetica.coffee.models.enums.RoastLevel;
+import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.CoffeeRepository;
+import com.example.coffeetica.coffee.repositories.ReviewRepository;
+import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.util.CoffeeTestData;
 
+import com.example.coffeetica.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.modelmapper.ModelMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,6 +27,15 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
+
+
+
+
+/**
+ * Unit tests for {@link CoffeeServiceImpl} verifying CRUD operations
+ * and ResourceNotFoundException handling, analogous to RoasteryServiceImplTest.
+ */
 @ExtendWith(MockitoExtension.class)
 public class CoffeeServiceImplTest {
 
@@ -32,148 +43,208 @@ public class CoffeeServiceImplTest {
     private CoffeeRepository coffeeRepository;
 
     @Mock
+    private ReviewRepository reviewRepository;
+
+    @Mock
+    private RoasteryRepository roasteryRepository;
+
+    @Mock
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private CoffeeServiceImpl underTest;
+    private CoffeeServiceImpl coffeeService;
 
-    @Test
-    public void testThatCoffeeIsSaved() {
-        CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
-        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
+    private CoffeeDTO sampleCoffeeDTO;
+    private CoffeeEntity sampleCoffeeEntity;
 
-        // Mocking the behavior of ModelMapper
-        when(modelMapper.map(coffeeDTO, CoffeeEntity.class)).thenReturn(coffeeEntity);
-        when(coffeeRepository.save(coffeeEntity)).thenReturn(coffeeEntity);
-        when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);
-
-        // Action
-        CoffeeDTO result = underTest.saveCoffee(coffeeDTO);
-
-        // Assertions
-        assertEquals(coffeeDTO, result);
-        verify(modelMapper).map(coffeeDTO, CoffeeEntity.class);
-        verify(coffeeRepository).save(coffeeEntity);
-        verify(modelMapper).map(coffeeEntity, CoffeeDTO.class);
+    /**
+     * Initializes reusable test data before each test method.
+     */
+    @BeforeEach
+    void setUp() {
+        sampleCoffeeDTO = CoffeeTestData.createTestCoffeeDTO();
+        sampleCoffeeEntity = CoffeeTestData.createTestCoffeeEntity();
     }
 
+    /**
+     * Tests that saving a new coffee properly maps DTO to entity,
+     * calls the repository's save(), and maps the entity back to DTO.
+     */
+    @Test
+    public void testThatCoffeeIsSaved() {
+        when(modelMapper.map(sampleCoffeeDTO, CoffeeEntity.class)).thenReturn(sampleCoffeeEntity);
+        when(coffeeRepository.save(sampleCoffeeEntity)).thenReturn(sampleCoffeeEntity);
+        when(modelMapper.map(sampleCoffeeEntity, CoffeeDTO.class)).thenReturn(sampleCoffeeDTO);
+
+        CoffeeDTO result = coffeeService.saveCoffee(sampleCoffeeDTO);
+
+        assertEquals(sampleCoffeeDTO, result);
+        verify(modelMapper).map(sampleCoffeeDTO, CoffeeEntity.class);
+        verify(coffeeRepository).save(sampleCoffeeEntity);
+        verify(modelMapper).map(sampleCoffeeEntity, CoffeeDTO.class);
+    }
+
+    /**
+     * Tests that finding a coffee by its ID returns a matching DTO
+     * if the coffee entity is present in the database.
+     */
     @Test
     public void testThatFindByIdReturnsCoffeeWhenExists() {
         Long id = 1L;
-        CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
-        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
+        when(coffeeRepository.findById(id)).thenReturn(Optional.of(sampleCoffeeEntity));
+        when(modelMapper.map(sampleCoffeeEntity, CoffeeDTO.class)).thenReturn(sampleCoffeeDTO);
 
-        when(coffeeRepository.findById(id)).thenReturn(Optional.of(coffeeEntity));
-        when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);
-
-        Optional<CoffeeDTO> result = underTest.findCoffeeById(id);
+        Optional<CoffeeDTO> result = coffeeService.findCoffeeById(id);
 
         assertTrue(result.isPresent());
-        assertEquals(coffeeDTO, result.get());
+        assertEquals(sampleCoffeeDTO, result.get());
         verify(coffeeRepository).findById(id);
-        verify(modelMapper).map(coffeeEntity, CoffeeDTO.class);
+        verify(modelMapper).map(sampleCoffeeEntity, CoffeeDTO.class);
     }
 
+    /**
+     * Tests that finding a coffee by a non-existent ID returns an empty Optional.
+     */
     @Test
-    public void testThatFindByIdReturnEmptyWhenNoCoffee() {
-        Long id = 1L;
+    public void testThatFindByIdReturnsEmptyWhenNoCoffee() {
+        Long id = 999L;
         when(coffeeRepository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<CoffeeDTO> result = underTest.findCoffeeById(id);
+        Optional<CoffeeDTO> result = coffeeService.findCoffeeById(id);
 
-        assertEquals(Optional.empty(), result);
+        assertFalse(result.isPresent());
+        verify(coffeeRepository).findById(id);
+        verifyNoInteractions(modelMapper);
     }
 
+    /**
+     * Tests that listing coffees returns an empty page if none exist.
+     */
     @Test
-    public void testListCoffeesReturnsEmptyListWhenNoCoffeesExist() {
+    public void testListCoffeesReturnsEmptyPageWhenNoCoffeesExist() {
         Page<CoffeeEntity> emptyPage = new PageImpl<>(Collections.emptyList());
-        when(coffeeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(emptyPage);
+        when(coffeeRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(emptyPage);
 
         Pageable pageable = PageRequest.of(0, 5);
-        String name = null;
-        String countryOfOrigin = null;
-        Region region = null;
-        RoastLevel roastLevel = null;
-        FlavorProfile flavorProfile = null;
-        Set<String> flavorNotes = null;
-        String processingMethod = null;
-        Integer minProductionYear = null;
-        Integer maxProductionYear = null;
-        String roasteryName = null;
-
-        Page<CoffeeDTO> result = underTest.findCoffees(
-                name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
-                processingMethod, minProductionYear, maxProductionYear, roasteryName, pageable
+        Page<CoffeeDTO> result = coffeeService.findCoffees(
+                null, null, null, null, null, null, null,
+                null, null, null, pageable
         );
 
         assertTrue(result.isEmpty());
         verify(coffeeRepository).findAll(any(Specification.class), any(Pageable.class));
     }
 
+    /**
+     * Tests that listing coffees returns a page with coffees if they exist in the DB,
+     * verifying correct mapping of entities to DTOs.
+     */
     @Test
-    public void testListCoffeesReturnsCoffeesWhenExist() {
-        CoffeeDTO coffeeDTO = CoffeeTestData.createTestCoffeeDTO();
-        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
-
-        Page<CoffeeEntity> coffeePage = new PageImpl<>(List.of(coffeeEntity));
-        when(coffeeRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(coffeePage);
-        when(modelMapper.map(coffeeEntity, CoffeeDTO.class)).thenReturn(coffeeDTO);
+    public void testListCoffeesReturnsNonEmptyPageWhenCoffeesExist() {
+        Page<CoffeeEntity> coffeePage = new PageImpl<>(List.of(sampleCoffeeEntity));
+        when(coffeeRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(coffeePage);
+        when(modelMapper.map(sampleCoffeeEntity, CoffeeDTO.class)).thenReturn(sampleCoffeeDTO);
 
         Pageable pageable = PageRequest.of(0, 5);
-        String name = null;
-        String countryOfOrigin = null;
-        Region region = null;
-        RoastLevel roastLevel = null;
-        FlavorProfile flavorProfile = null;
-        Set<String> flavorNotes = null;
-        String processingMethod = null;
-        Integer minProductionYear = null;
-        Integer maxProductionYear = null;
-        String roasteryName = null;
-
-
-        Page<CoffeeDTO> result = underTest.findCoffees(
-                name, countryOfOrigin, region, roastLevel, flavorProfile, flavorNotes,
-                processingMethod, minProductionYear, maxProductionYear, roasteryName, pageable
+        Page<CoffeeDTO> result = coffeeService.findCoffees(
+                null, null, null, null, null, null, null,
+                null, null, null, pageable
         );
 
-
-        assertEquals(1, result.getContent().size());
-        assertEquals(coffeeDTO, result.getContent().get(0));
-        verify(modelMapper).map(coffeeEntity, CoffeeDTO.class);
-
+        assertFalse(result.isEmpty());
+        assertEquals(sampleCoffeeDTO, result.getContent().get(0));
+        verify(modelMapper).map(sampleCoffeeEntity, CoffeeDTO.class);
         verify(coffeeRepository).findAll(any(Specification.class), any(Pageable.class));
     }
 
+    /**
+     * Tests that isCoffeeExists returns false if the coffee is not found.
+     */
     @Test
     public void testCoffeeExistsReturnsFalseWhenCoffeeDoesntExist() {
         Long id = 1L;
         when(coffeeRepository.existsById(id)).thenReturn(false);
 
-        boolean result = underTest.isCoffeeExists(id);
-
+        boolean result = coffeeService.isCoffeeExists(id);
         assertFalse(result);
+        verify(coffeeRepository).existsById(id);
     }
 
+    /**
+     * Tests that isCoffeeExists returns true if the coffee is found in the DB.
+     */
     @Test
     public void testCoffeeExistsReturnsTrueWhenCoffeeDoesExist() {
         Long id = 1L;
         when(coffeeRepository.existsById(id)).thenReturn(true);
 
-        boolean result = underTest.isCoffeeExists(id);
-
+        boolean result = coffeeService.isCoffeeExists(id);
         assertTrue(result);
+        verify(coffeeRepository).existsById(id);
     }
 
+    /**
+     * Tests that deleting an existing coffee results in a repository delete call.
+     */
     @Test
-    public void testThatDeleteCoffeeDeletesCoffee() {
+    public void testDeleteCoffeeDeletesCoffee() {
         Long id = 1L;
-        CoffeeEntity coffeeEntity = CoffeeTestData.createTestCoffeeEntity();
+        when(coffeeRepository.findById(id)).thenReturn(Optional.of(sampleCoffeeEntity));
 
-        when(coffeeRepository.findById(id)).thenReturn(Optional.of(coffeeEntity));
+        coffeeService.deleteCoffee(id);
+        verify(coffeeRepository).delete(sampleCoffeeEntity);
+    }
 
-        underTest.deleteCoffee(id);
+    /**
+     * Tests that an exception (ResourceNotFoundException) is thrown
+     * if the coffee to delete does not exist.
+     */
+    @Test
+    public void testDeleteCoffeeThrowsIfCoffeeNotFound() {
+        Long id = 9999L;
+        when(coffeeRepository.findById(id)).thenReturn(Optional.empty());
 
-        verify(coffeeRepository, times(1)).delete(coffeeEntity);
+        assertThrows(ResourceNotFoundException.class, () -> coffeeService.deleteCoffee(id));
+        verify(coffeeRepository).findById(id);
+        verify(coffeeRepository, never()).deleteById(anyLong());
+    }
+
+    /**
+     * Tests that updating a coffee throws ResourceNotFoundException if the coffee is missing.
+     */
+    @Test
+    public void testUpdateCoffeeThrowsIfCoffeeNotFound() {
+        Long id = 9999L;
+        when(coffeeRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> coffeeService.updateCoffee(id, sampleCoffeeDTO));
+        verify(coffeeRepository).findById(id);
+        verifyNoMoreInteractions(coffeeRepository);
+    }
+
+    /**
+     * Tests that updating an existing coffee calls save and returns the updated DTO.
+     */
+    @Test
+    public void testUpdateCoffeeUpdatesSuccessfully() {
+        Long id = 1L;
+        when(coffeeRepository.findById(id)).thenReturn(Optional.of(sampleCoffeeEntity));
+        when(coffeeRepository.save(sampleCoffeeEntity)).thenReturn(sampleCoffeeEntity);
+
+        lenient().doNothing().when(modelMapper).map(any(CoffeeDTO.class), any(CoffeeEntity.class));
+        when(modelMapper.map(any(CoffeeEntity.class), eq(CoffeeDTO.class))).thenReturn(sampleCoffeeDTO);
+
+        Long roasteryId = sampleCoffeeDTO.getRoastery().getId();
+        when(roasteryRepository.findById(eq(roasteryId)))
+                .thenReturn(Optional.of(CoffeeTestData.createTestRoasteryEntity()));
+
+        CoffeeDTO updatedCoffee = coffeeService.updateCoffee(id, sampleCoffeeDTO);
+        assertEquals(sampleCoffeeDTO, updatedCoffee);
+        verify(coffeeRepository).findById(id);
+        verify(coffeeRepository).save(sampleCoffeeEntity);
+        verify(modelMapper).map(sampleCoffeeEntity, CoffeeDTO.class);
     }
 }

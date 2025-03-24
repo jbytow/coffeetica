@@ -6,16 +6,38 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Represents a user entity storing credentials and relationships.
+ */
 @Entity
-@Table(name = "users")
+@Table(name = "users") // you can add unique constraints here if needed
 public class UserEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * Username for the user, typically unique.
+     */
+    @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
+
+    /**
+     * Bcrypt-hashed password.
+     */
+    @Column(nullable = false, length = 100)
     private String password;
+
+    /**
+     * Email for the user, typically unique.
+     */
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    /**
+     * Roles assigned to the user.
+     */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -24,8 +46,15 @@ public class UserEntity {
     )
     private Set<RoleEntity> roleEntities = new HashSet<>();
 
+    /**
+     * Reviews created by this user.
+     */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ReviewEntity> reviews = new HashSet<>();
+
+    public UserEntity() {
+    }
+
 
     // Getters and setters
 

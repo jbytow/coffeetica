@@ -1,32 +1,50 @@
 package com.example.coffeetica.coffee.services.impl;
 
-
 import com.example.coffeetica.coffee.models.RoasteryDTO;
 import com.example.coffeetica.coffee.models.RoasteryEntity;
 import com.example.coffeetica.coffee.repositories.RoasteryRepository;
 import com.example.coffeetica.coffee.services.RoasteryService;
 import com.example.coffeetica.coffee.specification.RoasterySpecification;
+import com.example.coffeetica.exceptions.ResourceNotFoundException;
 import com.example.coffeetica.utility.FileHelper;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+/**
+ * Implementation of the {@link RoasteryService} interface,
+ * providing business logic for managing roasteries.
+ */
 @Service
 public class RoasteryServiceImpl implements RoasteryService {
 
-    @Autowired
-    private RoasteryRepository roasteryRepository;
+    private final RoasteryRepository roasteryRepository;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    /**
+     * Constructs a new instance of {@link RoasteryServiceImpl}.
+     *
+     * @param roasteryRepository the repository for roastery entities
+     * @param modelMapper the model mapper for converting entities and DTOs
+     */
+    public RoasteryServiceImpl(RoasteryRepository roasteryRepository, ModelMapper modelMapper) {
+        this.roasteryRepository = roasteryRepository;
+        this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public boolean isRoasteryExists(Long id) {
+        return roasteryRepository.existsById(id);
+    }
 
     @Override
     public List<RoasteryDTO> findAllRoasteries() {
@@ -41,8 +59,8 @@ public class RoasteryServiceImpl implements RoasteryService {
             String country,
             Integer minFoundingYear,
             Integer maxFoundingYear,
-            Pageable pageable) {
-
+            Pageable pageable
+    ) {
         Specification<RoasteryEntity> spec = RoasterySpecification.filterByAttributes(
                 name, country, minFoundingYear, maxFoundingYear
         );
@@ -67,8 +85,11 @@ public class RoasteryServiceImpl implements RoasteryService {
     @Override
     public RoasteryDTO updateRoastery(Long id, RoasteryDTO roasteryDetails) {
         RoasteryEntity entity = roasteryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Roastery not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Roastery not found with ID: " + id));
+
+        // Map fields from the incoming DTO to the existing entity
         modelMapper.map(roasteryDetails, entity);
+
         RoasteryEntity updatedEntity = roasteryRepository.save(entity);
         return modelMapper.map(updatedEntity, RoasteryDTO.class);
     }
@@ -76,38 +97,27 @@ public class RoasteryServiceImpl implements RoasteryService {
     @Override
     public void deleteRoastery(Long id) {
         RoasteryEntity roastery = roasteryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Roastery not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Roastery not found with ID: " + id));
 
-        // Delete the associated image file using FileHelper
+        // Delete the associated image file, if any
         if (roastery.getImageUrl() != null) {
             FileHelper.deleteImage(roastery.getImageUrl());
         }
 
-        // Delete the roastery entity from the database
         roasteryRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean isRoasteryExists(Long id) {
-        return roasteryRepository.existsById(id);
     }
 
     @Override
     public void updateRoasteryImageUrl(Long id, String newImageUrl) {
         RoasteryEntity roastery = roasteryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Roastery not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Roastery not found with ID: " + id));
 
-        // Check if there is an existing image and if it differs from the new image
         String oldImageUrl = roastery.getImageUrl();
         if (oldImageUrl != null && !oldImageUrl.equals(newImageUrl)) {
-            // Use FileHelper to delete the old image
             FileHelper.deleteImage(oldImageUrl);
         }
 
-        // Update the image URL in the roastery entity
         roastery.setImageUrl(newImageUrl);
-
-        // Save the updated roastery entity to the database
         roasteryRepository.save(roastery);
     }
 }

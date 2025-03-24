@@ -1,8 +1,6 @@
 package com.example.coffeetica.user.services.impl;
 
-
 import com.example.coffeetica.coffee.models.CoffeeDetailsDTO;
-import com.example.coffeetica.coffee.models.CoffeeEntity;
 import com.example.coffeetica.coffee.models.ReviewEntity;
 import com.example.coffeetica.coffee.repositories.ReviewRepository;
 import com.example.coffeetica.coffee.services.CoffeeService;
@@ -16,13 +14,11 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,38 +28,57 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link UserService}, providing registration,
+ * user lookups, password changes, and role management.
+ */
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
+    private final CoffeeService coffeeService;
+    private final ReviewRepository reviewRepository;
+    private final SecurityService securityService;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private CoffeeService coffeeService;
-
-    @Autowired
-    private ReviewRepository reviewRepository;
-
-    @Autowired
-    private SecurityService securityService;
+    /**
+     * Constructs a new {@link UserServiceImpl} with required dependencies.
+     *
+     * @param userRepository repository for user entities
+     * @param roleRepository repository for role entities
+     * @param passwordEncoder password encoder for user credentials
+     * @param modelMapper model mapper for DTO conversions
+     * @param coffeeService coffee service for coffee details
+     * @param reviewRepository repository for review entities
+     * @param securityService security service for current user checks
+     */
+    public UserServiceImpl(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder,
+            ModelMapper modelMapper,
+            CoffeeService coffeeService,
+            ReviewRepository reviewRepository,
+            SecurityService securityService
+    ) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
+        this.coffeeService = coffeeService;
+        this.reviewRepository = reviewRepository;
+        this.securityService = securityService;
+    }
 
     @Override
     public Page<UserDTO> findAllUsers(String search, int page, int size, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<UserEntity> userEntities = userRepository.findBySearch(search, pageable);
@@ -76,6 +91,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             dto.setRoles(entity.getRoles().stream()
                     .map(RoleEntity::getName)
                     .collect(Collectors.toSet()));
+            // If you want the user's review IDs:
+            Set<Long> reviewIds = entity.getReviews().stream()
+                    .map(ReviewEntity::getId)
+                    .collect(Collectors.toSet());
+            dto.setReviewIds(reviewIds);
             return dto;
         });
     }
@@ -84,7 +104,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDTO registerNewUserAccount(RegisterRequestDTO request) throws Exception {
         logger.info("Registering new user {}", request.getUsername());
 
-        // Sprawdzenie, czy użytkownik już istnieje
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new Exception("There is an account with that username: " + request.getUsername());
         }
@@ -92,21 +111,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new Exception("There is an account with that email address: " + request.getEmail());
         }
 
-        // Tworzenie nowego użytkownika
         UserEntity user = new UserEntity();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Przypisanie domyślnej roli "User"
+        // Assign default "User" role
         RoleEntity userRole = roleRepository.findByName("User")
                 .orElseThrow(() -> new RuntimeException("Default role 'User' not found"));
+        user.setRoles(Set.of(userRole));
 
-        Set<RoleEntity> roles = new HashSet<>();
-        roles.add(userRole);
-        user.setRoles(roles);
-
-        // Zapis użytkownika w bazie
         UserEntity savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
@@ -116,7 +130,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Sprawdzenie, czy email jest już zajęty przez innego użytkownika
         Optional<UserEntity> existingUserWithEmail = userRepository.findByEmail(request.getEmail());
         if (existingUserWithEmail.isPresent() && !existingUserWithEmail.get().getId().equals(userId)) {
             throw new Exception("This email is already in use by another account.");
@@ -132,23 +145,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Pobierz ID i role aktualnie zalogowanego użytkownika
         Long currentUserId = securityService.getCurrentUserId();
         UserEntity currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new Exception("Current user not found"));
 
         boolean isCurrentUserAdmin = currentUser.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Admin"));
-
         boolean isTargetUserProtected = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Admin") || role.getName().equals("SuperAdmin"));
 
-        // Blokowanie edycji danych SuperAdmina/Admina przez Admina
         if (isCurrentUserAdmin && isTargetUserProtected) {
             throw new IllegalAccessException("You do not have permission to edit an Admin or SuperAdmin.");
         }
 
-        // Sprawdzenie unikalności nazwy użytkownika (jeśli zmieniana)
         if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             Optional<UserEntity> existingUserWithUsername = userRepository.findByUsername(request.getUsername());
             if (existingUserWithUsername.isPresent()) {
@@ -157,7 +166,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setUsername(request.getUsername());
         }
 
-        // Sprawdzenie unikalności emaila (jeśli zmieniany)
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
             Optional<UserEntity> existingUserWithEmail = userRepository.findByEmail(request.getEmail());
             if (existingUserWithEmail.isPresent()) {
@@ -175,23 +183,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Pobierz ID zalogowanego użytkownika
         Long currentUserId = securityService.getCurrentUserId();
         if (!userId.equals(currentUserId)) {
             throw new IllegalAccessException("You are not allowed to change this password.");
         }
 
-        // Sprawdzenie poprawności obecnego hasła
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("Current password is incorrect.");
         }
-
-        // Zapobieganie zmianie na to samo hasło
         if (passwordEncoder.matches(newPassword, user.getPassword())) {
             throw new IllegalArgumentException("New password cannot be the same as the old password.");
         }
 
-        // Ustaw nowe hasło
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
@@ -201,18 +204,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Pobierz ID i role aktualnie zalogowanego użytkownika (osoby próbującej resetować hasło)
         Long currentUserId = securityService.getCurrentUserId();
         UserEntity currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new Exception("Current user not found"));
 
         boolean isCurrentUserAdmin = currentUser.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Admin"));
-
         boolean isTargetUserProtected = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Admin") || role.getName().equals("SuperAdmin"));
 
-        // Blokowanie resetowania hasła Admina/SuperAdmina przez Admina
         if (isCurrentUserAdmin && isTargetUserProtected) {
             throw new IllegalAccessException("You do not have permission to reset the password of an Admin or SuperAdmin.");
         }
@@ -228,18 +228,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        // Pobierz ID i role aktualnie zalogowanego użytkownika (osoby próbującej usunąć)
         Long currentUserId = securityService.getCurrentUserId();
         UserEntity currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new Exception("Current user not found"));
 
         boolean isCurrentUserAdmin = currentUser.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Admin"));
-
         boolean isTargetUserProtected = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Admin") || role.getName().equals("SuperAdmin"));
 
-        // Blokowanie usuwania Admina/SuperAdmina przez Admina
         if (isCurrentUserAdmin && isTargetUserProtected) {
             throw new IllegalAccessException("You do not have permission to delete an Admin or SuperAdmin.");
         }
@@ -249,56 +246,39 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsernameOrEmail(String identifier) {
-        logger.info("Loading user by identifier: {}", identifier);
-        UserEntity user = userRepository.findByUsernameOrEmail(identifier)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + identifier));
-
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
-                .authorities(user.getRoles().stream()
-                        .map(role -> "ROLE_" + role.getName())
-                        .toArray(String[]::new))
-                .build();
-    }
-
-    // Spring Security will call this method by default
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return loadUserByUsernameOrEmail(username);  // Delegate to the loadUserByUsernameOrEmail method
-    }
-
     public Optional<UserDTO> findUserById(Long id) {
-        return userRepository.findById(id).map(user -> {
+        return userRepository.findById(id).map(entity -> {
             UserDTO userDTO = new UserDTO();
-            userDTO.setId(user.getId());
-            userDTO.setUsername(user.getUsername());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setRoles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
+            userDTO.setId(entity.getId());
+            userDTO.setUsername(entity.getUsername());
+            userDTO.setEmail(entity.getEmail());
+            userDTO.setRoles(entity.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet()));
+
+            // example if you want to map review IDs
+            Set<Long> reviewIds = entity.getReviews().stream()
+                    .map(review -> review.getId())
+                    .collect(Collectors.toSet());
+            userDTO.setReviewIds(reviewIds);
+
             return userDTO;
         });
     }
 
+    @Override
     public Optional<CoffeeDetailsDTO> findFavoriteCoffeeOfUser(Long userId) throws Exception {
-        // Upewniamy się, że user istnieje – w przeciwnym razie -> Exception/404
         if (!userRepository.existsById(userId)) {
             throw new Exception("User not found with id: " + userId);
         }
 
-        // pobieramy recenzję(je) rating=5.0, sort=desc, limit=1
         Page<ReviewEntity> topReviews = reviewRepository
                 .findReviewsWithRatingFiveByUserId(userId, PageRequest.of(0, 1));
 
         if (topReviews.isEmpty()) {
-            return Optional.empty(); // brak recenzji z oceną 5
+            return Optional.empty();
         }
 
         ReviewEntity review = topReviews.getContent().get(0);
-        // Mamy recenzję -> pobieramy kawę:
-        CoffeeEntity coffeeEntity = review.getCoffee();
-        // ... i mapujemy do CoffeeDetailsDTO:
-        return coffeeService.findCoffeeDetails(coffeeEntity.getId());
+        return coffeeService.findCoffeeDetails(review.getCoffee().getId());
     }
 
     @Override
@@ -306,14 +286,60 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found with id: " + userId));
 
-        Set<RoleEntity> roleEntities = roles.stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + roleName)))
-                .collect(Collectors.toSet());
+        Set<RoleEntity> roleEntities = new HashSet<>();
+        for (String roleName : roles) {
+            RoleEntity role = roleRepository.findByName(roleName)
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+            roleEntities.add(role);
+        }
 
         user.setRoles(roleEntities);
-        UserEntity updatedUser = userRepository.save(user);
-        return modelMapper.map(updatedUser, UserDTO.class);
+        UserEntity updated = userRepository.save(user);
+        return modelMapper.map(updated, UserDTO.class);
     }
 
+    /**
+     * Loads a user by their username or email (default for Spring Security).
+     *
+     * @param identifier the username or email
+     * @return a fully authenticated UserDetails object
+     * @throws UsernameNotFoundException if no user is found
+     */
+    @Override
+    public UserDetails loadUserByUsernameOrEmail(String identifier) {
+        logger.info("Loading user by identifier: {}", identifier);
+        UserEntity user = userRepository.findByUsernameOrEmail(identifier)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + identifier));
+
+        return toSpringSecurityUser(user);
+    }
+
+    /**
+     * Spring Security calls this method by default.
+     * We delegate to loadUserByUsernameOrEmail.
+     *
+     * @param username the username
+     * @return the user details for Spring Security
+     * @throws UsernameNotFoundException if not found
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return loadUserByUsernameOrEmail(username);
+    }
+
+    /**
+     * Converts a user entity to Spring Security's User object.
+     */
+    private UserDetails toSpringSecurityUser(UserEntity user) {
+        String[] roles = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .map(name -> "ROLE_" + name)
+                .toArray(String[]::new);
+
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .authorities(roles)
+                .build();
+    }
 }

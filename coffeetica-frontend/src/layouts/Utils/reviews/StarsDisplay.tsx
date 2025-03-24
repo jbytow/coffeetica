@@ -31,7 +31,7 @@ export const StarsDisplay: React.FC<StarsDisplayProps> = ({
                 </clipPath>
               </defs>
   
-              {/* Tło gwiazdki (szare) */}
+              {/* Star backvground (gray) */}
               <path
                 fill="#d3d3d3"
                 d="M3.612 15.443c-.386.198-.824-.149-.746-.592l
@@ -40,7 +40,7 @@ export const StarsDisplay: React.FC<StarsDisplayProps> = ({
                    l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
               />
   
-              {/* Pełna gwiazdka (złota) */}
+              {/* Full star (gold) */}
               {isFull && (
                 <path
                   fill="gold"
@@ -51,7 +51,7 @@ export const StarsDisplay: React.FC<StarsDisplayProps> = ({
                 />
               )}
   
-              {/* Połowa gwiazdki (złota, z clip-path) */}
+              {/* Half star (gold, with clip path) */}
               {isHalf && (
                 <path
                   fill="gold"

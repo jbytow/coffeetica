@@ -1,7 +1,11 @@
 package com.example.coffeetica.user.models;
 
-import javax.validation.constraints.NotBlank;
 
+import jakarta.validation.constraints.NotBlank;
+
+/**
+ * A DTO for changing a user's password.
+ */
 public class ChangePasswordRequestDTO {
 
     @NotBlank
@@ -10,20 +14,22 @@ public class ChangePasswordRequestDTO {
     @NotBlank
     private String newPassword;
 
-    public String getCurrentPassword() {
-        return currentPassword;
+    public ChangePasswordRequestDTO() {
     }
 
-    public void setCurrentPassword(String currentPassword) {
-        this.currentPassword = currentPassword;
+    public String getCurrentPassword() {
+        return currentPassword;
     }
 
     public String getNewPassword() {
         return newPassword;
     }
 
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
+    }
+
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
 }
-

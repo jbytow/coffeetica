@@ -10,20 +10,20 @@ interface LatestCoffeesProps {
   export const LatestCoffees: React.FC<LatestCoffeesProps> = ({ coffees, roasteryName }) => {
     return (
       <section className="latest-coffees container mt-3 mb-4">
-        {/* Nagłówek sekcji */}
+        {/* Header */}
         <div className="row">
           <div className="col-12">
             <h2 className="mb-4">Latest Added Coffees</h2>
           </div>
         </div>
   
-        {/* Lista kaw */}
+        {/* Coffee List */}
         {coffees.length > 0 ? (
           <>
             {coffees.map((coffee) => (
               <div className="card mt-3 shadow p-3 mb-3 bg-body rounded" key={coffee.id}>
                 <div className="row g-0">
-                  {/* Obrazek kawy */}
+                  {/* Coffee Image */}
                   <div className="col-md-3 d-flex justify-content-center align-items-center">
                     <div>
                       {coffee.imageUrl ? (
@@ -46,7 +46,7 @@ interface LatestCoffeesProps {
                     </div>
                   </div>
   
-                  {/* Informacje o kawie */}
+                  {/* Coffee Info */}
                   <div className="col-md-9">
                     <div className="card-body">
                       <div className="row align-items-center mb-2">
@@ -82,7 +82,7 @@ interface LatestCoffeesProps {
   
             <hr />
   
-            {/* Przycisk "View All Coffees" */}
+            {/* "View All Coffees" Button */}
             {roasteryName && (
               <div className="row">
                 <div className="col-12">

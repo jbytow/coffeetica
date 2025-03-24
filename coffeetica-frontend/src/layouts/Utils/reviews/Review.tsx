@@ -62,7 +62,9 @@ export const Review: React.FC<ReviewProps> = ({
       <Link to={`/coffees/${review.coffeeId}`}>{review.coffeeName}</Link>
     </h5>
   ) : (
-    <h5 className="mb-0 me-3 align-self-center">{review.userName}</h5>
+    <h5 className="mb-0 me-3 align-self-center">
+  <Link to={`/users/${review.userId}`}>{review.userName}</Link>
+</h5>
   );
 
   return (

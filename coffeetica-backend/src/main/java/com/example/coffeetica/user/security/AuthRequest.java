@@ -1,13 +1,21 @@
 package com.example.coffeetica.user.security;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
+/**
+ * A request DTO for user authentication,
+ * supporting username or email as the identifier.
+ */
 public class AuthRequest {
-    @NotBlank
+
+    @NotBlank(message = "Identifier (username or email) cannot be blank.")
     private String identifier;
 
-    @NotBlank
+    @NotBlank(message = "Password cannot be blank.")
     private String password;
+
+    public AuthRequest() {
+    }
 
     public String getIdentifier() {
         return identifier;
