@@ -26,21 +26,15 @@ const Navbar: React.FC = () => {
               <Link className="nav-link active" to="/">Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/about">About</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/contact">Contact</Link>
-            </li>
-            <li className="nav-item">
               <Link className="nav-link" to="/coffees">Coffees</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/roasteries">Roasteries</Link>
             </li>
             {isAuthenticated && hasRole("Admin") && (
-            <li className="nav-item">
-              <Link className="nav-link" to="/admin">Admin</Link>
-            </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/admin">Admin</Link>
+              </li>
             )}
           </ul>
           <ul className="navbar-nav">
@@ -48,6 +42,9 @@ const Navbar: React.FC = () => {
               <>
                 <li className="nav-item">
                   <span className="nav-link">Hello, {user?.username}</span>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/profile">Profile</Link>
                 </li>
                 <li className="nav-item">
                   <button className="btn btn-outline-light" onClick={logout}>Logout</button>
