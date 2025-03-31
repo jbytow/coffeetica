@@ -16,7 +16,7 @@ import { UpdateUserRequestDTO } from "../../models/UpdateUserRequestDTO";
  * handling all loading/error states locally.
  */
 export const UserProfilePage = () => {
-  const { isAuthenticated, updateUser } = useContext(AuthContext);
+  const { isAuthenticated, updateUser, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Basic user info loading
@@ -107,22 +107,33 @@ export const UserProfilePage = () => {
     e.preventDefault();
     setSuccessMsg("");
     setErrorMsg("");
-
+  
     if (!userDetails) return;
-
+  
     try {
-      const payload: UpdateUserRequestDTO = { email }
-
+      const payload: UpdateUserRequestDTO = { email };
+  
       const response = await apiClient.put<UserDTO>(
         `/users/${userDetails.id}/update-email`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      setSuccessMsg("Email address has been updated.");
+  
+      setSuccessMsg("Email address has been updated. Please log in again.");
       setUserDetails(response.data);
       updateUser(response.data);
       setIsEditingEmail(false);
+      
+      // Wyloguj użytkownika po krótkim opóźnieniu
+      setTimeout(() => {
+        logout(); 
+        navigate("/login", { 
+          state: { 
+            message: "Your email has been changed. Please log in again with your new email address." 
+          } 
+        });
+      }, 1500); // 1.5 sekundy opóźnienia, aby użytkownik zobaczył komunikat
+  
     } catch (error: any) {
       setErrorMsg("An error occurred while updating the email.");
     }
@@ -179,6 +190,13 @@ export const UserProfilePage = () => {
 
               <div className="mb-3">
                 <strong>Email Address:</strong>
+                {successMsg && (
+                  <div className="alert alert-success mt-2">{successMsg}</div>
+                )}
+                {errorMsg && (
+                  <div className="alert alert-danger mt-2">{errorMsg}</div>
+                )}
+
                 {!isEditingEmail ? (
                   <>
                     <div className="mt-1">{userDetails.email}</div>
@@ -192,42 +210,32 @@ export const UserProfilePage = () => {
                     </div>
                   </>
                 ) : (
-                  <>
-                    {successMsg && (
-                      <div className="alert alert-success mt-2">
-                        {successMsg}
-                      </div>
-                    )}
-                    {errorMsg && (
-                      <div className="alert alert-danger mt-2">{errorMsg}</div>
-                    )}
-                    <form className="mt-2" onSubmit={handleUpdateEmail}>
-                      <div className="mb-3">
-                        <input
-                          type="email"
-                          className="form-control"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="d-flex gap-2">
-                        <button className="btn btn-primary" type="submit">
-                          Save
-                        </button>
-                        <button
-                          className="btn btn-outline-secondary"
-                          type="button"
-                          onClick={() => {
-                            setEmail(userDetails.email);
-                            setIsEditingEmail(false);
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </>
+                  <form className="mt-2" onSubmit={handleUpdateEmail}>
+                    <div className="mb-3">
+                      <input
+                        type="email"
+                        className="form-control"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button className="btn btn-primary" type="submit">
+                        Save
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        type="button"
+                        onClick={() => {
+                          setEmail(userDetails.email);
+                          setIsEditingEmail(false);
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
                 )}
               </div>
 

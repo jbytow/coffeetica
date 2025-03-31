@@ -176,8 +176,12 @@ public class UserController {
             logger.info("Password reset successfully for user {}", id);
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {
+            if (e instanceof IllegalAccessException) {
+                logger.warn("Forbidden password reset for user {}: {}", id, e.getMessage());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
             logger.error("Password reset failed for user {}: {}", id, e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Password reset failed: " + e.getMessage());
         }
     }
 
@@ -218,6 +222,10 @@ public class UserController {
             logger.info("Admin updated user {} successfully", id);
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
+            if (e instanceof IllegalAccessException) {
+                logger.warn("Forbidden update attempt for user {}: {}", id, e.getMessage());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
             logger.error("Admin update failed for user {}: {}", id, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -237,9 +245,12 @@ public class UserController {
             userService.deleteUser(id);
             logger.info("Deleted user successfully {}", id);
             return ResponseEntity.noContent().build();
+        } catch (IllegalAccessException e) {
+            logger.warn("Forbidden delete attempt for user {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Delete failed for user {}: {}", id, e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.internalServerError().body("Delete failed: " + e.getMessage());
         }
     }
 

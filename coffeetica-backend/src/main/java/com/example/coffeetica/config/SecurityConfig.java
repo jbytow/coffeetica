@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
 
                         // User management
-                        .requestMatchers(HttpMethod.PUT, "/api/users/**/update-roles").hasRole("SuperAdmin") // Only SuperAdmin can edit roles
+                        .requestMatchers(HttpMethod.PUT, "/api/users/{id}/update-roles").hasRole("SuperAdmin") // Only SuperAdmin can edit roles
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}/update-email").authenticated() // Users can update their email
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}/change-password").authenticated() // Users can change their own passwords
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("Admin") // Admins can update any user

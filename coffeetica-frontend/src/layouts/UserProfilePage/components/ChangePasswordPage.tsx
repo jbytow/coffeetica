@@ -12,7 +12,7 @@ import { ChangePasswordRequestDTO } from "../../../models/ChangePasswordRequestD
  * which accepts an object { currentPassword, newPassword }.
  */
 export const ChangePasswordPage: React.FC = () => {
-  const { isAuthenticated, user } = useContext(AuthContext);
+  const { isAuthenticated, user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Form fields for password change
@@ -65,11 +65,17 @@ export const ChangePasswordPage: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setSuccessMsg("Password has been changed successfully.");
-      // Clear form fields
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmNewPassword("");
+      setSuccessMsg("Password has been changed successfully. You will be logged out shortly.");
+      
+      setTimeout(() => {
+        logout();
+        navigate("/login", {
+          state: {
+            message: "Your password has been changed. Please log in again with your new password."
+          }
+        });
+      }, 2000);
+
     } catch (error: any) {
       setErrorMsg(
         error?.response?.data || "An error occurred while changing the password."
