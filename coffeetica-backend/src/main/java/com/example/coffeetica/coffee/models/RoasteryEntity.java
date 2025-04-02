@@ -27,7 +27,6 @@ public class RoasteryEntity {
     @Column(nullable = false)
     private String websiteUrl;
 
-    @Column(nullable = false)
     private String imageUrl;
 
     @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

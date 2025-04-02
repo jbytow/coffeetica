@@ -1,0 +1,26 @@
+# Secrets
+secrets/*
+!secrets/example.*
+
+# Environment variables
+.env*
+!.env*.example
+
+# IDE
+.idea/
+.vscode/
+
+# Build
+target/
+node_modules/
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml

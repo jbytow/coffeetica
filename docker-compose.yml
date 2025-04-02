@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: coffeetica
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - coffeetica-network
+
+  backend:
+    build:
+      context: ./coffeetica-backend
+    env_file:
+      - .env.backend
+    secrets:
+      - db_password
+      - jwt_secret
+    depends_on:
+      - postgres
+    networks:
+      - coffeetica-network
+
+  frontend:
+    build:
+      context: ./coffeetica-frontend
+    depends_on:
+      - backend
+    networks:
+      - coffeetica-network
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt
+
+volumes:
+  postgres_data:
+
+networks:
+  coffeetica-network:
+    driver: bridge
