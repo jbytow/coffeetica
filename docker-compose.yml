@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
+    container_name: postgres
     environment:
       POSTGRES_DB: coffeetica
       POSTGRES_USER: postgres
@@ -13,10 +14,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - coffeetica-network
+    restart: unless-stopped
 
   backend:
     build:
       context: ./coffeetica-backend
+    container_name: backend
     env_file:
       - .env.backend
     secrets:
@@ -24,16 +27,23 @@ services:
       - jwt_secret
     depends_on:
       - postgres
+    ports:
+      - "8080:8080"
     networks:
       - coffeetica-network
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./coffeetica-frontend
+    container_name: frontend
     depends_on:
       - backend
+    ports:
+      - "3000:80"
     networks:
       - coffeetica-network
+    restart: unless-stopped
 
 secrets:
   db_password:
