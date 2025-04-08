@@ -25,6 +25,9 @@ services:
     secrets:
       - db_password
       - jwt_secret
+      - backend_properties
+    environment:
+      SPRING_CONFIG_IMPORT: "optional:file:/run/secrets/backend_properties"
     depends_on:
       - postgres
     ports:
@@ -50,6 +53,8 @@ secrets:
     file: ./secrets/db_password.txt
   jwt_secret:
     file: ./secrets/jwt_secret.txt
+  backend_properties:
+    file: ./secrets/secret.properties
 
 volumes:
   postgres_data:
