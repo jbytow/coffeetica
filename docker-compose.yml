@@ -20,14 +20,21 @@ services:
     build:
       context: ./coffeetica-backend
     container_name: backend
+
     env_file:
       - .env.backend
+
     secrets:
-      - db_password
-      - jwt_secret
       - backend_properties
+      - db_password
+
+    # application.properties has "spring.config.import=..." – 
+    # so no duplicate
     environment:
-      SPRING_CONFIG_IMPORT: "optional:file:/run/secrets/backend_properties"
+      SPRING_PROFILES_ACTIVE: docker
+      # SPRING_CONFIG_IMPORT: "optional:file:/run/secrets/backend_properties"
+
+
     depends_on:
       - postgres
     ports:
@@ -49,10 +56,6 @@ services:
     restart: unless-stopped
 
 secrets:
-  db_password:
-    file: ./secrets/db_password.txt
-  jwt_secret:
-    file: ./secrets/jwt_secret.txt
   backend_properties:
     file: ./secrets/secret.properties
 
@@ -62,3 +65,6 @@ volumes:
 networks:
   coffeetica-network:
     driver: bridge
+
+
+      
