@@ -59,6 +59,9 @@ secrets:
   backend_properties:
     file: ./secrets/secret.properties
 
+  db_password:
+    file: ./secrets/db_password.txt
+
 volumes:
   postgres_data:
 
