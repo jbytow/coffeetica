@@ -6,10 +6,8 @@ services:
     container_name: postgres
     environment:
       POSTGRES_DB: coffeetica
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-    secrets:
-      - db_password
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -22,18 +20,10 @@ services:
     container_name: backend
 
     env_file:
-      - .env.backend
+      - .env
 
-    secrets:
-      - backend_properties
-      - db_password
-
-    # application.properties has "spring.config.import=..." – 
-    # so no duplicate
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      # SPRING_CONFIG_IMPORT: "optional:file:/run/secrets/backend_properties"
-
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
 
     depends_on:
       - postgres
@@ -55,19 +45,11 @@ services:
       - coffeetica-network
     restart: unless-stopped
 
-secrets:
-  backend_properties:
-    file: ./secrets/secret.properties
-
-  db_password:
-    file: ./secrets/db_password.txt
-
 volumes:
   postgres_data:
 
 networks:
   coffeetica-network:
     driver: bridge
-
 
       
