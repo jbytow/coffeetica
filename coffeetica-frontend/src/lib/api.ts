@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api', // eg. VITE_API_URL=https://api.coffeetica.eu for production and 'http://localhost:8080/api' for development
   headers: {
     'Content-Type': 'application/json',
   },
