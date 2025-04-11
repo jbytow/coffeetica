@@ -32,11 +32,14 @@ services:
     networks:
       - coffeetica-network
     restart: unless-stopped
-
   frontend:
     build:
       context: ./coffeetica-frontend
+      args:
+        - VITE_API_URL=https://api.coffeetica.eu
     container_name: frontend
+    environment:
+      - VITE_API_URL=https://api.coffeetica.eu
     depends_on:
       - backend
     ports:
