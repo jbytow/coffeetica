@@ -36,10 +36,10 @@ services:
     build:
       context: ./coffeetica-frontend
       args:
-        - VITE_API_URL=https://api.coffeetica.eu
+        - VITE_API_URL=https://api.coffeetica.eu/api
     container_name: frontend
     environment:
-      - VITE_API_URL=https://api.coffeetica.eu
+      - VITE_API_URL=https://api.coffeetica.eu/api
     depends_on:
       - backend
     ports:
