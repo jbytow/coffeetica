@@ -204,7 +204,7 @@ public class CoffeeController {
             Files.write(filePath, file.getBytes());
 
             // Update DB with image URL
-            String imageUrl = "/" + coffeesUploadPath + fileName;
+            String imageUrl = "roasteries/" + fileName;
             coffeeService.updateCoffeeImageUrl(id, imageUrl);
 
             return ResponseEntity.ok("File uploaded successfully: " + imageUrl);
