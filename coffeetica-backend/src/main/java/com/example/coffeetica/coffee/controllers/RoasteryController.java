@@ -234,8 +234,8 @@ public class RoasteryController {
             Files.write(filePath, file.getBytes());
 
             // Update database with image URL
-            String imageUrl = "/" + roasteriesUploadPath + fileName;
-            // e.g. "/uploads/roasteries/<UUID_filename>"
+            String imageUrl = "roasteries/" + fileName;
+            
 
             roasteryService.updateRoasteryImageUrl(id, imageUrl);
 
