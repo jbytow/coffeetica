@@ -130,7 +130,7 @@ const CoffeesListPage: React.FC = () => {
               <div>
                 {coffee.imageUrl ? (
                   <img
-                    src={`http://localhost:8080${coffee.imageUrl}`}
+                    src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
                     width="123"
                     height="196"
                     alt={coffee.name}

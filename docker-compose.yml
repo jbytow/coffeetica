@@ -30,7 +30,7 @@ services:
     networks:
       - coffeetica-network
     volumes:
-      - uploads_volume:/uploads
+      - ./uploads:/uploads
     restart: unless-stopped
   frontend:
     build:
