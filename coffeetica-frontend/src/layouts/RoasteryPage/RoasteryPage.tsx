@@ -79,7 +79,7 @@ export const RoasteryPage = () => {
             {roastery.imageUrl ? (
               <div className="ratio" style={{ aspectRatio: "300 / 400" }}>
                 <img
-                  src={`${import.meta.env.VITE_API_BASE_URL}${roastery.imageUrl}`}
+                  src={`${import.meta.env.VITE_IMAGE_BASE_URL}${roastery.imageUrl}`}
                   alt="Roastery"
                   style={{ width: "100%", height: "100%" }}
                 />
