@@ -10,6 +10,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - coffeetica-network
+    volumes:
+      - uploads_volume:/uploads
     restart: unless-stopped
 
   backend:
@@ -44,8 +46,6 @@ services:
       - "3000:80"
     networks:
       - coffeetica-network
-    volumes:
-      - uploads_volume:/uploads
     restart: unless-stopped
 
 volumes:
