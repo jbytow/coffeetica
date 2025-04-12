@@ -50,6 +50,7 @@ services:
 
 volumes:
   postgres_data:
+  uploads_volume:
 
 networks:
   coffeetica-network:
