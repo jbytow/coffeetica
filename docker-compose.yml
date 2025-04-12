@@ -37,9 +37,11 @@ services:
       context: ./coffeetica-frontend
       args:
         - VITE_API_BASE_URL=https://api.coffeetica.eu/api
+        - VITE_IMAGE_BASE_URL: https://coffeetica.eu/uploads/
     container_name: frontend
     environment:
       - VITE_API_BASE_URL=https://api.coffeetica.eu/api
+      - VITE_IMAGE_BASE_URL=https://coffeetica.eu/uploads/
     depends_on:
       - backend
     ports:
