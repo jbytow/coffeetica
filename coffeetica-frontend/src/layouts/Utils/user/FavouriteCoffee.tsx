@@ -58,7 +58,7 @@ export const FavouriteCoffee: React.FC<FavouriteCoffeeProps> = ({ userId }) => {
         {coffee.imageUrl && (
           <div style={{ maxWidth: "300px", width: "100%" }}>
             <img
-              src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+              src={`${import.meta.env.VITE_IMAGE_BASE_URL}${coffee.imageUrl}`}
               alt={coffee.name}
               className="img-fluid rounded object-fit-cover"
               style={{ objectFit: "cover", aspectRatio: "3 / 4" }}

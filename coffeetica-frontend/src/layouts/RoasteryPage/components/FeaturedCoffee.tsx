@@ -68,7 +68,7 @@ interface FeaturedCoffeeProps {
                 {featuredCoffee.imageUrl && (
                   <div className="w-100" style={{ maxWidth: "300px" }}>
                     <img
-                      src={`${import.meta.env.VITE_API_BASE_URL}${featuredCoffee.imageUrl}`}
+                      src={`${import.meta.env.VITE_IMAGE_BASE_URL}${featuredCoffee.imageUrl}`}
                       alt={featuredCoffee.name}
                       className="img-fluid rounded-start object-fit-cover"
                       style={{ objectFit: "cover", aspectRatio: "3 / 4" }}
