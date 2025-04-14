@@ -135,7 +135,7 @@ export const CoffeePage = () => {
           {coffee?.imageUrl ? (
             <div className="ratio" style={{ aspectRatio: "300 / 400" }}>
               <img
-                src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+                src={`${import.meta.env.VITE_IMAGE_BASE_URL}${coffee.imageUrl}`}
                 alt="Coffee"
                 style={{ width: "100%", height: "100%" }}
               />

@@ -88,7 +88,7 @@ const RoasteriesListPage: React.FC = () => {
                             <div>
                                 {roastery.imageUrl ? (
                                     <img
-                                        src={`${import.meta.env.VITE_API_BASE_URL}${roastery.imageUrl}`}
+                                        src={`${import.meta.env.VITE_IMAGE_BASE_URL}${roastery.imageUrl}`}
                                         width="123"
                                         height="196"
                                         alt={roastery.name}

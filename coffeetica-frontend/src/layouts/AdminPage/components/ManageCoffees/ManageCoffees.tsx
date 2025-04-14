@@ -121,7 +121,7 @@ const ManageCoffees: React.FC = () => {
               <div>
                 {coffee.imageUrl ? (
                   <img
-                    src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+                    src={`${import.meta.env.VITE_IMAGE_BASE_URL}${coffee.imageUrl}`}
                     width="123"
                     height="196"
                     alt={coffee.name}
