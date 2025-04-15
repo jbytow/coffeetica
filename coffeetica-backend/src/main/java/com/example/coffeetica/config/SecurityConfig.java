@@ -64,6 +64,7 @@ public class SecurityConfig {
                         // Authentication and registration endpoints (public)
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/auto-login").permitAll()
 
                         // User-specific endpoints (authentication required)
                         .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
