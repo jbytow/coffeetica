@@ -8,7 +8,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); 
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -20,6 +20,16 @@ const LoginPage: React.FC = () => {
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.error || 'An unexpected error occurred. Please try again.');
+    }
+  };
+
+  const handleTestLogin = async () => {
+    try {
+      const response = await apiClient.post('/auth/auto-login');
+      await login(response.data.token);
+      navigate('/');
+    } catch (err: any) {
+      setError('Test login failed. Please try again later.');
     }
   };
 
@@ -54,6 +64,15 @@ const LoginPage: React.FC = () => {
             {error && <div className="alert alert-danger">{error}</div>}
             <button type="submit" className="btn btn-primary w-100">Login</button>
           </form>
+          <div className="mt-3 text-center">
+            <button
+              type="button"
+              className="btn btn-outline-secondary w-100"
+              onClick={handleTestLogin}
+            >
+              Login as Test User
+            </button>
+          </div>
           <div className="text-center mt-3">
             <p className="mb-0">Don't have an account? <Link to="/register">Register here</Link>.</p>
           </div>

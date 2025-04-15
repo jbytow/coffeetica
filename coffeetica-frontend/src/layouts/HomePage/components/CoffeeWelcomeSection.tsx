@@ -71,14 +71,14 @@ const CoffeeWelcomeSection: React.FC = () => {
                   {token ? (
                     <Link
                       type="button"
-                      className="btn main-color btn-lg text-white"
+                      className="btn btn-primary btn-lg text-white"
                       to="/coffees"
                     >
                       Browse Coffees
                     </Link>
                   ) : (
                     <Link
-                      className="btn main-color btn-lg text-white"
+                      className="btn btn-primary btn-lg text-white"
                       to="/login"
                     >
                       Join Us
