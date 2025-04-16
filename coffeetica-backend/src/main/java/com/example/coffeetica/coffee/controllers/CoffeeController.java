@@ -40,9 +40,9 @@ public class CoffeeController {
 
     /**
      * A file path for uploading coffee images, configured in application.properties,
-     * e.g. app.upload.coffees-path=uploads/coffees/
+     * e.g. app.upload.coffees-path=/uploads/coffees/
      */
-    @Value("${app.upload.coffees-path:uploads/coffees/}")
+    @Value("${app.upload.coffees-path}")
     private String coffeesUploadPath;
 
     /**

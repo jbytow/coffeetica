@@ -40,9 +40,9 @@ public class RoasteryController {
 
     /**
      * A file path for uploading roastery images, configured in application.properties.
-     * For example: app.upload.roasteries-path=uploads/roasteries/
+     * For example: app.upload.roasteries-path=/uploads/roasteries/
      */
-    @Value("${app.upload.roasteries-path:uploads/roasteries/}")
+    @Value("${app.upload.roasteries-path/}")
     private String roasteriesUploadPath;
 
     /**

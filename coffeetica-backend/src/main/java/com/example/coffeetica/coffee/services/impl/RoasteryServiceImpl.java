@@ -8,6 +8,7 @@ import com.example.coffeetica.coffee.specification.RoasterySpecification;
 import com.example.coffeetica.exceptions.ResourceNotFoundException;
 import com.example.coffeetica.utility.FileHelper;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,6 +30,13 @@ public class RoasteryServiceImpl implements RoasteryService {
 
     private final RoasteryRepository roasteryRepository;
     private final ModelMapper modelMapper;
+
+    /**
+     * A file path for uploading roastery images, configured in application.properties.
+     * For example: app.upload.roasteries-path=/uploads/roasteries/
+     */
+    @Value("${app.upload.roasteries-path/}")
+    private String roasteriesUploadPath;
 
     /**
      * Constructs a new instance of {@link RoasteryServiceImpl}.
@@ -101,7 +109,7 @@ public class RoasteryServiceImpl implements RoasteryService {
 
         // Delete the associated image file, if any
         if (roastery.getImageUrl() != null) {
-            FileHelper.deleteImage(roastery.getImageUrl());
+            FileHelper.deleteImage(roasteriesUploadPath, roastery.getImageUrl());
         }
 
         roasteryRepository.deleteById(id);
@@ -114,7 +122,7 @@ public class RoasteryServiceImpl implements RoasteryService {
 
         String oldImageUrl = roastery.getImageUrl();
         if (oldImageUrl != null && !oldImageUrl.equals(newImageUrl)) {
-            FileHelper.deleteImage(oldImageUrl);
+            FileHelper.deleteImage(roasteriesUploadPath, oldImageUrl);
         }
 
         roastery.setImageUrl(newImageUrl);

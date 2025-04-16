@@ -12,10 +12,10 @@ import com.example.coffeetica.coffee.specification.CoffeeSpecification;
 
 import com.example.coffeetica.exceptions.ResourceNotFoundException;
 import com.example.coffeetica.utility.FileHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,13 @@ public class CoffeeServiceImpl implements CoffeeService {
     private final ReviewRepository reviewRepository;
     private final RoasteryRepository roasteryRepository;
     private final ModelMapper modelMapper;
+
+    /**
+     * A file path for uploading coffee images, configured in application.properties,
+     * e.g. app.upload.coffees-path=/uploads/coffees/
+     */
+    @Value("${app.upload.coffees-path}")
+    private String coffeesUploadPath;
 
     /**
      * Constructs a new instance of {@link CoffeeServiceImpl} with the necessary dependencies.
@@ -184,7 +191,7 @@ public class CoffeeServiceImpl implements CoffeeService {
         CoffeeEntity coffeeEntity = coffeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Coffee not found: " + id));
 
-        FileHelper.deleteImage(coffeeEntity.getImageUrl());
+        FileHelper.deleteImage(coffeesUploadPath, coffeeEntity.getImageUrl());
         coffeeRepository.delete(coffeeEntity);
     }
 
@@ -195,7 +202,7 @@ public class CoffeeServiceImpl implements CoffeeService {
 
         String oldImageUrl = coffee.getImageUrl();
         if (oldImageUrl != null && !oldImageUrl.equals(newImageUrl)) {
-            FileHelper.deleteImage(oldImageUrl);
+            FileHelper.deleteImage(coffeesUploadPath, oldImageUrl);
         }
         coffee.setImageUrl(newImageUrl);
         coffeeRepository.save(coffee);
