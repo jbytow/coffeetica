@@ -85,19 +85,28 @@ const RoasteriesListPage: React.FC = () => {
                     <div className="row g-0">
                         {/* Roastery image */}
                         <div className="col-md-3 d-flex justify-content-center align-items-center">
-                            <div>
+                            <div style={{ maxWidth: '123px', maxHeight: '196px' }}>
                                 {roastery.imageUrl ? (
                                     <img
                                         src={`${import.meta.env.VITE_IMAGE_BASE_URL}${roastery.imageUrl}`}
-                                        width="123"
-                                        height="196"
+                                        style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                            width: 'auto',
+                                            height: 'auto',
+                                            objectFit: 'contain'
+                                        }}
                                         alt={roastery.name}
                                     />
                                 ) : (
                                     <img
-                                        src="https://via.placeholder.com/123x196"
-                                        width="123"
-                                        height="196"
+                                        src="https://via.placeholder.com/123"
+                                        style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                            width: 'auto',
+                                            height: 'auto'
+                                        }}
                                         alt="Roastery placeholder"
                                     />
                                 )}
@@ -108,7 +117,7 @@ const RoasteriesListPage: React.FC = () => {
                         <div className="col-md-9">
                             <div className="card-body">
                                 <div className="row align-items-center mb-2">
-                                <div className="col-md-5">
+                                    <div className="col-md-5">
                                         <Link
                                             to={`/roasteries/${roastery.id}`}
                                             className="fs-4 text-decoration-none"
@@ -137,7 +146,7 @@ const RoasteriesListPage: React.FC = () => {
                                             className="btn btn-primary"
                                             onClick={() => {
                                                 window.location.href = `/coffees?roasteryName=${encodeURIComponent(roastery.name)}`;
-                                              }}
+                                            }}
                                         >
                                             View All Coffees
                                         </button>
