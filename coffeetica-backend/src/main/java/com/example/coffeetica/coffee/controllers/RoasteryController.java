@@ -235,7 +235,7 @@ public class RoasteryController {
 
             // Update database with image URL
             String imageUrl = "roasteries/" + fileName;
-            
+
             roasteryService.updateRoasteryImageUrl(id, imageUrl);
 
             return ResponseEntity.ok("File uploaded successfully: " + imageUrl);
