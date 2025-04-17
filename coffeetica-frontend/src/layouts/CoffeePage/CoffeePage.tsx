@@ -15,6 +15,7 @@ import { CoffeeDetailsDTO } from "../../models/CoffeeDetailsDTO";
  */
 export const CoffeePage = () => {
   const [coffee, setCoffee] = useState<CoffeeDetailsDTO | undefined>();
+  const [latestReviews, setLatestReviews] = useState<ReviewDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
   const [userReview, setUserReview] = useState<ReviewDTO | null>(null);
@@ -32,7 +33,9 @@ export const CoffeePage = () => {
     if (!coffeeId) return;
     try {
       const response = await apiClient.get<CoffeeDetailsDTO>(`/coffees/${coffeeId}`);
-      setCoffee(response.data);
+      const data = response.data;
+      setCoffee(data);
+      setLatestReviews(data.latestReviews ?? []);
     } catch (error: any) {
       setHttpError(error.message);
     } finally {
@@ -130,7 +133,6 @@ export const CoffeePage = () => {
   // Extract aggregated fields from CoffeeDetailsDTO for easier use in the UI
   const averageRating = coffee?.averageRating ?? 0;
   const totalReviewsCount = coffee?.totalReviewsCount ?? 0;
-  const latestReviews = coffee?.latestReviews ?? [];
 
   return (
     <div className="container mt-5">
