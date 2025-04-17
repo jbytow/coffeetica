@@ -38,6 +38,7 @@ export const StarsSelector: React.FC<StarsSelectorProps> = ({
             }}
           >
             {/* Left half of the star - hover sets rating to i + 0.5 */}
+            {/* Disabled for the first star (i=0) to prevent 0.5 rating */}
             <div
               style={{
                 position: "absolute",
@@ -46,8 +47,8 @@ export const StarsSelector: React.FC<StarsSelectorProps> = ({
                 width: size / 2,
                 height: size,
               }}
-              onMouseEnter={() => setHoverRating(i + 0.5)}
-              onClick={() => onRatingChange(i + 0.5)}
+              onMouseEnter={() => i > 0 && setHoverRating(i + 0.5)}
+              onClick={() => i > 0 && onRatingChange(i + 0.5)}
             />
 
             {/* Right half of the star - hover sets rating to i + 1 */}

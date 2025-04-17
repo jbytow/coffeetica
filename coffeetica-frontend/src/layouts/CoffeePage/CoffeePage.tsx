@@ -26,19 +26,21 @@ export const CoffeePage = () => {
   const { id } = useParams<{ id: string }>();
   const coffeeId = id ? Number(id) : null;
 
-  // Fetch aggregated coffee details from the backend
+
+// Fetch aggregated coffee details from the backend
+  const fetchCoffeeDetails = async () => {
+    if (!coffeeId) return;
+    try {
+      const response = await apiClient.get<CoffeeDetailsDTO>(`/coffees/${coffeeId}`);
+      setCoffee(response.data);
+    } catch (error: any) {
+      setHttpError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCoffeeDetails = async () => {
-      if (!coffeeId) return;
-      try {
-        const response = await apiClient.get<CoffeeDetailsDTO>(`/coffees/${coffeeId}`);
-        setCoffee(response.data);
-      } catch (error: any) {
-        setHttpError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchCoffeeDetails();
   }, [coffeeId]);
 
@@ -73,6 +75,7 @@ export const CoffeePage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserReview(response.data);
+      fetchCoffeeDetails();
     } catch (error: any) {
       setHttpError(error.message);
     }
@@ -90,6 +93,7 @@ export const CoffeePage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUserReview(response.data);
+      fetchCoffeeDetails();
     } catch (error: any) {
       setHttpError(error.message);
     }
@@ -105,6 +109,7 @@ export const CoffeePage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserReview(null);
+      fetchCoffeeDetails();
     } catch (error: any) {
       setHttpError(error.message);
     }

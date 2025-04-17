@@ -14,6 +14,16 @@ export const ReviewDisplay: React.FC<ReviewDisplayProps> = ({
   onDelete,
 }) => {
   const [showModal, setShowModal] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const MAX_LENGTH = 100;
+  const contentToShow =
+    review.content.length > MAX_LENGTH && !isExpanded
+      ? review.content.substring(0, MAX_LENGTH) + "..."
+      : review.content;
+
+
+  const toggleReadMore = () => setIsExpanded(!isExpanded);
 
   return (
     <div>
@@ -45,7 +55,16 @@ export const ReviewDisplay: React.FC<ReviewDisplayProps> = ({
       {/* Review */}
       <div className="mb-3">
         <p className="card-text">
-          <strong>Description:</strong> {review.content}
+          <strong>Description:</strong> {contentToShow}
+          {review.content.length > MAX_LENGTH && (
+            <button
+              onClick={toggleReadMore}
+              className="btn btn-link p-0 ms-1"
+              style={{ fontSize: "0.9rem" }}
+            >
+              {isExpanded ? "Show less" : "Read more"}
+            </button>
+          )}
         </p>
       </div>
 

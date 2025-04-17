@@ -43,9 +43,12 @@ public interface CoffeeRepository extends JpaRepository<CoffeeEntity, Long>, Jpa
      * @param pageable pagination and sorting information
      * @return a page of coffees, highest average rating first
      */
-    @Query("SELECT c FROM CoffeeEntity c LEFT JOIN c.reviews r " +
-            "WHERE c.roastery.id = :roasteryId " +
-            "GROUP BY c.id " +
-            "ORDER BY AVG(r.rating) DESC")
+    @Query("""
+        SELECT c FROM CoffeeEntity c LEFT JOIN c.reviews r
+        WHERE c.roastery.id = :roasteryId
+        GROUP BY c.id
+        HAVING COUNT(r.id) > 0
+        ORDER BY AVG(r.rating) DESC
+    """)
     Page<CoffeeEntity> findFeaturedCoffeeByRoasteryId(@Param("roasteryId") Long roasteryId, Pageable pageable);
 }
