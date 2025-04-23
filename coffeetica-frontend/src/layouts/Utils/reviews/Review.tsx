@@ -69,16 +69,35 @@ export const Review: React.FC<ReviewProps> = ({
 
   return (
     <article className="card review">
-      <div className="card-header">
-        <div className="d-flex flex-column flex-md-row align-items-md-center">
-          <div className="d-flex align-items-center mb-2 mb-md-0">
-            {headingElement}
-            <div className="d-flex align-items-center ms-2">
+      {/* Desktop */}
+      <div className="card-header d-none d-md-block">
+        <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center flex-grow-1">
+            <div className="me-3" style={{ minWidth: 0 }}>
+              {headingElement}
+            </div>
+            <div className="d-flex align-items-center flex-shrink-0">
               <StarsDisplay rating={review.rating} size={20} />
               <span className="ms-2 text-muted">{displayRating}</span>
             </div>
           </div>
-          <small className="text-muted ms-md-auto">{formattedDate}</small>
+          <small className="text-muted ms-3">{formattedDate}</small>
+        </div>
+      </div>
+
+      {/* Mobile */}
+      <div className="card-header d-md-none">
+        <div className="d-flex flex-column">
+          <div className="text-truncate mb-2" style={{ minWidth: 0 }}>
+            {headingElement}
+          </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              <StarsDisplay rating={review.rating} size={20} />
+              <span className="ms-2 text-muted">{displayRating}</span>
+            </div>
+            <small className="text-muted">{formattedDate}</small>
+          </div>
         </div>
       </div>
 
