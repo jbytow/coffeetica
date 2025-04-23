@@ -58,7 +58,7 @@ interface LatestCoffeesProps {
                       </div>
   
                       <div className="row">
-                        <div className="col-md-5">
+                        <div className="col-md-5 mb-3 mb-md-0">
                           <p className="card-text"><strong>Roastery:</strong> {coffee.roastery.name}</p>
                           <p className="card-text"><strong>Region:</strong> {coffee.region}</p>
                           <p className="card-text"><strong>Country:</strong> {coffee.countryOfOrigin}</p>

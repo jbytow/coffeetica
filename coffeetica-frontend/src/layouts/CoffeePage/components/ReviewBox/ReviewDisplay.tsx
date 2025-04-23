@@ -59,7 +59,7 @@ export const ReviewDisplay: React.FC<ReviewDisplayProps> = ({
           {review.content.length > MAX_LENGTH && (
             <button
               onClick={toggleReadMore}
-              className="btn btn-link p-0 ms-1"
+              className="btn btn-link p-0 ms-1 text-nowrap align-baseline text-decoration-underline"
               style={{ fontSize: "0.9rem" }}
             >
               {isExpanded ? "Show less" : "Read more"}

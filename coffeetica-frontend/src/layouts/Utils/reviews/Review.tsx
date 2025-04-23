@@ -19,7 +19,7 @@ export const Review: React.FC<ReviewProps> = ({
 }) => {
   const { hasRole } = useContext(AuthContext); // Pobieramy rolę użytkownika
   const isAdmin = hasRole("Admin"); // Sprawdzamy, czy użytkownik jest Adminem
-  
+
   // Format date
   const dateObj = new Date(review.createdAt);
   const formattedDate = dateObj.toLocaleString("en-us", {
@@ -63,46 +63,47 @@ export const Review: React.FC<ReviewProps> = ({
     </h5>
   ) : (
     <h5 className="mb-0 me-3 align-self-center">
-  <Link to={`/users/${review.userId}`}>{review.userName}</Link>
-</h5>
+      <Link to={`/users/${review.userId}`}>{review.userName}</Link>
+    </h5>
   );
 
   return (
     <article className="card review">
-      <div className="card-header d-flex align-items-center">
-        {headingElement}
-        <div className="d-flex align-items-center ms-2">
-          <StarsDisplay rating={review.rating} size={20} />
-          <span className="ms-2 text-muted">{displayRating}</span>
+      <div className="card-header">
+        <div className="d-flex flex-column flex-md-row align-items-md-center">
+          <div className="d-flex align-items-center mb-2 mb-md-0">
+            {headingElement}
+            <div className="d-flex align-items-center ms-2">
+              <StarsDisplay rating={review.rating} size={20} />
+              <span className="ms-2 text-muted">{displayRating}</span>
+            </div>
+          </div>
+          <small className="text-muted ms-md-auto">{formattedDate}</small>
         </div>
-        <small className="text-muted ms-auto">{formattedDate}</small>
       </div>
 
-      <div className="card-body">
+      <div className="card-body text-break">
         <p className="mb-2">
           <strong>Brewing Method:</strong> {review.brewingMethod}
         </p>
         <p className="mb-2">
           <strong>Brewing Description:</strong> {review.brewingDescription}
         </p>
-        <p className="mb-2">
+        <p className="mb-2 text-break">
           {contentToShow}
           {review.content.length > MAX_LENGTH && (
-            <>
-              {" "}
-              <button
-                onClick={toggleReadMore}
-                className="btn btn-link p-0"
-                style={{ fontSize: "0.9rem" }}
-              >
-                {isExpanded ? "Show less" : "Read more"}
-              </button>
-            </>
+            <button
+              onClick={toggleReadMore}
+              className="btn btn-link p-0 ms-1 text-nowrap align-baseline text-decoration-underline"
+              style={{ fontSize: "0.9rem" }}
+            >
+              {isExpanded ? "Show less" : "Read more"}
+            </button>
           )}
         </p>
       </div>
 
-      {/* Przycisk "Delete" widoczny tylko dla Admina */}
+      {/* Delete button for admin only */}
       {isAdmin && (
         <div className="card-footer text-end">
           <button className="btn btn-danger btn-sm" onClick={handleDeleteReview}>

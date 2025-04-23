@@ -134,7 +134,7 @@ export const CoffeeCarousel: React.FC = () => {
               <Link to={`/coffees/${coffee.id}`} className="card-link">
                 <div className="coffee-carousel-card m-3 shadow-sm">
                   <img
-                    src={`${import.meta.env.VITE_API_BASE_URL}${coffee.imageUrl}`}
+                    src={`${import.meta.env.VITE_IMAGE_BASE_URL}${coffee.imageUrl}`}
                     alt={coffee.name}
                     className="coffee-carousel-image"
                   />

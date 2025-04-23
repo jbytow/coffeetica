@@ -30,6 +30,7 @@ The database for this demo environment is **automatically reset** every day at: 
 - REST API  
 - Maven  
 - PostgreSQL  
+- JUnit 4 (unit and integration testing)
 - Hibernate (JPA)  
 - ModelMapper  
 - Constructor-based Dependency Injection  
@@ -51,7 +52,7 @@ The database for this demo environment is **automatically reset** every day at: 
 
 ## Test Coverage
 
-> Test coverage pending integration with testing frameworks and CI tools (e.g., JUnit + JaCoCo).
+> 88% classes coverage
 
 ## Configuration Highlights
 
