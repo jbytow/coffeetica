@@ -13,7 +13,7 @@ Coffeetica is a full-stack **coffee review portal** built for specialty coffee l
 
 ## Live Demo
 
-App is accessible at: https://gltracker.eu
+App is accessible at: https://coffeetica.eu
 Login by using "Login as a test user button" or by following credentials:  
 - **Username**: `testadminuser`
 - **Password**: `admin123`  
